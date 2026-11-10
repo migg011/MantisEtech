@@ -1,0 +1,51 @@
+<!-- Cards usam routerLink para abrir os módulos; não criam registros ou fazem requisições por conta própria. -->
+<div class="cadastro-page">
+    <div class="cadastro-header">
+        <div>
+            <div class="eyebrow">MANTIS / ADMINISTRAÇÃO</div>
+            <h1>Central de Cadastros</h1>
+            <p>
+                Gerencie as informações e configurações dos módulos do MANTIS
+                2.0.
+            </p>
+        </div>
+        <div class="header-icon">
+            <mat-icon>apps</mat-icon>
+        </div>
+    </div>
+
+    <div class="cadastro-grid">
+        <ng-container *ngFor="let item of items">
+            <a
+                *ngIf="item.route && (!item.adminOnly || administrator())"
+                class="cadastro-card"
+                [routerLink]="item.route"
+            >
+                <div class="icon-box" [style.background]="item.color">
+                    <mat-icon>{{ item.icon }}</mat-icon>
+                </div>
+
+                <div class="card-content">
+                    <h3>{{ item.title }}</h3>
+                    <p>{{ item.description }}</p>
+                    <span class="open-label">
+                        Acessar módulo
+                        <mat-icon>arrow_forward</mat-icon>
+                    </span>
+                </div>
+            </a>
+
+            <div *ngIf="!item.route" class="cadastro-card coming-soon">
+                <div class="icon-box" [style.background]="item.color">
+                    <mat-icon>{{ item.icon }}</mat-icon>
+                </div>
+
+                <div class="card-content">
+                    <h3>{{ item.title }}</h3>
+                    <p>{{ item.description }}</p>
+                    <span class="pending-label"> Em desenvolvimento </span>
+                </div>
+            </div>
+        </ng-container>
+    </div>
+</div>

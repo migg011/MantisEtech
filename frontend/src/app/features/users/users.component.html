@@ -1,0 +1,266 @@
+<!-- Cadastro de contas: ngModel liga os campos ao objeto form. O Django valida perfil, linha e senha em cada operação. -->
+<div class="page usuarios-page">
+    <!-- CABEÇALHO -->
+    <div class="page-header">
+        <div>
+            <div class="eyebrow">CONTROLE DE ACESSO</div>
+            <h1>Gerenciamento de Usuários</h1>
+            <p class="muted">
+                Cadastre, edite e gerencie os acessos ao MANTIS 2.0.
+            </p>
+        </div>
+
+        <button
+            mat-flat-button
+            class="primary"
+            *ngIf="!formOpen"
+            (click)="newUser()"
+        >
+            <mat-icon>person_add</mat-icon>
+            Novo usuário
+        </button>
+    </div>
+
+    <!-- MENSAGENS -->
+    <div class="alert success" *ngIf="successMessage">
+        <mat-icon>check_circle</mat-icon>
+        <span>{{ successMessage }}</span>
+    </div>
+
+    <div class="alert error" *ngIf="error && !formOpen">
+        <mat-icon>error_outline</mat-icon>
+        <span>{{ error }}</span>
+    </div>
+
+    <!-- CADASTRO / EDIÇÃO -->
+    <app-form-modal
+        *ngIf="formOpen"
+        [title]="editingId !== null ? 'Editar usuário' : 'Novo usuário'"
+        subtitle="Preencha os dados e selecione o perfil de acesso."
+        icon="person_add"
+        [busy]="loading"
+        (closed)="cancel()"
+    >
+        <p *ngIf="error" class="error" role="alert">{{ error }}</p>
+        <div class="fields">
+            <label class="modal-field">
+                <span>Nome completo</span>
+                <input name="name" [(ngModel)]="form.name" maxlength="150" />
+            </label>
+
+            <label class="modal-field">
+                <span>Matrícula</span>
+                <input name="registration" [(ngModel)]="form.registration" />
+            </label>
+
+            <label class="modal-field">
+                <span>Perfil</span>
+                <select name="role" [(ngModel)]="form.role">
+                    <option value="ADMINISTRADOR">Administrador</option>
+                    <option value="TECNICO">Técnico</option>
+                    <option value="OPERADOR">Operador</option>
+                </select>
+            </label>
+
+            <label class="modal-field" *ngIf="form.role === 'OPERADOR'">
+                <span>Linha SMT</span>
+
+                <select name="lineId" [(ngModel)]="form.lineId">
+                    <option *ngFor="let line of lines" [ngValue]="line.id">
+                        {{ line.name }}
+                    </option>
+                </select>
+            </label>
+
+            <label class="modal-field" *ngIf="editingId === null">
+                <span>Senha inicial (12+ caracteres)</span>
+                <input
+                    type="password"
+                    name="password"
+                    autocomplete="new-password"
+                    [(ngModel)]="form.password"
+                />
+            </label>
+        </div>
+
+        <div modalActions class="modal-actions">
+            <button
+                mat-flat-button
+                class="primary"
+                [disabled]="
+                    loading ||
+                    !form.name.trim() ||
+                    !form.registration.trim() ||
+                    !form.role ||
+                    (form.role === 'OPERADOR' && !form.lineId) ||
+                    (editingId === null && form.password.length < 12)
+                "
+                (click)="register()"
+            >
+                <mat-icon>save</mat-icon>
+                {{
+                    loading
+                        ? 'Salvando...'
+                        : editingId !== null
+                          ? 'Salvar alterações'
+                          : 'Cadastrar usuário'
+                }}
+            </button>
+
+            <button
+                mat-stroked-button
+                type="button"
+                [disabled]="loading"
+                (click)="cancel()"
+            >
+                Cancelar
+            </button>
+        </div>
+    </app-form-modal>
+
+    <!-- LISTA DE USUÁRIOS -->
+    <div class="card users-list-card">
+        <div class="section-header">
+            <div>
+                <h2>Usuários cadastrados</h2>
+                <p class="muted">
+                    {{ usersFiltered.length }} usuário(s) encontrado(s)
+                </p>
+            </div>
+        </div>
+
+        <!-- PESQUISA DE USUÁRIOS -->
+        <div class="list-toolbar">
+            <mat-form-field appearance="outline" class="search-field">
+                <mat-label>Pesquisar usuário</mat-label>
+                <mat-icon matPrefix>search</mat-icon>
+
+                <input
+                    matInput
+                    name="search"
+                    [(ngModel)]="search"
+                    placeholder="Nome, matrícula ou perfil"
+                />
+            </mat-form-field>
+        </div>
+
+        <!-- INDICADOR DE CARREGAMENTO -->
+        <div class="loading-users" *ngIf="loadingUsers">
+            <mat-icon>hourglass_top</mat-icon>
+            <span>Carregando usuários cadastrados...</span>
+        </div>
+
+        <div class="table-wrap">
+            <table class="users-table">
+                <thead>
+                    <tr>
+                        <th>Nome</th>
+                        <th>Matrícula</th>
+                        <th>Perfil</th>
+                        <th>Linha SMT</th>
+                        <th>Situação</th>
+                        <th class="actions-column">Ações</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+                    <tr *ngFor="let user of usersFiltered">
+                        <td>
+                            <div class="user-identity">
+                                <span class="user-avatar">
+                                    <mat-icon>person</mat-icon>
+                                </span>
+                                <strong>{{ user.name }}</strong>
+                            </div>
+                        </td>
+
+                        <td>{{ user.registration }}</td>
+
+                        <td>
+                            <span
+                                class="role-badge"
+                                [class.admin]="user.role === 'ADMINISTRADOR'"
+                                [class.technician]="user.role === 'TECNICO'"
+                                [class.operator]="user.role === 'OPERADOR'"
+                            >
+                                {{ user.role }}
+                            </span>
+                        </td>
+
+                        <td>{{ getLine(user.line_id) }}</td>
+
+                        <td>
+                            <span
+                                class="status-badge"
+                                [class.inactive]="!user.active"
+                            >
+                                <span class="status-dot"></span>
+                                {{ user.active ? 'Ativo' : 'Inativo' }}
+                            </span>
+                        </td>
+
+                        <td>
+                            <div class="row-actions">
+                                <button
+                                    mat-icon-button
+                                    title="Editar"
+                                    aria-label="Editar usuário"
+                                    (click)="editUser(user)"
+                                >
+                                    <mat-icon>edit</mat-icon>
+                                </button>
+
+                                <button
+                                    mat-icon-button
+                                    title="Redefinir senha"
+                                    aria-label="Redefinir senha"
+                                    (click)="resetPassword(user)"
+                                >
+                                    <mat-icon>lock_reset</mat-icon>
+                                </button>
+
+                                <button
+                                    mat-icon-button
+                                    [disabled]="
+                                        user.active &&
+                                        user.id === authentication.user()?.id
+                                    "
+                                    [title]="
+                                        user.active ? 'Desativar' : 'Reativar'
+                                    "
+                                    [attr.aria-label]="
+                                        user.active
+                                            ? 'Desativar usuário'
+                                            : 'Reativar usuário'
+                                    "
+                                    (click)="toggleActive(user)"
+                                >
+                                    <mat-icon>
+                                        {{
+                                            user.active
+                                                ? 'person_off'
+                                                : 'person_add'
+                                        }}
+                                    </mat-icon>
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+
+                    <tr
+                        *ngIf="
+                            !loadingUsers &&
+                            usersFiltered.length === 0 &&
+                            !error
+                        "
+                    >
+                        <td colspan="6" class="empty-state">
+                            <mat-icon>group_off</mat-icon>
+                            <p>Nenhum usuário encontrado.</p>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>

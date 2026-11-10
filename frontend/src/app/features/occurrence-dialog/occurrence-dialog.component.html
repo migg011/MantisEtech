@@ -1,0 +1,130 @@
+<!-- Abertura da OS: o operador seleciona um problema do catálogo; save envia IDs e a prioridade ao servidor. -->
+<div class="mantis-modal">
+    <header class="mantis-modal-header">
+        <div class="mantis-modal-icon"><mat-icon>build</mat-icon></div>
+        <div
+            ><h2 mat-dialog-title>Abrir ordem de serviço</h2
+            ><p>Identifique o problema e registre o que aconteceu.</p></div
+        >
+        <button
+            class="mantis-modal-close"
+            aria-label="Fechar modal"
+            [disabled]="processing"
+            (click)="dialogReference.close()"
+            ><mat-icon>close</mat-icon></button
+        >
+    </header>
+    <mat-dialog-content class="mantis-modal-body">
+        <fieldset [disabled]="processing || successMessage">
+            <p
+                ><b>{{ machine.name || machine.model || machine.type_name }}</b>
+                — {{ machine.model || machine.type_name }}</p
+            >
+            <section
+                class="opening-context"
+                aria-label="Dados automáticos da ocorrência"
+            >
+                <div
+                    ><span>Operador / responsável pela abertura</span
+                    ><strong>{{
+                        recordCreated?.opened_by_name || nameOperator
+                    }}</strong></div
+                >
+                <div
+                    ><span>Início da parada de linha</span
+                    ><strong>{{
+                        recordCreated?.created_at || timeCurrent
+                            | date: 'dd/MM/yyyy HH:mm:ss'
+                    }}</strong
+                    ><small>{{
+                        recordCreated
+                            ? 'Horário registrado pelo servidor'
+                            : 'Horário definitivo registrado ao confirmar a ocorrência'
+                    }}</small></div
+                >
+            </section>
+            <p *ngIf="loadingProblems" class="muted" role="status"
+                >Carregando problemas cadastrados...</p
+            >
+            <div *ngIf="errorLoading" class="error" role="alert"
+                >{{ errorLoading }}
+                <button mat-button (click)="loadProblems()"
+                    >Tentar novamente</button
+                ></div
+            >
+            <label class="modal-field">
+                <span>Problema identificado *</span>
+                <select
+                    [(ngModel)]="idTypeProblem"
+                    (ngModelChange)="selectProblem()"
+                    [disabled]="
+                        loadingProblems || !!errorLoading || !problems.length
+                    "
+                >
+                    <option [ngValue]="null" disabled
+                        >Selecione o problema</option
+                    >
+                    <option
+                        *ngFor="let problem of problems"
+                        [ngValue]="problem.id"
+                        >{{ problem.name }}</option
+                    >
+                </select>
+            </label>
+            <p
+                class="muted"
+                *ngIf="!loadingProblems && !errorLoading && !problems.length"
+                >Nenhum problema cadastrado para este tipo de equipamento.
+                Solicite o cadastro à equipe de manutenção.</p
+            >
+            <p class="priority-summary" *ngIf="operator && idTypeProblem"
+                >Prioridade definida pelo cadastro:
+                <strong>{{ priorities[priority] }}</strong></p
+            >
+            <label class="modal-field" *ngIf="!operator">
+                <span>Prioridade</span>
+                <select [(ngModel)]="priority"
+                    ><option value="BAIXA">Baixa</option
+                    ><option value="MEDIA">Média</option
+                    ><option value="ALTA">Alta</option
+                    ><option value="CRITICA">Crítica</option></select
+                >
+            </label>
+            <label class="modal-field occurrence-description"
+                ><span>Descrição do ocorrido (opcional)</span
+                ><textarea
+                    rows="4"
+                    maxlength="3000"
+                    [(ngModel)]="occurrenceDescription"
+                    placeholder="Descreva o que aconteceu, os sintomas e as condições observadas. Ex.: a máquina parou durante a alimentação da placa e apresentou um alarme no painel."
+                ></textarea
+                ><small
+                    >{{ occurrenceDescription.length }} / 3000 caracteres</small
+                ></label
+            >
+            <p class="error" *ngIf="error" role="alert">{{ error }}</p>
+            <p class="success" *ngIf="successMessage" role="status"
+                >OS #{{ recordCreated?.id }} aberta com sucesso. Operador,
+                horário e relato registrados.</p
+            >
+        </fieldset>
+    </mat-dialog-content>
+    <mat-dialog-actions align="end" class="mantis-modal-footer">
+        <button
+            mat-button
+            [disabled]="processing"
+            (click)="dialogReference.close()"
+            >Fechar</button
+        >
+        <button
+            mat-flat-button
+            class="primary"
+            (click)="save()"
+            *ngIf="!successMessage"
+            [disabled]="processing || loadingProblems || !idTypeProblem"
+            >{{
+                processing ? 'Registrando...' : 'Registrar ocorrência'
+            }}</button
+        >
+    </mat-dialog-actions>
+</div>

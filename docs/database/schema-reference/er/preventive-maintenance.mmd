@@ -1,0 +1,93 @@
+%% Gerado do catálogo físico. PK = chave primária; FK = referência a outra tabela.
+erDiagram
+    tipos_equipamento {
+        int2 id PK
+        varchar nome
+    }
+    equipamentos {
+        int8 id PK
+        varchar numero_modelo
+        varchar modelo
+        varchar numero_serie
+        varchar fabricante
+        date data_fabricacao
+        varchar data_fabricacao_texto
+        numeric comprimento_mm
+        numeric largura_mm
+        numeric altura_mm
+        numeric peso_kg
+        numeric tensao_v
+        numeric frequencia_hz
+        numeric corrente_a
+        numeric potencia_w
+        numeric pressao_pneumatica_bar
+        varchar numero_patrimonio
+        text descricao
+        text descricao_processo
+        int4 posicao
+        bool ativo
+        timestamptz criado_em
+        int2 tipo_equipamento_id FK
+        int8 linha_id
+        int8 setor_id
+        varchar nome
+    }
+    agendas_preventiva {
+        int8 id PK
+        varchar periodicidade
+        date proximo_vencimento
+        date ultima_execucao
+        bool ativo
+        int8 equipamento_id FK
+        jsonb itens_roteiro
+    }
+    roteiros_preventiva {
+        int8 id PK
+        varchar periodicidade
+        jsonb itens
+        int2 tipo_equipamento_id FK
+    }
+    ordens_preventiva {
+        int8 id PK
+        varchar situacao
+        date vencimento_previsto
+        date data_planejada
+        time hora_planejada
+        varchar base_recorrencia
+        varchar periodicidade
+        jsonb retrato_equipamento
+        jsonb itens
+        jsonb resultados
+        text instrucoes_seguranca
+        jsonb pecas
+        text observacoes
+        date data_execucao
+        time hora_execucao
+        varchar nome_responsavel
+        timestamptz criado_em
+        varchar nome_executor
+        timestamptz concluido_em
+        text motivo_cancelamento
+        int4 revisao
+        int8 responsavel_id
+        int8 criado_por_id
+        int8 concluido_por_id
+        int8 agenda_id FK
+    }
+    execucoes_preventiva {
+        int8 id PK
+        date data_execucao
+        date vencimento_anterior
+        date proximo_vencimento
+        text observacoes
+        timestamptz criado_em
+        int8 agenda_id FK
+        int8 tecnico_id
+        int8 ordem_preventiva_id FK
+    }
+    tipos_equipamento ||--o{ equipamentos : "tipo_equipamento_id"
+    tipos_equipamento ||--o{ roteiros_preventiva : "tipo_equipamento_id"
+    equipamentos ||--o{ agendas_preventiva : "equipamento_id"
+    agendas_preventiva ||--o{ ordens_preventiva : "agenda_id"
+    agendas_preventiva ||--o{ execucoes_preventiva : "agenda_id"
+    ordens_preventiva |o--o| execucoes_preventiva : "ordem_preventiva_id"

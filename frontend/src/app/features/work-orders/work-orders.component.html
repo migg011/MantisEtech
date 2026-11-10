@@ -1,0 +1,256 @@
+<!-- Painel: visibleRows controla a página; exhibition oculta menus e ações. Minutos são derivados dos horários devolvidos pelo servidor. -->
+<section class="status-page" [class.exhibition]="displayMode">
+    <div class="board-tools">
+        <div *ngIf="!displayMode"
+            ><span class="eyebrow">MANUTENÇÃO / MONITORAMENTO</span
+            ><h1>Status das linhas</h1
+            ><p
+                >Acompanhe as ocorrências e os atendimentos em tempo real.</p
+            ></div
+        >
+        <div *ngIf="displayMode" class="exhibition-tools"
+            ><a class="tool-button" routerLink="/ordens"
+                ><mat-icon>arrow_back</mat-icon>Voltar</a
+            ><button class="tool-button" (click)="fullscreen()"
+                ><mat-icon>fullscreen</mat-icon>Tela cheia</button
+            ></div
+        >
+    </div>
+    <div class="overview" *ngIf="!displayMode"
+        ><div
+            ><span class="overview-dot all"></span
+            ><strong>{{ lines.length }}</strong
+            ><span>LINHAS MONITORADAS</span></div
+        ><div
+            ><span class="overview-dot stopped"></span
+            ><strong>{{ linesWithOrders }}</strong
+            ><span>COM OS ABERTA</span></div
+        ><div
+            ><span class="overview-dot waiting"></span
+            ><strong>{{ waiting }}</strong
+            ><span>AGUARDANDO TÉCNICO</span></div
+        ><div
+            ><span class="overview-dot attending"></span
+            ><strong>{{ inProgress }}</strong
+            ><span>EM ATENDIMENTO</span></div
+        ></div
+    >
+    <div class="board-filters" *ngIf="!displayMode"
+        ><div class="view-tabs" aria-label="Visualização"
+            ><button
+                [class.selected]="view === 'live'"
+                [attr.aria-pressed]="view === 'live'"
+                (click)="view = 'live'; page = 0"
+                >Ao vivo</button
+            ><button
+                [class.selected]="view === 'history'"
+                [attr.aria-pressed]="view === 'history'"
+                (click)="view = 'history'; page = 0"
+                >Histórico de OS</button
+            ></div
+        ><label
+            ><span>Linha</span
+            ><select [(ngModel)]="lineSelected" (ngModelChange)="page = 0"
+                ><option [ngValue]="null">Todas as linhas</option
+                ><option *ngFor="let line of lines" [ngValue]="line.id">{{
+                    line.name
+                }}</option></select
+            ></label
+        ></div
+    >
+    <div class="status-board" [class.stale]="!!error">
+        <header class="board-heading"
+            ><div class="board-brand"
+                ><mat-icon>precision_manufacturing</mat-icon
+                ><div
+                    ><span>MANTIS · PRODUÇÃO</span
+                    ><h2>{{
+                        view === 'live'
+                            ? 'PAINEL DE LINHAS'
+                            : 'HISTÓRICO DE ATENDIMENTOS'
+                    }}</h2></div
+                ></div
+            ><div class="board-clock"
+                ><time>{{ now | date: 'HH:mm:ss' }}</time
+                ><span>{{ now | date: 'dd/MM/yyyy' }}</span></div
+            ></header
+        >
+        <div *ngIf="error" class="board-alert" role="alert"
+            ><mat-icon>cloud_off</mat-icon>{{ error }}</div
+        >
+        <p *ngIf="loading" class="board-empty" role="status"
+            >Conectando ao painel…</p
+        >
+        <div class="board-scroll" *ngIf="!loading"
+            ><table
+                ><thead
+                    ><tr
+                        ><th>LINHA / OS</th><th>MÁQUINA</th><th>OPERADOR</th
+                        ><th>PARADA</th><th>TÉCNICO / INÍCIO</th
+                        ><th>{{
+                            view === 'live' ? 'MINUTOS' : 'TOTAL / FECHAMENTO'
+                        }}</th
+                        ><th>SITUAÇÃO</th></tr
+                    ></thead
+                ><tbody>
+                    <tr
+                        *ngFor="let row of recordsVisible; trackBy: keyRecord"
+                        [class.waiting-row]="
+                            row.order &&
+                            !row.order.started_at &&
+                            !row.order.finished_at
+                        "
+                        [class.attending-row]="
+                            row.order?.started_at && !row.order.finished_at
+                        "
+                        [class.clear-row]="!row.order"
+                    >
+                        <td
+                            ><strong class="line-name">{{
+                                row.line.name
+                            }}</strong
+                            ><button
+                                class="order-link"
+                                *ngIf="row.order && !displayMode && canService"
+                                (click)="edit(row.order)"
+                                [attr.aria-label]="
+                                    (row.order.finished_at
+                                        ? 'Consultar OS '
+                                        : 'Atender OS ') + row.order.id
+                                "
+                                >OS #{{ row.order.id
+                                }}<mat-icon>open_in_new</mat-icon></button
+                            ><small
+                                *ngIf="
+                                    row.order && (displayMode || !canService)
+                                "
+                                >OS #{{ row.order.id }}</small
+                            ><small *ngIf="!row.order">{{
+                                row.line.sector_name || '—'
+                            }}</small></td
+                        >
+                        <td
+                            ><strong>{{
+                                row.order?.model ||
+                                    (row.order ? row.order.type_name : '—')
+                            }}</strong
+                            ><small>{{ row.order?.serial || '' }}</small></td
+                        >
+                        <td
+                            ><strong>{{
+                                row.order?.opened_by_name || '—'
+                            }}</strong></td
+                        >
+                        <td
+                            ><strong class="time-value">{{
+                                row.order
+                                    ? (row.order.created_at | date: 'HH:mm:ss')
+                                    : '—'
+                            }}</strong
+                            ><small>{{
+                                row.order?.created_at | date: 'dd/MM'
+                            }}</small></td
+                        >
+                        <td
+                            ><strong>{{
+                                row.order?.assigned_to_name || '—'
+                            }}</strong
+                            ><small class="time-value">{{
+                                row.order?.started_at
+                                    ? (row.order.started_at | date: 'HH:mm:ss')
+                                    : row.order
+                                      ? row.order.status === 'CONCLUIDA'
+                                          ? 'Horário não registrado'
+                                          : 'Aguardando início'
+                                      : ''
+                            }}</small></td
+                        >
+                        <td
+                            ><strong
+                                class="elapsed"
+                                *ngIf="row.order; else noElapsed"
+                                >{{ minutes(row.order) | number: '1.0-1'
+                                }}<span> min</span></strong
+                            ><ng-template #noElapsed
+                                ><strong>—</strong></ng-template
+                            ><small *ngIf="row.order?.finished_at">{{
+                                row.order.finished_at | date: 'dd/MM HH:mm:ss'
+                            }}</small></td
+                        >
+                        <td
+                            ><span
+                                class="situation"
+                                [class.waiting]="
+                                    row.order &&
+                                    !row.order.started_at &&
+                                    !row.order.finished_at
+                                "
+                                [class.attending]="
+                                    row.order?.started_at &&
+                                    !row.order.finished_at
+                                "
+                                [class.done]="row.order?.finished_at"
+                                ><i></i
+                                >{{
+                                    !row.order
+                                        ? 'SEM OS ABERTA'
+                                        : row.order.finished_at
+                                          ? 'CONCLUÍDA'
+                                          : row.order.started_at
+                                            ? 'EM ATENDIMENTO'
+                                            : 'AGUARDANDO TÉCNICO'
+                                }}</span
+                            ></td
+                        >
+                    </tr>
+                    <tr *ngIf="!recordsVisible.length"
+                        ><td colspan="7" class="board-empty">{{
+                            view === 'history'
+                                ? 'Nenhuma OS concluída para esta seleção.'
+                                : 'Nenhuma linha disponível para monitoramento.'
+                        }}</td></tr
+                    >
+                </tbody></table
+            ></div
+        >
+        <footer class="board-footer"
+            ><span
+                ><i class="connection-dot" [class.offline]="!!error"></i
+                >{{
+                    error
+                        ? 'CONEXÃO INTERROMPIDA'
+                        : 'ATUALIZAÇÃO AUTOMÁTICA · 15 SEGUNDOS'
+                }}</span
+            ><div class="pagination" *ngIf="quantityPages > 1"
+                ><button
+                    *ngIf="!displayMode"
+                    aria-label="Página anterior"
+                    (click)="page = (page + quantityPages - 1) % quantityPages"
+                    ><mat-icon>chevron_left</mat-icon></button
+                ><span
+                    >PÁGINA {{ (page % quantityPages) + 1 }} /
+                    {{ quantityPages }}</span
+                ><button
+                    *ngIf="!displayMode"
+                    aria-label="Próxima página"
+                    (click)="page = (page + 1) % quantityPages"
+                    ><mat-icon>chevron_right</mat-icon></button
+                ></div
+            ><span>{{
+                updatedIn
+                    ? 'DADOS ÀS ' + (updatedIn | date: 'HH:mm:ss')
+                    : 'AGUARDANDO DADOS'
+            }}</span></footer
+        >
+    </div>
+    <p class="board-note"
+        >{{
+            displayMode
+                ? 'EXIBIÇÃO AO VIVO · MANTIS REPORTING SYSTEM'
+                : view === 'history'
+                  ? 'Últimas 100 OS concluídas. Clique no número da OS para consultar o atendimento.'
+                  : 'Clique no número da OS para atender ou consultar. Pendências são registradas dentro da OS.'
+        }}
+        <span>Parada = abertura até fechamento da OS.</span></p
+    >
+</section>

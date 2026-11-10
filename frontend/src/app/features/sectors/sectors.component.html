@@ -1,0 +1,198 @@
+<!-- Lista e formulário de setores. Eventos click chamam métodos da classe; name/description são enviados por save à API. -->
+<div class="page sectors-page">
+    <div class="sectors-heading">
+        <div>
+            <div class="eyebrow">GESTÃO DE ATIVOS / CADASTROS</div>
+            <h1>Setores</h1>
+            <p class="muted">
+                Selecione um setor para acessar seus equipamentos e linhas SMT.
+            </p>
+        </div>
+
+        <button
+            *ngIf="authentication.user()?.role === 'ADMINISTRADOR'"
+            mat-flat-button
+            class="primary"
+            type="button"
+            (click)="openFormSector()"
+        >
+            <mat-icon>add</mat-icon>
+            Novo setor
+        </button>
+    </div>
+
+    <div class="sectors-summary">
+        <div class="summary-icon">
+            <mat-icon>domain</mat-icon>
+        </div>
+        <div>
+            <span class="summary-label">SETORES CADASTRADOS</span>
+            <strong>{{ sectors.length }}</strong>
+        </div>
+    </div>
+
+    <p *ngIf="error && !openDialog" class="error" role="alert">{{ error }}</p>
+    <p *ngIf="successMessage" class="success">{{ successMessage }}</p>
+
+    <section class="sectors-list">
+        <h2>Seus setores</h2>
+
+        <div class="sector-grid" *ngIf="sectors.length">
+            <div class="sector-tile" *ngFor="let s of sectors">
+                <!-- ÁREA CLICÁVEL DO SETOR -->
+                <a
+                    class="sector-tile-link"
+                    [routerLink]="['/setores', s.id]"
+                    [attr.aria-label]="'Acessar setor ' + s.name"
+                >
+                    <div class="sector-tile-heading">
+                        <div class="sector-tile-icon">
+                            <mat-icon>factory</mat-icon>
+                        </div>
+
+                        <div class="sector-tile-info">
+                            <h3>{{ s.name }}</h3>
+                            <p>{{ s.description || 'Sem descrição' }}</p>
+                        </div>
+
+                        <mat-icon class="sector-arrow">
+                            chevron_right
+                        </mat-icon>
+                    </div>
+                </a>
+
+                <!-- AÇÕES EXCLUSIVAS DO ADMINISTRADOR -->
+                <div
+                    class="sector-tile-footer"
+                    *ngIf="authentication.user()?.role === 'ADMINISTRADOR'"
+                >
+                    <div class="sector-tile-actions">
+                        <button
+                            mat-icon-button
+                            type="button"
+                            [disabled]="processing"
+                            (click)="edit(s)"
+                            [attr.title]="'Editar setor ' + s.name"
+                            [attr.aria-label]="'Editar setor ' + s.name"
+                        >
+                            <mat-icon>edit</mat-icon>
+                        </button>
+
+                        <button
+                            mat-icon-button
+                            type="button"
+                            [disabled]="processing"
+                            (click)="deactivate(s)"
+                            [attr.title]="'Excluir setor ' + s.name"
+                            [attr.aria-label]="'Excluir setor ' + s.name"
+                        >
+                            <mat-icon>delete_outline</mat-icon>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="card" *ngIf="!sectors.length">
+            <h3>Nenhum setor cadastrado</h3>
+            <p class="muted">
+                Cadastre um setor para começar a organizar os equipamentos da
+                fábrica.
+            </p>
+        </div>
+    </section>
+
+    <ng-template #sectorDialog>
+        <!-- ngModel mantém campo e classe sincronizados; isso ainda não é uma gravação no banco. -->
+        <form class="sector-modal" (ngSubmit)="save()">
+            <header class="sector-modal-header">
+                <div class="sector-modal-icon"><mat-icon>domain</mat-icon></div>
+                <div>
+                    <h2 id="sector-dialog-title">{{
+                        editingId === null ? 'Novo setor' : 'Editar setor'
+                    }}</h2>
+                    <p>{{
+                        editingId === null
+                            ? 'Preencha as informações para cadastrar um novo setor.'
+                            : 'Atualize as informações do setor.'
+                    }}</p>
+                </div>
+                <button
+                    class="sector-modal-close"
+                    type="button"
+                    aria-label="Fechar modal"
+                    [disabled]="processing"
+                    (click)="closeFormSector()"
+                >
+                    <mat-icon>close</mat-icon>
+                </button>
+            </header>
+
+            <div class="sector-modal-body">
+                <p *ngIf="error" class="error" role="alert">{{ error }}</p>
+                <div class="sector-modal-field">
+                    <label for="sector-name"
+                        >Nome do setor <span>*</span></label
+                    >
+                    <input
+                        id="sector-name"
+                        name="name"
+                        required
+                        maxlength="120"
+                        placeholder="Ex.: Manutenção, Produção, Qualidade..."
+                        aria-describedby="sector-name-help"
+                        [disabled]="processing"
+                        [(ngModel)]="name"
+                    />
+                    <p id="sector-name-help"
+                        >Informe um nome que identifique o setor na sua
+                        empresa.</p
+                    >
+                </div>
+                <div class="sector-modal-field">
+                    <label for="sector-description">Descrição (opcional)</label>
+                    <textarea
+                        id="sector-description"
+                        name="description"
+                        rows="3"
+                        maxlength="2000"
+                        placeholder="Descreva o objetivo ou as principais atividades do setor..."
+                        aria-describedby="sector-description-help"
+                        [disabled]="processing"
+                        [(ngModel)]="description"
+                    ></textarea>
+                    <p id="sector-description-help"
+                        >Adicione uma descrição para fornecer mais detalhes
+                        sobre o setor.</p
+                    >
+                </div>
+            </div>
+
+            <footer class="sector-modal-footer">
+                <button
+                    class="sector-cancel"
+                    type="button"
+                    [disabled]="processing"
+                    (click)="closeFormSector()"
+                    >Cancelar</button
+                >
+                <button
+                    class="sector-save"
+                    type="submit"
+                    [disabled]="processing || name.trim().length < 2"
+                >
+                    <mat-icon>{{
+                        editingId === null ? 'add' : 'save'
+                    }}</mat-icon>
+                    {{
+                        processing
+                            ? 'Salvando...'
+                            : editingId === null
+                              ? 'Salvar setor'
+                              : 'Salvar alterações'
+                    }}
+                </button>
+            </footer>
+        </form>
+    </ng-template>
+</div>

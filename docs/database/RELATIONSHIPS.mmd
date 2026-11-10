@@ -1,0 +1,190 @@
+erDiagram
+    auth_group {
+        int4 id PK
+        varchar name UK
+    }
+    auth_group_permissions {
+        int8 id PK
+        int4 group_id FK, UK
+        int4 permission_id FK, UK
+    }
+    auth_permission {
+        int4 id PK
+        int4 content_type_id FK, UK
+        varchar codename UK
+    }
+    django_content_type {
+        int4 id PK
+        varchar app_label UK
+        varchar model UK
+    }
+    django_migrations {
+        int8 id PK
+    }
+    equipment {
+        int8 id PK
+        varchar serial UK
+        varchar asset_number UK
+        int4 position UK
+        int2 equipment_type_id FK
+        int8 line_id FK, UK
+        int8 sector_id FK
+    }
+    equipment_attachments {
+        int8 id PK
+        varchar kind UK
+        int8 equipment_id UK, FK
+        int8 uploaded_by FK
+    }
+    equipment_movements {
+        int8 id PK
+        int8 equipment_id FK
+        int8 performed_by FK
+        int8 from_line_id FK
+        int8 to_line_id FK
+    }
+    equipment_preventives {
+        int8 id PK
+        varchar frequency UK
+        int8 equipment_id FK, UK
+    }
+    equipment_types {
+        int2 id PK
+        varchar name UK
+    }
+    line_pendencies {
+        int8 id PK
+        int8 created_by_id FK
+        int8 equipment_id FK
+        int8 line_id FK
+        int8 resolved_by_id FK
+        int8 work_order_id FK
+    }
+    lines {
+        int8 id PK
+        varchar code UK
+        int8 sector_id FK
+    }
+    maintenance_part_requisitions {
+        int8 id PK
+        int8 equipment_id FK
+        int8 requester_id FK
+        int8 spare_part_id FK
+        int8 work_order_id FK
+    }
+    preventive_checklists {
+        int8 id PK
+        varchar frequency UK
+        int2 equipment_type_id FK, UK
+    }
+    preventive_executions {
+        int8 id PK
+        int8 schedule_id FK
+        int8 technician_id FK
+        int8 order_id FK, UK
+    }
+    preventive_orders {
+        int8 id PK
+        int8 assigned_to_id FK
+        int8 created_by_id FK
+        int8 finished_by_id FK
+        int8 schedule_id FK
+    }
+    problem_types {
+        int8 id PK
+        int2 equipment_type_id FK
+    }
+    sectors {
+        int8 id PK
+        varchar code UK
+    }
+    spare_part_compatibility {
+        int8 equipment_id FK, PK
+        int8 spare_part_id FK, PK
+    }
+    spare_part_technical {
+        int8 spare_part_id PK, FK
+        int8 fiscal_validated_by FK
+    }
+    spare_parts {
+        int8 id PK
+        varchar code UK
+    }
+    spare_purchase_events {
+        int8 id PK
+        int8 actor_id FK
+        int8 request_id FK
+    }
+    spare_purchase_request_items {
+        int8 id PK
+        int8 request_id FK
+        int8 spare_part_id FK
+    }
+    spare_purchase_requests {
+        int8 id PK
+        int8 equipment_id FK
+        int8 manager_id FK
+        int8 requester_id FK
+        int8 work_order_id FK
+    }
+    users {
+        int8 id PK
+        varchar registration UK
+        int8 line_id FK
+    }
+    work_orders {
+        int8 id PK
+        int8 assigned_to FK
+        int8 equipment_id FK
+        int8 opened_by FK
+        int8 problem_type_id FK
+    }
+    auth_permission ||--o{ auth_group_permissions : "permission_id"
+    auth_group ||--o{ auth_group_permissions : "group_id"
+    django_content_type ||--o{ auth_permission : "content_type_id"
+    equipment_types ||--o{ equipment : "equipment_type_id"
+    lines |o--o{ equipment : "line_id"
+    sectors |o--o{ equipment : "sector_id"
+    equipment ||--o{ equipment_attachments : "equipment_id"
+    users ||--o{ equipment_attachments : "uploaded_by"
+    equipment ||--o{ equipment_movements : "equipment_id"
+    lines |o--o{ equipment_movements : "from_line_id"
+    users ||--o{ equipment_movements : "performed_by"
+    lines |o--o{ equipment_movements : "to_line_id"
+    equipment ||--o{ equipment_preventives : "equipment_id"
+    users ||--o{ line_pendencies : "created_by_id"
+    equipment ||--o{ line_pendencies : "equipment_id"
+    lines ||--o{ line_pendencies : "line_id"
+    users |o--o{ line_pendencies : "resolved_by_id"
+    work_orders ||--o{ line_pendencies : "work_order_id"
+    sectors |o--o{ lines : "sector_id"
+    equipment ||--o{ maintenance_part_requisitions : "equipment_id"
+    spare_parts ||--o{ maintenance_part_requisitions : "spare_part_id"
+    work_orders ||--o{ maintenance_part_requisitions : "work_order_id"
+    users ||--o{ maintenance_part_requisitions : "requester_id"
+    equipment_types ||--o{ preventive_checklists : "equipment_type_id"
+    equipment_preventives ||--o{ preventive_executions : "schedule_id"
+    preventive_orders |o--o| preventive_executions : "order_id"
+    users ||--o{ preventive_executions : "technician_id"
+    users |o--o{ preventive_orders : "assigned_to_id"
+    users ||--o{ preventive_orders : "created_by_id"
+    users |o--o{ preventive_orders : "finished_by_id"
+    equipment_preventives ||--o{ preventive_orders : "schedule_id"
+    equipment_types |o--o{ problem_types : "equipment_type_id"
+    spare_parts ||--o{ spare_part_compatibility : "spare_part_id"
+    equipment ||--o{ spare_part_compatibility : "equipment_id"
+    users |o--o{ spare_part_technical : "fiscal_validated_by"
+    spare_parts ||--o| spare_part_technical : "spare_part_id"
+    spare_purchase_requests ||--o{ spare_purchase_events : "request_id"
+    users ||--o{ spare_purchase_events : "actor_id"
+    spare_purchase_requests ||--o{ spare_purchase_request_items : "request_id"
+    spare_parts ||--o{ spare_purchase_request_items : "spare_part_id"
+    work_orders |o--o{ spare_purchase_requests : "work_order_id"
+    equipment |o--o{ spare_purchase_requests : "equipment_id"
+    users ||--o{ spare_purchase_requests : "manager_id"
+    users ||--o{ spare_purchase_requests : "requester_id"
+    lines |o--o{ users : "line_id"
+    users |o--o{ work_orders : "assigned_to"
+    equipment ||--o{ work_orders : "equipment_id"
+    users ||--o{ work_orders : "opened_by"
+    problem_types |o--o{ work_orders : "problem_type_id"

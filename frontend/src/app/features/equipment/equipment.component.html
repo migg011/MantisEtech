@@ -1,0 +1,453 @@
+<!-- Cadastro técnico: o formulário edita valores locais; save envia JSON e depois os anexos ao Django. -->
+<div class="page">
+    <div class="eyebrow">GESTÃO DE ATIVOS / SETOR</div>
+    <h1>Repositório — {{ nameSector() }}</h1>
+    <div
+        class="actions"
+        *ngIf="idSector"
+        style="margin: 16px 0; gap: 8px; flex-wrap: wrap"
+    >
+        <a mat-stroked-button [routerLink]="['/setores', idSector]"
+            >Visão do setor</a
+        >
+        <a
+            mat-flat-button
+            class="primary"
+            [routerLink]="['/setores', idSector, 'equipamentos']"
+            >Repositório</a
+        >
+        <a mat-stroked-button [routerLink]="['/setores', idSector, 'linhas']"
+            >Linhas SMT</a
+        >
+    </div>
+    <p *ngIf="!idSector" class="error"
+        >Selecione primeiro um setor. <a routerLink="/setores">Abrir setores</a>
+    </p>
+    <p class="muted"
+        >O equipamento pertence ao repositório do setor e pode ser transferido
+        quando estiver fora de uma linha. A posição só é definida durante a
+        montagem da linha.</p
+    >
+    <button
+        mat-flat-button
+        class="primary"
+        *ngIf="idSector"
+        (click)="newEquipment()"
+        ><mat-icon>add</mat-icon>Novo equipamento</button
+    >
+    <p *ngIf="messageTransfer" class="success" role="status">{{
+        messageTransfer
+    }}</p>
+    <app-form-modal
+        *ngIf="machineTransfer as machine"
+        title="Transferir equipamento"
+        subtitle="Transfira a máquina para o repositório de outro setor."
+        icon="swap_horiz"
+        [busy]="transferring"
+        (closed)="closeTransfer()"
+    >
+        <p
+            ><strong>{{
+                machine.name || machine.model || machine.type_name
+            }}</strong>
+            · {{ machine.asset_number || machine.serial }}</p
+        >
+        <p
+            >Setor de origem: <strong>{{ nameSector() }}</strong></p
+        >
+        <p class="muted"
+            >A máquina manterá seu cadastro, fotos, manuais, preventivas e OS.
+            Ela ficará disponível no setor de destino.</p
+        >
+        <label class="modal-field"
+            ><span>Setor de destino</span
+            ><select [(ngModel)]="sectorDestination" [disabled]="transferring"
+                ><option [ngValue]="null" disabled>Selecione o setor</option
+                ><option
+                    *ngFor="let sector of sectorsDestination"
+                    [ngValue]="sector.id"
+                    >{{ sector.name }}</option
+                ></select
+            ></label
+        >
+        <label class="modal-field"
+            ><span>Motivo da transferência</span
+            ><textarea
+                [(ngModel)]="reasonTransfer"
+                minlength="3"
+                maxlength="500"
+                rows="3"
+                [disabled]="transferring"
+                placeholder="Informe por que o equipamento será transferido."
+            ></textarea>
+        </label>
+        <p *ngIf="!sectorsDestination.length" class="muted"
+            >Cadastre outro setor ativo para realizar a transferência.</p
+        >
+        <p *ngIf="errorTransfer" class="error" role="alert">{{
+            errorTransfer
+        }}</p>
+        <div modalActions class="modal-actions"
+            ><button
+                mat-stroked-button
+                [disabled]="transferring"
+                (click)="closeTransfer()"
+                >Cancelar</button
+            ><button
+                mat-flat-button
+                class="primary"
+                [disabled]="
+                    transferring ||
+                    !sectorDestination ||
+                    reasonTransfer.trim().length < 3
+                "
+                (click)="transfer()"
+                >Confirmar transferência</button
+            ></div
+        >
+    </app-form-modal>
+    <app-form-modal
+        *ngIf="machineHistory as machine"
+        title="Histórico do equipamento"
+        [subtitle]="machine.name || machine.model || machine.type_name"
+        icon="history"
+        (closed)="closeHistory()"
+    >
+        <p *ngIf="loadingHistory" role="status">Carregando movimentações...</p>
+        <p *ngIf="errorHistory" class="error" role="alert">{{
+            errorHistory
+        }}</p>
+        <p *ngIf="!loadingHistory && !errorHistory && !history.length"
+            >Nenhuma movimentação registrada.</p
+        >
+        <article
+            *ngFor="let item of history"
+            style="padding: 12px 0; border-bottom: 1px solid #e1e6ed"
+        >
+            <strong>{{ labelMovement(item.action) }}</strong
+            ><p
+                >{{ item.created_at | date: 'dd/MM/yyyy HH:mm' }} ·
+                {{ item.performed_by_name }}</p
+            >
+            <p *ngIf="item.action === 'TRANSFERENCIA'"
+                >Origem: {{ item.from_sector_name || 'Não informado' }} ·
+                Destino: {{ item.to_sector_name }}<br />Motivo:
+                {{ item.reason }}</p
+            >
+            <p *ngIf="item.action !== 'TRANSFERENCIA'"
+                >{{ item.from_line ? 'Origem: ' + item.from_line : '' }}
+                {{ item.to_line ? 'Destino: ' + item.to_line : '' }}</p
+            >
+        </article>
+    </app-form-modal>
+    <p class="error" *ngIf="error && !formOpen">{{ error }}</p
+    ><p class="success" *ngIf="successMessage && !formOpen">{{
+        successMessage
+    }}</p>
+    <app-form-modal
+        *ngIf="formOpen"
+        [title]="editingId ? 'Editar equipamento' : 'Novo equipamento'"
+        subtitle="Informe os dados técnicos e os documentos do equipamento."
+        icon="precision_manufacturing"
+        [wide]="true"
+        [busy]="saving"
+        (closed)="cancelEditing()"
+    >
+        <p class="muted"
+            >Somente o tipo é obrigatório. Informe os demais dados conforme a
+            documentação disponível.</p
+        >
+        <h3 class="section-heading">Identificação</h3>
+        <div class="fields">
+            <label class="modal-field">
+                <span>Tipo de equipamento *</span>
+                <select [(ngModel)]="form.equipmentTypeId">
+                    <option [ngValue]="undefined" disabled
+                        >Selecione o tipo de equipamento</option
+                    >
+                    <option *ngFor="let t of types" [ngValue]="t.id">{{
+                        t.name
+                    }}</option>
+                </select>
+            </label>
+            <label class="modal-field">
+                <span>Nome do equipamento</span>
+                <input
+                    [(ngModel)]="form.name"
+                    maxlength="160"
+                    placeholder="Ex.: Impressora de pasta — Linha 01"
+                />
+            </label>
+            <label class="modal-field" *ngFor="let field of fieldsText">
+                <span>{{ field.label }}</span>
+                <input [(ngModel)]="form[field.key]"
+            /></label>
+            <label class="modal-field">
+                <span>Data de fabricação</span>
+                <input
+                    type="text"
+                    [(ngModel)]="form.manufacturingDateText"
+                    placeholder="2020, 03/2020 ou 15/03/2020"
+                />
+            </label>
+        </div>
+        <fieldset class="preventive-config">
+            <legend class="section-heading"
+                >Preventivas aplicáveis ao equipamento</legend
+            >
+            <p class="muted"
+                >Marque as periodicidades e informe o próximo vencimento. Sem
+                data, o primeiro prazo será calculado a partir de hoje: 15 dias,
+                1, 2, 3, 6 ou 12 meses. Ao desmarcar, o alerta é desativado e o
+                histórico é preservado. Uma OS aberta precisa ser concluída ou
+                cancelada antes de alterar o prazo ou desmarcar sua
+                periodicidade.</p
+            >
+            <div class="preventive-options">
+                <div
+                    class="preventive-option"
+                    *ngFor="let option of optionsPreventive"
+                >
+                    <label class="preventive-check"
+                        ><input
+                            type="checkbox"
+                            [(ngModel)]="selectionPreventive[option.value]"
+                            [disabled]="saving"
+                        />{{ option.label }}</label
+                    >
+                    <label
+                        class="modal-field"
+                        *ngIf="selectionPreventive[option.value]"
+                        ><span>Próximo vencimento — {{ option.label }}</span
+                        ><input
+                            type="date"
+                            [(ngModel)]="datesPreventive[option.value]"
+                            [disabled]="saving"
+                    /></label>
+                </div>
+            </div>
+        </fieldset>
+        <h3 class="section-heading"> Dimensões e especificações técnicas </h3>
+        <p class="muted"
+            >Digite os valores diretamente. Campos vazios serão mantidos sem
+            informação.</p
+        >
+        <div class="fields">
+            <label class="modal-field" *ngFor="let f of fieldsNumeric">
+                <span>{{ f.label }}</span>
+                <input
+                    type="text"
+                    inputmode="decimal"
+                    [(ngModel)]="form[f.key]"
+                    placeholder="Opcional"
+                />
+            </label>
+        </div>
+        <h3 class="section-heading">Descrição e processo</h3>
+        <div class="fields">
+            <label class="modal-field">
+                <span>Descrição do equipamento</span>
+                <textarea rows="3" [(ngModel)]="form.description"></textarea>
+            </label>
+            <label class="modal-field">
+                <span>Descrição do processo</span>
+                <textarea
+                    rows="3"
+                    [(ngModel)]="form.processDescription"
+                ></textarea>
+            </label>
+        </div>
+        <h3 class="section-heading">Foto e manual</h3>
+        <p class="muted"
+            >Você pode selecionar os arquivos agora e salvá-los junto com o
+            cadastro. Foto: JPG/PNG até 3 MB. Manual: PDF até 5 MB.</p
+        >
+        <div class="fields">
+            <div
+                ><label><strong>Foto do equipamento</strong></label>
+                <p *ngIf="nameAttachmentSaved('PHOTO') as name"
+                    >Foto já salva: <strong>{{ name }}</strong>
+                    <button
+                        type="button"
+                        mat-button
+                        (click)="download(editingId!, 'PHOTO', name)"
+                        >Baixar foto</button
+                    ></p
+                >
+                <p
+                    ><input
+                        type="file"
+                        accept="image/jpeg,image/png"
+                        [disabled]="saving"
+                        (change)="selectFile($event, 'PHOTO')"
+                /></p>
+                <small>{{
+                    photoSelected
+                        ? 'Nova foto: ' + photoSelected.name
+                        : loadingAttachmentsEditing
+                          ? 'Consultando foto salva...'
+                          : nameAttachmentSaved('PHOTO')
+                            ? 'A foto salva será mantida. Selecione outro arquivo apenas para substituí-la.'
+                            : errorAttachmentsEditing
+                              ? 'Consulta da foto salva indisponível.'
+                              : 'Nenhuma foto cadastrada.'
+                }}</small></div
+            >
+            <div
+                ><label><strong>Manual técnico</strong></label>
+                <p *ngIf="nameAttachmentSaved('MANUAL') as name"
+                    >Manual já salvo: <strong>{{ name }}</strong></p
+                >
+                <p
+                    ><input
+                        type="file"
+                        accept="application/pdf"
+                        [disabled]="saving"
+                        (change)="selectFile($event, 'MANUAL')"
+                /></p>
+                <small>{{
+                    manualSelected
+                        ? 'Novo manual: ' + manualSelected.name
+                        : loadingAttachmentsEditing
+                          ? 'Consultando manual salvo...'
+                          : nameAttachmentSaved('MANUAL')
+                            ? 'O manual salvo será mantido.'
+                            : errorAttachmentsEditing
+                              ? 'Consulta do manual salvo indisponível.'
+                              : 'Nenhum manual cadastrado.'
+                }}</small></div
+            >
+        </div>
+        <p *ngIf="errorAttachmentsEditing" class="error" role="alert">{{
+            errorAttachmentsEditing
+        }}</p>
+        <p *ngIf="error" class="error">{{ error }}</p>
+        <p *ngIf="successMessage" class="success">{{ successMessage }}</p>
+        <div
+            modalActions
+            class="modal-actions"
+            style="gap: 10px; flex-wrap: wrap"
+        >
+            <button
+                mat-flat-button
+                class="primary"
+                (click)="save()"
+                [disabled]="saving || !form.equipmentTypeId || !idSector"
+            >
+                {{
+                    saving
+                        ? 'Salvando...'
+                        : editingId
+                          ? 'Salvar alterações'
+                          : 'Cadastrar equipamento'
+                }}
+            </button>
+            <button
+                mat-stroked-button
+                (click)="cancelEditing()"
+                [disabled]="saving"
+                >Cancelar
+            </button>
+        </div>
+    </app-form-modal>
+    <div class="card" style="margin-top: 20px">
+        <h2>Equipamentos cadastrados</h2>
+        <div class="table-wrap">
+            <table>
+                <tr>
+                    <th>Tipo</th>
+                    <th>Nome do equipamento</th>
+                    <th>Modelo</th>
+                    <th>Nº ativo</th>
+                    <th>Data fab.</th>
+                    <th>Situação</th>
+                    <th>Documentos</th>
+                    <th *ngIf="administrator()">Ações</th>
+                </tr>
+                <tr *ngFor="let e of equipment">
+                    <td>{{ e.type_name }}</td>
+                    <!-- O nome abre a ficha; os tipos de OS ficam dentro dela, fora da listagem. -->
+                    <td
+                        ><a
+                            class="equipment-sheet-link"
+                            routerLink="/cadastro/preventivas"
+                            [queryParams]="{ equipmentId: e.id }"
+                            >{{
+                                e.name || e.model || 'Consultar equipamento'
+                            }}</a
+                        ></td
+                    >
+                    <td>{{ e.model || '—' }}</td>
+                    <td>{{ e.asset_number || '—' }}</td>
+                    <td>{{
+                        e.manufacturing_date_text ||
+                            (e.manufacturing_date
+                                ? (e.manufacturing_date | date: 'dd/MM/yyyy')
+                                : '—')
+                    }}</td>
+                    <td>{{
+                        e.line_id
+                            ? 'Alocado — ' +
+                              (e.line_name || 'Linha') +
+                              ' / posição ' +
+                              e.position
+                            : 'Disponível'
+                    }}</td>
+                    <td>
+                        <button mat-button (click)="attachments(e.id)"
+                            >Ver documentos</button
+                        >
+                        <button mat-button (click)="openHistory(e)"
+                            >Histórico</button
+                        >
+                    </td>
+                    <td *ngIf="administrator()">
+                        <button
+                            mat-button
+                            [disabled]="!!e.line_id || transferring"
+                            [title]="
+                                e.line_id
+                                    ? 'Retire a máquina da linha antes de transferir'
+                                    : 'Transferir para outro setor'
+                            "
+                            (click)="openTransfer(e)"
+                            >Transferir</button
+                        >
+                        <button
+                            mat-icon-button
+                            title="Editar"
+                            aria-label="Editar equipamento"
+                            (click)="edit(e)"
+                        >
+                            <mat-icon>edit</mat-icon>
+                        </button>
+                        <button
+                            mat-icon-button
+                            title="Excluir"
+                            aria-label="Excluir equipamento"
+                            (click)="deactivate(e)"
+                            [disabled]="!!e.line_id"
+                        >
+                            <mat-icon>delete</mat-icon>
+                        </button>
+                    </td>
+                </tr>
+            </table>
+        </div>
+        <p *ngIf="!equipment.length" class="muted"
+            >Nenhum equipamento cadastrado neste setor.</p
+        >
+        <p *ngIf="messageAttachments" class="muted">{{ messageAttachments }}</p>
+        <div *ngIf="files.length" class="card" style="margin-top: 12px">
+            <h3>Documentos do equipamento selecionado</h3>
+            <p *ngFor="let f of files"
+                >{{ f.kind === 'PHOTO' ? 'Foto' : 'Manual' }} — {{ f.filename }}
+                <button
+                    mat-button
+                    (click)="download(equipmentSelected, f.kind, f.filename)"
+                    >Baixar</button
+                >
+            </p>
+        </div>
+    </div>
+</div>

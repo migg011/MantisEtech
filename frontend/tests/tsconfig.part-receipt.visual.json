@@ -1,0 +1,6 @@
+{
+    "extends": "../tsconfig.app.json",
+    "files": ["part-receipt.visual.ts"],
+    "include": ["../src/**/*.d.ts"],
+    "compilerOptions": { "outDir": "../.tmp-test-entrada-pecas" }
+}

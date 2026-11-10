@@ -1,0 +1,418 @@
+<!-- Cadastro mestre de peças e compatibilidade. Referências de estoque não representam retirada ou consumo de peças. -->
+<div class="page spare-page" [class.catalog-selection]="selectingForWorkOrder">
+    <header class="spare-heading">
+        <div
+            ><div class="eyebrow">CADASTRO / MANTIS</div><h1>Spare Parts</h1
+            ><p class="muted"
+                >Peças de reposição e inventário do estoque.</p
+            ></div
+        >
+        <div class="spare-toolbar" *ngIf="!selectingForWorkOrder"
+            ><button mat-stroked-button (click)="openInventory()"
+                ><mat-icon>assessment</mat-icon>Relatório de inventário</button
+            ><button
+                mat-flat-button
+                class="primary"
+                *ngIf="administrator()"
+                (click)="newPart()"
+                ><mat-icon>add</mat-icon>Nova peça</button
+            ></div
+        >
+        <button
+            mat-icon-button
+            *ngIf="selectingForWorkOrder"
+            aria-label="Fechar catálogo de peças"
+            (click)="closeCatalog()"
+            ><mat-icon>close</mat-icon></button
+        >
+    </header>
+    <p class="catalog-order-context" *ngIf="selectingForWorkOrder"
+        >Selecione a peça para a OS #{{ contextSelection?.selectForWorkOrder }}.
+        Depois, confira a quantidade e confirme a solicitação no atendimento.</p
+    >
+    <p class="error" *ngIf="error && !formOpen">{{ error }}</p>
+    <p class="success" *ngIf="successMessage && !formOpen">{{
+        successMessage
+    }}</p>
+    <app-form-modal
+        *ngIf="formOpen"
+        [title]="editingId ? 'Editar peça' : 'Nova peça de reposição'"
+        subtitle="Preencha as informações da peça de reposição."
+        icon="inventory_2"
+        [wide]="true"
+        [busy]="saving"
+        (closed)="cancel()"
+    >
+        <p class="muted"
+            >Use o Part Number do fabricante como referência principal. Para
+            peças sem Part Number, informe uma descrição clara.</p
+        >
+        <div class="sp-grid">
+            <label class="modal-field"
+                ><span>Descrição *</span
+                ><input [(ngModel)]="form.description" maxlength="250"
+            /></label>
+            <label class="modal-field"
+                ><span>Part Number</span><input [(ngModel)]="form.partNumber"
+            /></label>
+            <label class="modal-field"
+                ><span>Fabricante</span><input [(ngModel)]="form.manufacturer"
+            /></label>
+            <div class="category-field">
+                <label class="modal-field"
+                    ><span>Categorias</span
+                    ><select
+                        aria-label="Selecionar categoria"
+                        (change)="addCategory($event)"
+                        [disabled]="saving || !categoriesAvailable.length"
+                        ><option value="">Selecione a categoria</option
+                        ><option
+                            *ngFor="let c of categoriesAvailable"
+                            [value]="c.id"
+                            >{{ c.name }}</option
+                        ></select
+                    ></label
+                >
+                <!-- Seleções anteriores permanecem visíveis; remover muda apenas o formulário até salvar. -->
+                <div
+                    class="selected-categories"
+                    *ngIf="categoriesSelected.length"
+                    ><span *ngFor="let c of categoriesSelected"
+                        >{{ c.name }}{{ c.active ? '' : ' (inativa)'
+                        }}<button
+                            type="button"
+                            [disabled]="saving"
+                            [attr.aria-label]="'Remover categoria ' + c.name"
+                            (click)="removeCategory(c.id)"
+                            ><mat-icon>close</mat-icon></button
+                        ></span
+                    ></div
+                >
+                <p class="error" *ngIf="errorCategory">{{ errorCategory }}</p
+                ><small class="muted" *ngIf="!categories.length"
+                    >Cadastre categorias na Central de Cadastros.</small
+                >
+            </div>
+            <label class="modal-field"
+                ><span>Unidade</span><input [(ngModel)]="form.unit"
+            /></label>
+            <label class="modal-field"
+                ><span>Localização</span
+                ><input [(ngModel)]="form.storageLocation"
+            /></label>
+            <label class="modal-field"
+                ><span>Estoque mínimo</span
+                ><input type="number" min="0" [(ngModel)]="form.minimumStock"
+            /></label>
+            <label class="modal-field"
+                ><span>Estoque máximo</span
+                ><input type="number" min="0" [(ngModel)]="form.maximumStock"
+            /></label>
+            <label class="modal-field"
+                ><span>Ponto de reposição</span
+                ><input type="number" min="0" [(ngModel)]="form.reorderPoint"
+            /></label>
+            <label class="modal-field"
+                ><span>Fornecedor preferencial</span
+                ><input [(ngModel)]="form.preferredSupplier"
+            /></label>
+            <div class="modal-field"
+                ><span>Custo médio (referência)</span>
+                <div class="cost-input"
+                    ><select
+                        aria-label="Moeda do custo médio"
+                        [(ngModel)]="form.averageCostCurrency"
+                    >
+                        <option value="">Não informada</option>
+                        <option value="BRL">R$</option>
+                        <option value="USD">US$</option>
+                        <option value="EUR">€</option> </select
+                    ><input
+                        aria-label="Custo médio (referência)"
+                        type="number"
+                        step="0.01"
+                        min="0"
+                        [(ngModel)]="form.averageCost"
+                /></div>
+            </div>
+            <div class="modal-field"
+                ><span>Último custo</span>
+                <div class="cost-input"
+                    ><select
+                        aria-label="Moeda do último custo"
+                        [(ngModel)]="form.lastCostCurrency"
+                    >
+                        <option value="">Não informada</option>
+                        <option value="BRL">R$</option>
+                        <option value="USD">US$</option>
+                        <option value="EUR">€</option> </select
+                    ><input
+                        aria-label="Último custo"
+                        type="number"
+                        step="0.01"
+                        min="0"
+                        [(ngModel)]="form.lastCost"
+                /></div>
+            </div>
+        </div>
+        <p class="muted"
+            >Selecione a moeda de cada custo. Alterar R$ / US$ não converte o
+            valor automaticamente.</p
+        >
+        <section class="part-photo-field">
+            <h3>Foto da peça</h3>
+            <p class="muted"
+                >JPG ou PNG de até 3 MB. Se não escolher outra foto, a imagem já
+                salva será mantida.</p
+            >
+            <label class="modal-field"
+                ><span>Selecionar foto da peça</span
+                ><input
+                    type="file"
+                    accept="image/png,image/jpeg"
+                    [disabled]="saving"
+                    (change)="selectPhoto($event)"
+            /></label>
+            <p *ngIf="photoSelected">Nova foto: {{ photoSelected.name }}</p>
+            <p *ngIf="!photoSelected && namePhotoSaved"
+                >Foto já salva: {{ namePhotoSaved }}</p
+            >
+            <p *ngIf="loadingPhoto" role="status">Carregando foto...</p>
+            <p *ngIf="errorPhoto" class="error" role="alert">{{
+                errorPhoto
+            }}</p>
+            <img
+                *ngIf="photoPreview"
+                class="part-photo-preview"
+                [src]="photoPreview"
+                alt="Prévia da foto da peça"
+            />
+        </section>
+        <p class="error" *ngIf="error">{{ error }}</p>
+        <p class="success" *ngIf="successMessage">{{ successMessage }}</p>
+        <div modalActions class="modal-actions">
+            <button mat-button [disabled]="saving" (click)="cancel()"
+                >Cancelar</button
+            >
+            <button
+                mat-flat-button
+                class="primary"
+                (click)="save()"
+                [disabled]="
+                    !administrator() || saving || !form.description.trim()
+                "
+                >{{
+                    saving
+                        ? 'Salvando...'
+                        : editingId
+                          ? 'Salvar alterações'
+                          : 'Cadastrar peça'
+                }}
+            </button>
+        </div>
+    </app-form-modal>
+    <app-form-modal
+        *ngIf="photoViewed as part"
+        title="Foto da peça"
+        [subtitle]="part.description"
+        icon="image"
+        (closed)="closePhoto()"
+    >
+        <p *ngIf="loadingPhoto" role="status">Carregando foto...</p
+        ><p *ngIf="errorPhoto" class="error" role="alert">{{ errorPhoto }}</p>
+        <img
+            *ngIf="photoPreview"
+            class="part-photo-viewer"
+            [src]="photoPreview"
+            [alt]="part.description"
+        /><p>{{ namePhotoSaved }}</p>
+    </app-form-modal>
+    <app-form-modal
+        *ngIf="partStock as p"
+        title="Estoque da peça"
+        [subtitle]="(p.part_number || p.description) + ' · ' + p.description"
+        icon="inventory_2"
+        [wide]="true"
+        [busy]="movingStock"
+        (closed)="closeStock()"
+        ><app-part-stock [partId]="p.id" (busyChange)="movingStock = $event"
+    /></app-form-modal>
+    <app-form-modal
+        *ngIf="loadingInventory || inventory || errorInventory"
+        title="Relatório de inventário"
+        subtitle="Saldo registrado dos itens ativos. Use a impressão para salvar em PDF."
+        icon="assessment"
+        [wide]="true"
+        (closed)="
+            inventory = null; errorInventory = ''; loadingInventory = false
+        "
+    >
+        <p *ngIf="loadingInventory" role="status">Carregando inventário...</p
+        ><p *ngIf="errorInventory" class="error" role="alert">{{
+            errorInventory
+        }}</p>
+        <ng-container *ngIf="inventory as inv"
+            ><p
+                >Gerado em {{ inv.generated_at | date: 'dd/MM/yyyy HH:mm' }} ·
+                {{ inv.total_items }} item(ns) ·
+                {{ inv.uninitialized_items }} sem contagem inicial.</p
+            ><p class="muted"
+                >Filtro: {{ inv.query || 'Todos os itens ativos' }} · Categoria:
+                {{ inv.category_name || 'Todas' }}. Quantidades de unidades
+                diferentes não são somadas. Não há reservas nem baixas
+                automáticas por OS.</p
+            ><div class="table-wrap"
+                ><table
+                    ><thead
+                        ><tr
+                            ><th>Part Number</th><th>Descrição</th
+                            ><th>Localização</th><th>Unidade</th><th>Saldo</th
+                            ><th>Situação</th></tr
+                        ></thead
+                    ><tbody
+                        ><tr *ngFor="let p of inv.items"
+                            ><td>{{ p.part_number || '—' }}</td
+                            ><td>{{ p.description }}</td
+                            ><td>{{ p.storage_location || '—' }}</td
+                            ><td>{{ p.unit }}</td
+                            ><td>{{
+                                p.stock_quantity === null
+                                    ? 'Não informado'
+                                    : (p.stock_quantity | number: '1.0-3')
+                            }}</td
+                            ><td>{{ p.stock_status }}</td></tr
+                        ></tbody
+                    ></table
+                ></div
+            ></ng-container
+        >
+        <div modalActions class="modal-actions"
+            ><button
+                mat-button
+                (click)="printInventory()"
+                [disabled]="!inventory"
+                >Imprimir / Salvar PDF</button
+            ><button
+                mat-flat-button
+                class="primary"
+                (click)="downloadInventory()"
+                [disabled]="!inventory || downloadingInventory"
+                >{{
+                    downloadingInventory ? 'Baixando...' : 'Baixar CSV'
+                }}</button
+            ></div
+        >
+    </app-form-modal>
+    <div class="card parts-catalog"
+        ><div class="catalog-toolbar"
+            ><h2>Peças cadastradas</h2>
+            <label class="category-filter"
+                ><span>Categoria</span
+                ><select
+                    [(ngModel)]="categoryFilter"
+                    (ngModelChange)="loadData()"
+                    ><option value="">Todas as categorias</option
+                    ><option *ngFor="let c of categories" [value]="c.id"
+                        >{{ c.name }}{{ c.active ? '' : ' (inativa)' }}</option
+                    ></select
+                ></label
+            ><label class="catalog-search"
+                ><span>Pesquisar peça</span
+                ><input
+                    [(ngModel)]="search"
+                    (ngModelChange)="loadData()"
+                    placeholder="Part Number, descrição ou fabricante" /></label
+        ></div>
+        <div class="table-wrap">
+            <table>
+                <tr>
+                    <th>Part Number / Ficha</th>
+                    <th>Descrição</th>
+                    <th>Fabricante</th>
+                    <th class="quantity-column">Quantidade</th>
+                    <th>Foto</th>
+                    <th class="actions-column">Ações</th>
+                </tr>
+                <tr *ngFor="let p of parts">
+                    <td
+                        ><app-part-query
+                            [partId]="p.id"
+                            [label]="p.part_number || p.description"
+                    /></td>
+                    <td
+                        >{{ p.description
+                        }}<div class="category-tags"
+                            ><span *ngFor="let c of p.categories">{{
+                                c.name
+                            }}</span></div
+                        ></td
+                    >
+                    <td>{{ p.manufacturer || '—' }}</td>
+                    <!-- Apenas apresentação: nulo aparece como 00, mas continua não contado no banco. -->
+                    <td
+                        class="quantity-column"
+                        [title]="
+                            p.stock_quantity === null
+                                ? 'Contagem inicial ainda não registrada'
+                                : 'Saldo registrado em estoque'
+                        "
+                        ><span class="stock-quantity"
+                            >{{ p.stock_quantity ?? 0 | number: '2.0-3' }}
+                            <small>{{ p.unit | uppercase }}</small></span
+                        ></td
+                    >
+                    <td
+                        ><app-part-query
+                            *ngIf="p.photo_filename; else semFoto"
+                            [partId]="p.id"
+                            label="Ver foto e ficha"
+                        /><ng-template #semFoto>Sem foto</ng-template></td
+                    >
+                    <td class="actions-column">
+                        <button
+                            mat-stroked-button
+                            *ngIf="selectingForWorkOrder"
+                            (click)="selectForWorkOrder(p)"
+                            >Selecionar peça</button
+                        >
+                        <ng-container *ngIf="!selectingForWorkOrder">
+                            <button
+                                mat-icon-button
+                                [matMenuTriggerFor]="acoesPeca"
+                                [attr.aria-label]="
+                                    'Ações da peça ' +
+                                    (p.part_number || p.description)
+                                "
+                                ><mat-icon>more_vert</mat-icon></button
+                            >
+                            <mat-menu #acoesPeca="matMenu">
+                                <button mat-menu-item (click)="partStock = p"
+                                    ><mat-icon>inventory_2</mat-icon
+                                    ><span>{{
+                                        administrator()
+                                            ? p.stock_quantity === null
+                                                ? 'Registrar quantidade inicial'
+                                                : 'Entrada / Saída de peças'
+                                            : 'Consultar estoque'
+                                    }}</span></button
+                                >
+                                <ng-container *ngIf="administrator()"
+                                    ><button mat-menu-item (click)="edit(p)"
+                                        ><mat-icon>edit</mat-icon
+                                        ><span>Editar peça</span></button
+                                    ><button
+                                        mat-menu-item
+                                        (click)="deactivate(p)"
+                                        ><mat-icon>delete_outline</mat-icon
+                                        ><span>Desativar peça</span></button
+                                    ></ng-container
+                                >
+                            </mat-menu>
+                        </ng-container>
+                    </td>
+                </tr>
+            </table>
+        </div>
+        <p class="muted" *ngIf="!parts.length">Nenhuma peça cadastrada.</p>
+    </div>
+</div>

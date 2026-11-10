@@ -1,0 +1,60 @@
+%% Gerado do catálogo físico. PK = chave primária; FK = referência a outra tabela.
+erDiagram
+    equipamentos {
+        int8 id PK
+        varchar numero_modelo
+        varchar modelo
+        varchar numero_serie
+        varchar fabricante
+        date data_fabricacao
+        varchar data_fabricacao_texto
+        numeric comprimento_mm
+        numeric largura_mm
+        numeric altura_mm
+        numeric peso_kg
+        numeric tensao_v
+        numeric frequencia_hz
+        numeric corrente_a
+        numeric potencia_w
+        numeric pressao_pneumatica_bar
+        varchar numero_patrimonio
+        text descricao
+        text descricao_processo
+        int4 posicao
+        bool ativo
+        timestamptz criado_em
+        int2 tipo_equipamento_id
+        int8 linha_id
+        int8 setor_id
+        varchar nome
+    }
+    compatibilidade_pecas_equipamentos {
+        int8 equipamento_id PK, FK
+        int8 peca_id PK, FK
+    }
+    pecas_reposicao {
+        int8 id PK
+        varchar codigo
+        varchar descricao
+        varchar numero_peca
+        varchar fabricante
+        varchar categoria
+        varchar unidade
+        numeric estoque_minimo
+        numeric estoque_maximo
+        numeric ponto_reposicao
+        varchar local_armazenamento
+        varchar fornecedor_preferencial
+        numeric custo_medio
+        numeric ultimo_custo
+        varchar nome_arquivo_foto
+        varchar tipo_mime_foto
+        bytea conteudo_foto
+        varchar nome_arquivo_ficha
+        bytea conteudo_ficha
+        bool ativo
+        timestamptz criado_em
+        timestamptz atualizado_em
+    }
+    equipamentos ||--o{ compatibilidade_pecas_equipamentos : "equipamento_id"
+    pecas_reposicao ||--o{ compatibilidade_pecas_equipamentos : "peca_id"

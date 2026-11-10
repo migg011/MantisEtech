@@ -1,0 +1,6 @@
+{
+    "extends": "../tsconfig.app.json",
+    "files": ["categories.visual.ts"],
+    "include": ["../src/**/*.d.ts"],
+    "compilerOptions": { "outDir": "../.tmp-test-categorias" }
+}

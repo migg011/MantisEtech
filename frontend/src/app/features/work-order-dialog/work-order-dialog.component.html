@@ -1,0 +1,321 @@
+<!-- Atendimento: Iniciar atendimento confirma credenciais; save envia status/causa/soluções. Pendência e peça usam endpoints próprios da OS. -->
+<div class="mantis-modal service-order">
+    <header class="mantis-modal-header">
+        <div class="mantis-modal-icon"><mat-icon>assignment</mat-icon></div>
+        <div
+            ><h2 mat-dialog-title>Atendimento da OS #{{ order.id }}</h2
+            ><p
+                >Registre o diagnóstico, as soluções e as peças para
+                substituição.</p
+            ></div
+        >
+        <button
+            class="mantis-modal-close"
+            aria-label="Fechar modal"
+            [disabled]="busy"
+            (click)="dialogReference.close()"
+            ><mat-icon>close</mat-icon></button
+        >
+    </header>
+    <nav class="service-tabs" aria-label="Seções do atendimento">
+        <button
+            type="button"
+            [class.selected]="tab === 'attendance'"
+            [attr.aria-pressed]="tab === 'attendance'"
+            [disabled]="busy || loading"
+            (click)="tab = 'attendance'"
+            ><mat-icon>build</mat-icon>Atendimento técnico</button
+        >
+        <button
+            type="button"
+            [class.selected]="tab === 'parts'"
+            [attr.aria-pressed]="tab === 'parts'"
+            [disabled]="busy || loading"
+            (click)="showParts()"
+            ><mat-icon>inventory_2</mat-icon>Spare Parts e solicitações</button
+        >
+        <button
+            type="button"
+            [disabled]="busy || loading"
+            (click)="showPendency = true"
+            ><mat-icon>pending_actions</mat-icon>Gerar pendência</button
+        >
+    </nav>
+    <mat-dialog-content class="mantis-modal-body">
+        <p *ngIf="loading" class="muted" role="status">Carregando a OS...</p>
+        <div class="machine-context"
+            ><div
+                ><span>Máquina</span
+                ><strong>{{
+                    order.model || order.type_name || 'EQ-' + order.equipment_id
+                }}</strong></div
+            ><div
+                ><span>Serial da máquina</span
+                ><strong>{{ order.serial || 'Não cadastrado' }}</strong></div
+            ><div
+                ><span>Patrimônio</span
+                ><strong>{{
+                    order.asset_number || 'Não cadastrado'
+                }}</strong></div
+            ></div
+        >
+        <p class="error" *ngIf="error" role="alert">{{ error }}</p
+        ><p class="success" *ngIf="message" role="status">{{ message }}</p>
+        <div class="attendance-summary">
+            <p
+                ><strong>Abertura / parada:</strong>
+                {{ order.created_at | date: 'dd/MM/yyyy HH:mm:ss' }} ·
+                <strong>Operador:</strong> {{ order.opened_by_name }}</p
+            >
+            <p *ngIf="order.started_at"
+                ><strong>Início do atendimento:</strong>
+                {{ order.started_at | date: 'dd/MM/yyyy HH:mm:ss' }} ·
+                {{ order.assigned_to_name }}</p
+            >
+            <p *ngIf="order.finished_at"
+                ><strong>Fechamento:</strong>
+                {{ order.finished_at | date: 'dd/MM/yyyy HH:mm:ss' }} ·
+                <strong>Tempo de parada:</strong>
+                {{ order.downtime_minutes | number: '1.0-2' }} min</p
+            >
+        </div>
+        <section
+            *ngIf="
+                !loading && !order.started_at && order.status !== 'CONCLUIDA'
+            "
+            class="replacement-request"
+        >
+            <h3>Identificação do técnico</h3
+            ><p
+                >Confirme suas credenciais para registrar o início do
+                atendimento.</p
+            >
+            <label
+                ><span>Matrícula</span
+                ><input
+                    [(ngModel)]="registration"
+                    autocomplete="username"
+                    [disabled]="busy"
+            /></label>
+            <label
+                ><span>Senha</span
+                ><input
+                    type="password"
+                    [(ngModel)]="password"
+                    autocomplete="current-password"
+                    [disabled]="busy"
+                    (keyup.enter)="startService()"
+            /></label>
+            <button
+                mat-flat-button
+                (click)="startService()"
+                [disabled]="busy || !password"
+                >Iniciar atendimento</button
+            >
+        </section>
+        <p
+            *ngIf="order.started_at && !canEdit && order.status !== 'CONCLUIDA'"
+            class="muted"
+            >Atendimento em andamento por {{ order.assigned_to_name }}. Entre no
+            sistema com essa conta para registrar as intervenções.</p
+        >
+        <fieldset [disabled]="busy || loading">
+            <section *ngIf="tab === 'attendance'">
+                <fieldset [disabled]="!canEdit">
+                    <div class="reported-problem"
+                        ><span>Problema identificado</span
+                        ><p>{{ order.problem }}</p></div
+                    >
+                    <div class="reported-occurrence"
+                        ><span>Descrição do ocorrido</span
+                        ><p>{{
+                            order.occurrence_description ||
+                                'Não informada na abertura desta OS.'
+                        }}</p></div
+                    >
+                    <label
+                        ><span>Status</span
+                        ><select [(ngModel)]="status"
+                            ><option value="EM_ANDAMENTO">Em andamento</option
+                            ><option value="CONCLUIDA"
+                                >Concluída</option
+                            ></select
+                        ></label
+                    >
+                    <div class="attendance-fields">
+                        <label
+                            ><span>Causa raiz</span
+                            ><textarea
+                                rows="5"
+                                [(ngModel)]="rootCause"
+                                placeholder="Descreva a causa identificada na análise da falha..."
+                            ></textarea>
+                        </label>
+                        <label
+                            ><span>Solução corretiva</span
+                            ><textarea
+                                rows="5"
+                                [(ngModel)]="correctiveAction"
+                                placeholder="Descreva a intervenção ou a substituição realizada..."
+                            ></textarea>
+                        </label>
+                        <label
+                            ><span>Solução preventiva</span
+                            ><textarea
+                                rows="5"
+                                [(ngModel)]="preventiveAction"
+                                placeholder="Registre as ações para evitar a repetição do problema..."
+                            ></textarea>
+                        </label>
+                    </div>
+                    <button mat-stroked-button (click)="showParts()"
+                        ><mat-icon>search</mat-icon>Consultar Spare Parts e
+                        solicitar substituição</button
+                    >
+                </fieldset>
+            </section>
+            <section *ngIf="tab === 'parts'">
+                <!-- O catálogo completo abre por demanda, preservando a OS ao selecionar a peça. -->
+                <button
+                    type="button"
+                    class="spare-parts-card"
+                    (click)="openCatalogParts()"
+                    [disabled]="busy || loading"
+                    aria-label="Consultar Spare Parts"
+                >
+                    <span class="catalog-card-icon"
+                        ><mat-icon>inventory_2</mat-icon></span
+                    >
+                    <span class="catalog-card-content"
+                        ><strong>Spare Parts</strong
+                        ><span
+                            >Consulte o catálogo, confira a ficha e selecione a
+                            peça para esta OS.</span
+                        ><span class="catalog-card-action"
+                            >Consultar Spare Parts
+                            <mat-icon>arrow_forward</mat-icon></span
+                        ></span
+                    >
+                </button>
+                <p class="muted" *ngIf="loadingParts" role="status"
+                    >Carregando solicitações desta OS...</p
+                >
+                <section
+                    class="replacement-request"
+                    *ngIf="partSelected as part"
+                    #requestForm
+                >
+                    <div class="parts-heading"
+                        ><h3>Solicitar peça para a OS</h3
+                        ><button
+                            mat-icon-button
+                            aria-label="Cancelar seleção da peça"
+                            (click)="partSelected = null"
+                            ><mat-icon>close</mat-icon></button
+                        ></div
+                    >
+                    <app-part-sheet [partId]="part.id" />
+                    <p class="request-destination"
+                        >OS #{{ order.id }} ·
+                        {{ order.model || order.type_name }} · Serial:
+                        <strong>{{
+                            order.serial || 'Não cadastrado'
+                        }}</strong></p
+                    >
+                    <label
+                        ><span>Quantidade ({{ part.unit }})</span
+                        ><input
+                            type="number"
+                            min="0.001"
+                            step="0.001"
+                            [(ngModel)]="draft.quantity"
+                    /></label>
+                    <label
+                        ><span>Observação (opcional)</span
+                        ><textarea
+                            rows="3"
+                            maxlength="5000"
+                            [(ngModel)]="draft.note"
+                        ></textarea>
+                    </label>
+                    <p class="muted"
+                        >A peça será solicitada diretamente para esta
+                        manutenção, com a OS, a máquina e o serial registrados
+                        automaticamente.</p
+                    >
+                    <button
+                        mat-flat-button
+                        class="primary"
+                        (click)="createRequest()"
+                        [disabled]="busy || draft.quantity <= 0"
+                        >{{
+                            requesting
+                                ? 'Registrando...'
+                                : 'Registrar solicitação de peça'
+                        }}</button
+                    >
+                </section>
+                <section class="linked-requests"
+                    ><h3>Solicitações vinculadas a esta OS</h3
+                    ><p *ngIf="!loadingParts && !requests.length" class="muted"
+                        >Nenhuma solicitação de peça registrada para esta OS.</p
+                    >
+                    <article
+                        *ngFor="let request of requests"
+                        class="linked-request"
+                        ><div
+                            ><app-part-query
+                                [partId]="request.spare_part_id"
+                                [label]="
+                                    request.part_number || request.description
+                                "
+                            /><p
+                                >{{ request.description }} · Solicitação #{{
+                                    request.id
+                                }}</p
+                            ><span class="request-status">Solicitada</span
+                            ><p
+                                >Quantidade: {{ request.quantity }} · Part
+                                Number:
+                                {{ request.part_number || 'Não informado' }}</p
+                            ><p
+                                >Serial registrado:
+                                <strong>{{
+                                    request.equipment_serial || 'Não registrado'
+                                }}</strong></p
+                            ><small
+                                >{{ request.requester_name }} ·
+                                {{
+                                    request.created_at
+                                        | date: 'dd/MM/yyyy HH:mm'
+                                }}</small
+                            ><p *ngIf="request.note">{{ request.note }}</p></div
+                        ></article
+                    >
+                </section>
+            </section>
+        </fieldset>
+    </mat-dialog-content>
+    <mat-dialog-actions align="end" class="mantis-modal-footer"
+        ><button mat-button [disabled]="busy" (click)="dialogReference.close()"
+            >Fechar</button
+        ><button
+            mat-flat-button
+            class="primary"
+            (click)="save()"
+            [disabled]="busy || loading || !canEdit"
+            >{{ processing ? 'Salvando...' : 'Salvar atendimento' }}</button
+        ></mat-dialog-actions
+    >
+</div>
+
+<app-pendency-form
+    *ngIf="showPendency"
+    [workOrderId]="order.id"
+    (closed)="showPendency = false"
+    (created)="
+        showPendency = false;
+        message =
+            'Pendência registrada na Central de Cadastros → Pendências de linha.'
+    "
+></app-pendency-form>

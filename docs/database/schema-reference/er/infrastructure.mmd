@@ -1,0 +1,31 @@
+%% Gerado do catálogo físico. PK = chave primária; FK = referência a outra tabela.
+erDiagram
+    auth_group {
+        int4 id PK
+        varchar name
+    }
+    auth_group_permissions {
+        int8 id PK
+        int4 group_id FK
+        int4 permission_id FK
+    }
+    auth_permission {
+        int4 id PK
+        varchar name
+        int4 content_type_id FK
+        varchar codename
+    }
+    django_content_type {
+        int4 id PK
+        varchar app_label
+        varchar model
+    }
+    django_migrations {
+        int8 id PK
+        varchar app
+        varchar name
+        timestamptz applied
+    }
+    auth_permission ||--o{ auth_group_permissions : "permission_id"
+    auth_group ||--o{ auth_group_permissions : "group_id"
+    django_content_type ||--o{ auth_permission : "content_type_id"

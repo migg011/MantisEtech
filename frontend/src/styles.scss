@@ -1,0 +1,736 @@
+/* Estilo global: tema Material, tipografia e modais compartilhados por vários componentes. */
+@use '@angular/material' as mat;
+
+html {
+    color-scheme: light;
+    @include mat.theme(
+        (
+            color: (
+                primary: mat.$red-palette,
+                tertiary: mat.$red-palette,
+            ),
+            typography: Inter,
+            density: 0,
+        )
+    );
+}
+
+* {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    font-family: Inter, Arial, sans-serif;
+    color: #1a1a1d;
+    background: #f3f5f8;
+}
+
+:root {
+    --red: #d20a20;
+    --dark: #101116;
+    --muted: #667085;
+}
+
+button {
+    cursor: pointer;
+}
+
+.mat-mdc-unelevated-button.mat-primary,
+.primary {
+    background: linear-gradient(95deg, #ec081b, #ab0617) !important;
+    color: white !important;
+}
+
+.full {
+    width: 100%;
+}
+
+.muted {
+    color: var(--muted);
+}
+
+.page {
+    padding: 32px;
+    max-width: 1480px;
+    margin: auto;
+}
+
+.card {
+    background: white;
+    border: 1px solid #e7e9ef;
+    border-radius: 16px;
+    padding: 23px;
+    box-shadow: 0 5px 20px #151d2510;
+}
+
+.actions {
+    display: flex;
+    gap: 12px;
+    align-items: center;
+    flex-wrap: wrap;
+}
+
+.fields {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 10px;
+}
+
+h1 {
+    font-size: 28px;
+    margin: 0 0 8px;
+}
+
+h2 {
+    font-size: 19px;
+}
+
+.eyebrow {
+    font-weight: 800;
+    color: var(--red);
+    letter-spacing: 1.8px;
+    font-size: 11px;
+    text-transform: uppercase;
+}
+
+.empty {
+    border: 1px dashed #c9cdd7;
+    border-radius: 14px;
+    padding: 48px;
+    text-align: center;
+    color: #717782;
+    background: #fff;
+}
+
+.metric {
+    padding: 22px;
+    background: #fff;
+    border: 1px solid #eceef1;
+    border-radius: 15px;
+    min-width: 160px;
+}
+
+.metric strong {
+    display: block;
+    font-size: 32px;
+    margin: 8px 0;
+}
+
+.table-wrap {
+    overflow: auto;
+}
+
+table {
+    border-collapse: collapse;
+    width: 100%;
+}
+
+th,
+td {
+    padding: 13px;
+    text-align: left;
+    border-bottom: 1px solid #f0f0f1;
+}
+
+th {
+    font-size: 12px;
+    color: #69717f;
+}
+
+.error {
+    color: #b00020;
+}
+
+.success {
+    color: #16794b;
+}
+
+/* Responsividade: aplica estas regras quando a largura da tela atende à condição abaixo. */
+@media (max-width: 740px) {
+    .page {
+        padding: 18px;
+    }
+    .fields {
+        grid-template-columns: 1fr;
+    }
+}
+
+/* MANTIS 2.0 — Formulários mais compactos */
+
+.fields {
+    gap: 14px;
+}
+
+.fields .mat-mdc-form-field {
+    font-size: 14px;
+    min-width: 0;
+}
+
+.fields .mat-mdc-form-field .mdc-text-field {
+    min-height: 52px;
+}
+
+.fields .mat-mdc-form-field .mat-mdc-form-field-infix {
+    min-height: 52px;
+    padding-top: 16px;
+    padding-bottom: 8px;
+}
+
+.fields .mat-mdc-form-field .mdc-floating-label {
+    font-size: 13px;
+}
+
+.fields input.mat-mdc-input-element,
+.fields textarea.mat-mdc-input-element,
+.fields .mat-mdc-select-value {
+    font-size: 14px;
+}
+
+.fields .mat-mdc-form-field-hint,
+.fields .mat-mdc-form-field-error {
+    font-size: 11px;
+}
+
+.card h2 {
+    font-size: 19px;
+    margin-bottom: 12px;
+}
+
+.card .muted {
+    font-size: 13px;
+    line-height: 1.5;
+}
+
+@media (max-width: 900px) {
+    .fields {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+}
+
+@media (max-width: 560px) {
+    .fields {
+        grid-template-columns: 1fr;
+    }
+}
+
+/* MANTIS 2.0 — Repositório de equipamentos */
+
+.equipment-form {
+    --field-border: #dce1e8;
+    --field-focus: #c8102e;
+}
+
+.equipment-form .fields {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    column-gap: 16px;
+    row-gap: 8px;
+    align-items: start;
+    margin: 16px 0 24px;
+}
+
+.equipment-form .fields > * {
+    min-width: 0;
+    width: 100%;
+}
+
+.equipment-form .mat-mdc-form-field {
+    width: 100%;
+}
+
+.equipment-form .mat-mdc-text-field-wrapper {
+    background: #fafbfc !important;
+    border: 1px solid var(--field-border);
+    border-radius: 9px 9px 0 0;
+}
+
+.equipment-form .mat-mdc-form-field-infix {
+    min-height: 48px;
+    padding-top: 15px;
+    padding-bottom: 7px;
+}
+
+.equipment-form .mdc-floating-label,
+.equipment-form input,
+.equipment-form textarea,
+.equipment-form .mat-mdc-select-value {
+    font-size: 13px;
+}
+
+.equipment-form .mat-mdc-form-field-hint-wrapper,
+.equipment-form .mat-mdc-form-field-error-wrapper {
+    font-size: 11px;
+}
+
+.equipment-form .section-heading {
+    font-size: 16px;
+    font-weight: 700;
+    margin: 28px 0 4px;
+    padding-left: 12px;
+    border-left: 3px solid #c8102e;
+}
+
+.equipment-form .section-help {
+    font-size: 12px;
+    color: #64748b;
+    margin: 6px 0 12px;
+}
+
+@media (max-width: 1100px) {
+    .equipment-form .fields {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+}
+
+@media (max-width: 640px) {
+    .equipment-form .fields {
+        grid-template-columns: 1fr;
+    }
+}
+
+/* ==========================================
+   MANTIS 2.0 — IDENTIDADE VISUAL GLOBAL
+   CAMPOS ANGULAR MATERIAL
+   ========================================== */
+
+:root {
+    --mantis-red: #c8102e;
+    --mantis-red-dark: #a30922;
+    --mantis-black: #111827;
+    --mantis-gray: #64748b;
+    --mantis-border: #cbd5e1;
+    --mantis-white: #ffffff;
+}
+
+/* Padrão visual de todos os formulários */
+.mat-mdc-form-field {
+    width: 100%;
+    font-size: 13px;
+
+    --mdc-outlined-text-field-container-shape: 8px;
+
+    --mdc-outlined-text-field-outline-color: #cbd5e1;
+    --mdc-outlined-text-field-hover-outline-color: #94a3b8;
+    --mdc-outlined-text-field-focus-outline-color: #c8102e;
+
+    --mdc-outlined-text-field-label-text-color: #64748b;
+    --mdc-outlined-text-field-hover-label-text-color: #475569;
+    --mdc-outlined-text-field-focus-label-text-color: #c8102e;
+
+    --mdc-outlined-text-field-input-text-color: #111827;
+    --mdc-outlined-text-field-input-text-placeholder-color: #94a3b8;
+
+    --mdc-outlined-text-field-caret-color: #c8102e;
+}
+
+/* Fundo branco nos campos */
+.mat-mdc-form-field .mdc-text-field--outlined {
+    background-color: #ffffff;
+}
+
+/* Valores digitados e selecionados */
+.mat-mdc-form-field input,
+.mat-mdc-form-field textarea,
+.mat-mdc-form-field .mat-mdc-select-value {
+    color: #111827;
+    font-size: 13px;
+}
+
+/* Cor da seta dos seletores */
+.mat-mdc-form-field .mat-mdc-select-arrow {
+    color: #64748b;
+}
+
+/* Cor da seta ao selecionar */
+.mat-mdc-form-field.mat-focused .mat-mdc-select-arrow {
+    color: #c8102e;
+}
+
+/* Textos auxiliares */
+.mat-mdc-form-field-hint {
+    color: #64748b;
+    font-size: 11px;
+}
+
+/* Cor dos erros de validação */
+.mat-mdc-form-field-error {
+    color: #b42318;
+    font-size: 11px;
+}
+
+/* Destaque na seleção de texto */
+input::selection,
+textarea::selection {
+    background: #f4b8c2;
+    color: #111827;
+}
+
+/* MANTIS 2.0 — Botões de cadastro */
+
+.mantis-form-actions {
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 12px;
+
+    margin-top: 22px;
+    padding-top: 18px;
+    border-top: 1px solid #e5e7eb;
+}
+
+.mantis-form-actions .primary {
+    min-height: 44px;
+    padding: 0 24px;
+    border-radius: 24px;
+    font-weight: 600;
+}
+
+@media (max-width: 600px) {
+    .mantis-form-actions {
+        flex-direction: column-reverse;
+        align-items: stretch;
+    }
+
+    .mantis-form-actions button {
+        width: 100%;
+    }
+}
+
+.mantis-simbolo {
+    width: 65px;
+    height: 65px;
+    object-fit: contain;
+    flex-shrink: 0;
+}
+
+/* Identidade MANTIS - Menu lateral */
+.sidebrand {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.mantis-sidebar-symbol {
+    width: 48px;
+    height: 48px;
+    object-fit: contain;
+    flex-shrink: 0;
+}
+
+.mantis-sidebar-text {
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+}
+
+.mantis-sidebar-text strong {
+    font-size: 23px;
+    line-height: 1.1;
+    letter-spacing: 0.5px;
+    color: #fff;
+}
+
+.mantis-sidebar-text small {
+    font-size: 7px;
+    letter-spacing: 0.5px;
+    color: #a5a8b4;
+}
+
+/* Modal de setores: superfície e fundo do overlay, fora do componente. */
+.sector-dialog-panel .mat-mdc-dialog-surface {
+    border-radius: 20px;
+    background: #fff;
+    box-shadow: 0 24px 80px #10182835;
+}
+.sector-dialog-backdrop.cdk-overlay-backdrop {
+    background: rgba(13, 18, 26, 0.64);
+    backdrop-filter: blur(3px);
+}
+
+/* Estrutura comum dos modais de cadastro e edição. */
+.mantis-form-dialog .mat-mdc-dialog-surface {
+    border-radius: 20px;
+    background: #fff;
+    box-shadow: 0 24px 80px #10182835;
+}
+.mantis-modal {
+    color: #141824;
+    background: #fff;
+    display: flex;
+    flex-direction: column;
+    max-height: calc(100dvh - 32px);
+}
+.mantis-modal-header {
+    display: flex;
+    align-items: flex-start;
+    flex-shrink: 0;
+    gap: 22px;
+    padding: 30px 32px 24px;
+    > div:nth-child(2) {
+        min-width: 0;
+        flex: 1;
+    }
+    h2.mat-mdc-dialog-title {
+        padding: 0;
+        margin: 2px 0 6px;
+        font: inherit;
+        font-size: 27px;
+        line-height: 1.25;
+        font-weight: 750;
+        letter-spacing: -0.6px;
+        color: #141824;
+        &::before {
+            display: none;
+        }
+    }
+    p {
+        margin: 0;
+        color: #667085;
+        font-size: 15px;
+        line-height: 1.5;
+    }
+}
+.mantis-modal-icon {
+    display: grid;
+    place-items: center;
+    flex-shrink: 0;
+    width: 64px;
+    height: 64px;
+    border-radius: 16px;
+    background: #fff0f2;
+    color: #d4433a;
+}
+.mantis-modal-close {
+    display: grid;
+    place-items: center;
+    flex-shrink: 0;
+    width: 28px;
+    height: 28px;
+    margin-left: auto;
+    padding: 0;
+    border: 0;
+    background: transparent;
+    color: #7b8190;
+    border-radius: 6px;
+    &:hover {
+        background: #f3f4f6;
+    }
+}
+.mantis-modal .mantis-modal-body {
+    padding: 8px 32px 28px;
+    margin: 0;
+    max-height: none;
+    min-height: 0;
+    color: #141824;
+    font: inherit;
+    overflow: auto;
+    fieldset {
+        border: 0;
+        min-width: 0;
+        padding: 0;
+        margin: 0;
+    }
+    .fields,
+    .sp-grid,
+    .two,
+    .technical-fields {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 22px 18px;
+        max-height: none;
+        overflow: visible;
+        padding: 0;
+        margin: 0 0 22px;
+    }
+    .section-heading {
+        margin: 24px 0 16px;
+        font-size: 16px;
+    }
+    .muted,
+    small {
+        color: #778092;
+        font-size: 14px;
+        line-height: 1.5;
+    }
+    label {
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+        min-width: 0;
+        margin: 0 0 20px;
+        color: #141824;
+        font-size: 15px;
+        font-weight: 600;
+        > span {
+            display: block;
+        }
+    }
+    .fields label,
+    .sp-grid label,
+    .two label,
+    .technical-fields label {
+        margin-bottom: 0;
+    }
+    .fields.modal-single {
+        grid-template-columns: 1fr;
+    }
+    input:not([type='file']),
+    textarea,
+    select {
+        display: block;
+        width: 100%;
+        min-width: 0;
+        min-height: 52px;
+        padding: 13px 16px;
+        border: 1px solid #d5d8df;
+        border-radius: 8px;
+        background: #fff;
+        color: #141824;
+        font: inherit;
+        font-size: 15px;
+        font-weight: 400;
+        line-height: 1.5;
+        &::placeholder {
+            color: #8a909e;
+            opacity: 1;
+        }
+        &:focus {
+            outline: none;
+            border-color: #ed001b;
+            box-shadow: 0 0 0 1px #ed001b;
+        }
+        &:disabled {
+            background: #f8f9fb;
+        }
+    }
+    textarea {
+        min-height: 92px;
+        resize: vertical;
+    }
+    input[type='file'] {
+        width: 100%;
+        font-size: 13px;
+    }
+    .error {
+        color: #b42318 !important;
+        padding: 12px;
+        background: #fff1f2;
+        border: 1px solid #fecdd3;
+        border-radius: 8px;
+    }
+    .success {
+        color: #16794b !important;
+    }
+    .modal-password {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+}
+.mantis-modal .mantis-modal-footer {
+    display: flex;
+    flex-shrink: 0;
+    justify-content: flex-end;
+    align-items: center;
+    gap: 10px;
+    padding: 23px 30px;
+    margin: 0;
+    border-top: 1px solid #e8e9ed;
+    .modal-actions {
+        display: flex;
+        justify-content: flex-end;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 10px;
+        width: 100%;
+        margin: 0;
+        padding: 0;
+        border: 0;
+    }
+    button {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        min-height: 50px;
+        padding: 0 25px;
+        border-radius: 28px;
+        font: inherit;
+        font-size: 15px;
+        font-weight: 600;
+        border: 1px solid #9297a2;
+        color: #d00015;
+        background: #fff;
+        &:disabled {
+            cursor: default;
+            opacity: 0.5;
+        }
+    }
+    button.primary {
+        border-color: transparent;
+        border-radius: 28px !important;
+        background: linear-gradient(100deg, #ed001b, #bb0018);
+        color: #fff;
+        order: 1;
+    }
+}
+.mantis-modal button:focus-visible {
+    outline: 2px solid #d00015;
+    outline-offset: 3px;
+}
+@media (max-width: 600px) {
+    .mantis-modal-header {
+        gap: 12px;
+        padding: 24px 20px 18px;
+        h2.mat-mdc-dialog-title {
+            font-size: 23px;
+        }
+        p {
+            font-size: 14px;
+        }
+    }
+    .mantis-modal-icon {
+        width: 48px;
+        height: 48px;
+        border-radius: 12px;
+    }
+    .mantis-modal .mantis-modal-body {
+        padding: 8px 20px 24px;
+        .fields,
+        .sp-grid,
+        .two,
+        .technical-fields {
+            grid-template-columns: 1fr;
+        }
+    }
+    .mantis-modal .mantis-modal-footer {
+        padding: 18px 20px;
+        button {
+            padding: 0 18px;
+        }
+    }
+}
+.mantis-modal .mantis-modal-body .modal-field .cost-input {
+    // Regra do modal: moeda curta à esquerda e valor compacto ao lado, sem empilhar.
+    display: grid;
+    grid-template-columns: 82px minmax(0, 146px);
+    gap: 6px;
+    width: 234px;
+    max-width: 100%;
+    align-items: center;
+    > input,
+    > select {
+        width: 100%;
+        min-width: 0;
+        min-height: 42px;
+        height: 42px;
+        padding: 8px 10px;
+        font-size: 14px;
+    }
+}
+.mantis-modal .modal-field:has(> .cost-input) > span {
+    font-weight: 600;
+    margin-bottom: 6px;
+}

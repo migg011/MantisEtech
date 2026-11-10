@@ -1,0 +1,6 @@
+{
+    "extends": "../tsconfig.app.json",
+    "files": ["category-center.visual.ts"],
+    "include": ["../src/**/*.d.ts"],
+    "compilerOptions": { "outDir": "../.tmp-test-central-categorias" }
+}

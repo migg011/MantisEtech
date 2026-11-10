@@ -1,0 +1,481 @@
+<!-- A ficha lê o cadastro existente; editar o equipamento continua sendo responsabilidade do módulo de equipamento. -->
+<section *ngIf="tab === 'GERAIS'" class="sheet-grid">
+    <div
+        ><h2>Ficha do equipamento</h2
+        ><dl>
+            <div
+                ><dt>Nome</dt><dd>{{ equipment.name || '—' }}</dd></div
+            >
+            <div
+                ><dt>Tipo</dt><dd>{{ equipment.type_name }}</dd></div
+            >
+            <div
+                ><dt>Fabricante</dt
+                ><dd>{{ equipment.manufacturer || '—' }}</dd></div
+            >
+            <div
+                ><dt>Modelo</dt><dd>{{ equipment.model || '—' }}</dd></div
+            >
+            <div
+                ><dt>Número do modelo</dt
+                ><dd>{{ equipment.model_number || '—' }}</dd></div
+            >
+            <div
+                ><dt>Patrimônio</dt
+                ><dd>{{ equipment.asset_number || '—' }}</dd></div
+            >
+            <div
+                ><dt>Número de série</dt
+                ><dd>{{ equipment.serial || '—' }}</dd></div
+            >
+            <div
+                ><dt>Fabricação</dt
+                ><dd>{{
+                    equipment.manufacturing_date_text ||
+                        equipment.manufacturing_date ||
+                        '—'
+                }}</dd></div
+            >
+            <div
+                ><dt>Setor</dt><dd>{{ equipment.sector_name || '—' }}</dd></div
+            >
+            <div
+                ><dt>Linha / posição</dt
+                ><dd
+                    >{{ equipment.line_name || 'Sem linha' }} /
+                    {{ equipment.position ?? '—' }}</dd
+                ></div
+            >
+        </dl>
+        <!-- Medidas e descrições ficam disponíveis sob demanda para destacar a identificação na primeira leitura. -->
+        <details class="technical-details"
+            ><summary>Dados técnicos e descrição</summary
+            ><dl>
+                <div
+                    ><dt>Dimensões (C × L × A), mm</dt
+                    ><dd
+                        >{{ equipment.length_mm ?? '—' }} ×
+                        {{ equipment.width_mm ?? '—' }} ×
+                        {{ equipment.height_mm ?? '—' }}</dd
+                    ></div
+                >
+                <div
+                    ><dt>Peso (kg)</dt
+                    ><dd>{{ equipment.weight_kg ?? '—' }}</dd></div
+                >
+                <div
+                    ><dt>Tensão (V)</dt
+                    ><dd>{{ equipment.voltage_v ?? '—' }}</dd></div
+                >
+                <div
+                    ><dt>Frequência (Hz)</dt
+                    ><dd>{{ equipment.frequency_hz ?? '—' }}</dd></div
+                >
+                <div
+                    ><dt>Corrente (A)</dt
+                    ><dd>{{ equipment.current_a ?? '—' }}</dd></div
+                >
+                <div
+                    ><dt>Potência (W)</dt
+                    ><dd>{{ equipment.power_w ?? '—' }}</dd></div
+                >
+                <div
+                    ><dt>Pressão pneumática (bar)</dt
+                    ><dd>{{ equipment.pneumatic_pressure_bar ?? '—' }}</dd></div
+                >
+                <div
+                    ><dt>Descrição</dt
+                    ><dd>{{ equipment.description || '—' }}</dd></div
+                >
+                <div
+                    ><dt>Processo</dt
+                    ><dd>{{ equipment.process_description || '—' }}</dd></div
+                >
+            </dl></details
+        ></div
+    >
+    <div class="photo"
+        ><img
+            *ngIf="addressPhoto"
+            [src]="addressPhoto"
+            [alt]="
+                'Foto de ' +
+                (equipment.name || equipment.model || equipment.type_name)
+            "
+        /><p *ngIf="!addressPhoto" class="muted">{{
+            errorPhoto ||
+                (loadingFiles
+                    ? 'Carregando foto...'
+                    : errorFiles
+                      ? 'Foto indisponível.'
+                      : 'Foto não disponível.')
+        }}</p></div
+    >
+</section>
+<section *ngIf="tab === 'DOCUMENTOS'"
+    ><h2>Documentação</h2>
+    <p *ngIf="loadingFiles" role="status">Carregando documentos...</p
+    ><p class="error" *ngIf="errorFiles" role="alert">{{ errorFiles }}</p>
+    <p *ngIf="!loadingFiles && !errorFiles && !files.length" class="muted"
+        >Nenhum documento cadastrado. Adicione foto ou manual no cadastro do
+        equipamento.</p
+    >
+    <div class="file" *ngFor="let file of files"
+        ><span
+            ><strong>{{ file.kind === 'PHOTO' ? 'Foto' : 'Manual' }}</strong> ·
+            {{ file.filename }}</span
+        ><button type="button" (click)="download(file)"
+            >Baixar arquivo</button
+        ></div
+    >
+</section>
+<section *ngIf="tab === 'HISTORICO'"
+    ><h2>Movimentações do equipamento</h2>
+    <p *ngIf="loadingMovements" role="status">Carregando movimentações...</p
+    ><p *ngIf="errorMovements" class="error" role="alert">{{
+        errorMovements
+    }}</p>
+    <p
+        *ngIf="!loadingMovements && !errorMovements && !movements.length"
+        class="muted"
+        >Nenhuma movimentação registrada.</p
+    >
+    <div class="table-wrap" *ngIf="movements.length"
+        ><table
+            ><thead
+                ><tr
+                    ><th>Data</th><th>Origem</th><th>Destino</th
+                    ><th>Responsável</th></tr
+                ></thead
+            ><tbody
+                ><tr *ngFor="let row of movements"
+                    ><td>{{ row.created_at | date: 'dd/MM/yyyy HH:mm' }}</td
+                    ><td>{{ row.from_line || 'Disponível' }}</td
+                    ><td>{{ row.to_line || 'Disponível' }}</td
+                    ><td>{{ row.performed_by_name }}</td></tr
+                ></tbody
+            ></table
+        ></div
+    >
+</section>
+<!-- Catálogo e lista são independentes da máquina. A divisão em dois painéis acompanha a sequência buscar → selecionar → gerar compra. -->
+<section *ngIf="tab === 'PECAS'" class="parts-workspace">
+    <header class="parts-heading"
+        ><div
+            ><h2>Peças para compra</h2
+            ><p>Busque no catálogo geral e adicione à sua lista.</p></div
+        ><a class="catalog-link" routerLink="/cadastro/spare-parts"
+            ><mat-icon>inventory_2</mat-icon>Gerenciar peças<mat-icon
+                >open_in_new</mat-icon
+            ></a
+        ></header
+    >
+    <p *ngIf="idCreated" class="feedback success" role="status"
+        ><mat-icon>check_circle</mat-icon
+        ><span
+            >Rascunho SC-{{ idCreated }} criado.
+            <a
+                routerLink="/cadastro/compras"
+                [queryParams]="{ requestId: idCreated }"
+                >Acessar solicitação</a
+            ></span
+        ></p
+    >
+    <div class="parts-layout">
+        <!-- O catálogo ocupa a área principal; carregamento, falha e ausência de dados têm estados distintos. -->
+        <section class="catalog-panel" aria-labelledby="catalog-title">
+            <header class="panel-heading"
+                ><h3 id="catalog-title"
+                    ><span class="step-number">1</span>Encontre as peças</h3
+                ><span class="panel-count" *ngIf="catalogLoaded"
+                    >{{ parts.length }} no catálogo</span
+                ></header
+            >
+            <div class="catalog-search"
+                ><label for="part-search">Pesquisar no catálogo</label
+                ><div class="search-controls"
+                    ><div class="search-field"
+                        ><mat-icon>search</mat-icon
+                        ><input
+                            id="part-search"
+                            [(ngModel)]="search"
+                            placeholder="Part Number, descrição ou fabricante"
+                        /><button
+                            type="button"
+                            *ngIf="search"
+                            class="icon-action"
+                            (click)="search = ''"
+                            aria-label="Limpar pesquisa"
+                            ><mat-icon>close</mat-icon></button
+                        ></div
+                    ><button
+                        type="button"
+                        class="refresh-action"
+                        (click)="loadCatalog()"
+                        [disabled]="loadingCatalog || saving"
+                        aria-label="Atualizar catálogo"
+                        title="Atualizar catálogo"
+                        ><mat-icon>refresh</mat-icon></button
+                    ></div
+                ></div
+            >
+            <div *ngIf="loadingCatalog" class="catalog-state" role="status"
+                ><mat-icon>hourglass_top</mat-icon
+                ><strong>Carregando catálogo...</strong></div
+            >
+            <div *ngIf="errorCatalog" class="catalog-state error" role="alert"
+                ><mat-icon>cloud_off</mat-icon
+                ><strong>Não foi possível carregar as peças</strong
+                ><p>{{ errorCatalog }}</p
+                ><button
+                    type="button"
+                    (click)="loadCatalog()"
+                    [disabled]="loadingCatalog"
+                    >Tentar novamente</button
+                ></div
+            >
+            <ng-container
+                *ngIf="catalogLoaded && !loadingCatalog && !errorCatalog"
+            >
+                <div *ngIf="!parts.length" class="catalog-state"
+                    ><span class="empty-icon"
+                        ><mat-icon>inventory_2</mat-icon></span
+                    ><strong>Seu catálogo ainda está vazio</strong
+                    ><p
+                        >Cadastre peças para montar sua primeira lista de
+                        compra.</p
+                    ><a class="empty-action" routerLink="/cadastro/spare-parts"
+                        ><mat-icon>add</mat-icon>Cadastrar peças</a
+                    ></div
+                >
+                <div
+                    *ngIf="parts.length && !resultsSearch.length"
+                    class="catalog-state"
+                    ><span class="empty-icon"
+                        ><mat-icon>search_off</mat-icon></span
+                    ><strong>Nenhuma peça encontrada</strong
+                    ><p>Pesquise pelo Part Number, descrição ou fabricante.</p
+                    ><button type="button" (click)="search = ''"
+                        >Limpar pesquisa</button
+                    ></div
+                >
+                <ng-container *ngIf="resultsSearch.length"
+                    ><div class="results-label"
+                        >{{ resultsSearch.length }} resultado(s)<span
+                            *ngIf="resultsSearch.length > 50"
+                        >
+                            · refine a busca para ver outros itens</span
+                        ></div
+                    >
+                    <div class="table-wrap catalog-table"
+                        ><table
+                            ><thead
+                                ><tr
+                                    ><th>Peça / identificação</th
+                                    ><th>Fabricante</th><th>Un.</th
+                                    ><th
+                                        ><span class="sr-only"
+                                            >Selecionar peça</span
+                                        ></th
+                                    ></tr
+                                ></thead
+                            ><tbody>
+                                <tr
+                                    *ngFor="
+                                        let part of resultsSearch
+                                            | slice: 0 : 50
+                                    "
+                                    [class.selected-part]="hasPart(part.id)"
+                                    ><td
+                                        ><app-part-query
+                                            [partId]="part.id"
+                                            [label]="
+                                                part.part_number ||
+                                                part.description
+                                            "
+                                        /><strong>{{
+                                            part.description
+                                        }}</strong></td
+                                    ><td>{{ part.manufacturer || '—' }}</td
+                                    ><td>{{ part.unit }}</td
+                                    ><td
+                                        ><button
+                                            type="button"
+                                            class="add-part"
+                                            (click)="add(part)"
+                                            [disabled]="
+                                                saving ||
+                                                hasPart(part.id) ||
+                                                lines.length >= 100
+                                            "
+                                            [attr.aria-label]="
+                                                (hasPart(part.id)
+                                                    ? 'Já selecionada: '
+                                                    : 'Adicionar ') +
+                                                part.description
+                                            "
+                                            ><mat-icon>{{
+                                                hasPart(part.id)
+                                                    ? 'check'
+                                                    : 'add'
+                                            }}</mat-icon
+                                            >{{
+                                                hasPart(part.id)
+                                                    ? 'Na lista'
+                                                    : 'Adicionar'
+                                            }}</button
+                                        ></td
+                                    ></tr
+                                >
+                            </tbody></table
+                        ></div
+                    >
+                </ng-container>
+            </ng-container>
+        </section>
+        <!-- A lista recebe quantidades e observações; somente Gerar solicitação grava um rascunho na API. -->
+        <aside class="basket-panel" aria-labelledby="basket-title">
+            <header class="panel-heading"
+                ><h3 id="basket-title"
+                    ><span class="step-number">2</span>Lista de compra</h3
+                ><span class="basket-count" aria-live="polite">{{
+                    lines.length
+                }}</span></header
+            >
+            <div *ngIf="!lines.length" class="basket-empty"
+                ><mat-icon>shopping_bag</mat-icon
+                ><strong>Nenhuma peça selecionada</strong
+                ><p
+                    >Use <b>Adicionar</b> no catálogo para montar sua lista.</p
+                ></div
+            >
+            <div class="basket-items" *ngIf="lines.length">
+                <article
+                    class="basket-item"
+                    *ngFor="let line of lines; let i = index"
+                    ><div class="basket-item-title"
+                        ><div
+                            ><app-part-query
+                                [partId]="line.part.id"
+                                [label]="
+                                    line.part.part_number ||
+                                    line.part.description
+                                "
+                            /><strong>{{ line.part.description }}</strong></div
+                        ><button
+                            type="button"
+                            class="icon-action"
+                            (click)="lines.splice(i, 1)"
+                            [disabled]="saving"
+                            [attr.aria-label]="
+                                'Remover ' + line.part.description
+                            "
+                            title="Remover peça"
+                            ><mat-icon>close</mat-icon></button
+                        ></div
+                    >
+                    <div class="quantity-row"
+                        ><label [for]="'quantity-' + line.part.id"
+                            >Quantidade
+                            <span>({{ line.part.unit }})</span></label
+                        ><input
+                            [id]="'quantity-' + line.part.id"
+                            type="number"
+                            [(ngModel)]="line.quantity"
+                            min="0.001"
+                            max="100000"
+                            step="0.001"
+                            [disabled]="saving"
+                    /></div>
+                    <details class="item-note"
+                        ><summary>Observação da peça</summary
+                        ><label
+                            ><span class="sr-only"
+                                >Observação de {{ line.part.description }}</span
+                            ><input
+                                [(ngModel)]="line.note"
+                                maxlength="1000"
+                                placeholder="Opcional"
+                                [disabled]="saving" /></label
+                    ></details>
+                </article>
+            </div>
+            <p class="basket-hint"
+                ><mat-icon>info</mat-icon
+                ><span
+                    >Lista geral, sem vínculo com a máquina. Salve a solicitação
+                    antes de sair da página.</span
+                ></p
+            >
+            <details *ngIf="lines.length" class="purchase-options" open
+                ><summary>Dados da solicitação</summary>
+                <label
+                    >Gestor responsável *<select
+                        [(ngModel)]="managerId"
+                        [disabled]="saving"
+                        ><option [ngValue]="0">Selecione o gestor</option
+                        ><option
+                            *ngFor="let manager of managers"
+                            [ngValue]="manager.id"
+                            >{{ manager.name }}</option
+                        ></select
+                    ></label
+                >
+                <div class="purchase-options-row"
+                    ><label
+                        >Tipo de compra<select
+                            [(ngModel)]="typePurchase"
+                            [disabled]="saving"
+                            ><option value="NACIONAL">Nacional</option
+                            ><option value="IMPORTACAO"
+                                >Importação</option
+                            ></select
+                        ></label
+                    ><label
+                        >Prioridade<select
+                            [(ngModel)]="priority"
+                            [disabled]="saving"
+                            ><option value="BAIXA">Baixa</option
+                            ><option value="MEDIA">Média</option
+                            ><option value="ALTA">Alta</option
+                            ><option value="CRITICA">Crítica</option></select
+                        ></label
+                    ></div
+                >
+                <p
+                    *ngIf="managersLoaded && !managers.length"
+                    class="error"
+                    role="alert"
+                    >Nenhum gestor ativo disponível. Cadastre um administrador
+                    para gerar a compra.</p
+                >
+                <label
+                    >Justificativa *<textarea
+                        [(ngModel)]="justification"
+                        rows="3"
+                        maxlength="4000"
+                        [disabled]="saving"
+                        placeholder="Descreva a necessidade (mín. 10 caracteres)"
+                    ></textarea>
+                </label>
+            </details>
+            <p *ngIf="errorPurchase" class="feedback error" role="alert">{{
+                errorPurchase
+            }}</p>
+            <footer class="basket-footer"
+                ><button
+                    type="button"
+                    class="primary generate-purchase"
+                    (click)="createPurchase()"
+                    [disabled]="saving || !purchaseValid"
+                    ><mat-icon>assignment_add</mat-icon
+                    >{{
+                        saving ? 'Gerando...' : 'Gerar solicitação de compra'
+                    }}</button
+                ><small
+                    >Cria um rascunho para revisão e aprovação.</small
+                ></footer
+            >
+        </aside>
+    </div>
+</section>

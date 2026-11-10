@@ -1,0 +1,223 @@
+/* Estilo local de login: aparência, estados visuais e adaptação da tela; não acessa a API nem o banco. */
+.login {
+    min-height: 100vh;
+    display: grid;
+    grid-template-columns: 57% 43%;
+    background: white;
+}
+
+.hero {
+    background: radial-gradient(
+        ellipse at 50% 75%,
+        #61030b 0%,
+        #180509 35%,
+        #050506 70%
+    );
+    color: white;
+    position: relative;
+    overflow: hidden;
+    padding: 44px;
+}
+
+.brand {
+    display: flex;
+    gap: 13px;
+    align-items: center;
+    font-size: 29px;
+    letter-spacing: 1px;
+    position: relative;
+    z-index: 2;
+}
+
+.brand small {
+    display: block;
+    font-size: 9px;
+    letter-spacing: 0;
+}
+
+.logo {
+    font-size: 58px;
+    font-weight: 900;
+    color: #e5091e;
+    line-height: 1;
+}
+
+.hero-copy {
+    position: absolute;
+    top: 53%;
+    width: calc(100% - 88px);
+    text-align: center;
+}
+
+.hero-copy h1 {
+    font-size: 27px;
+    color: #e91023;
+    letter-spacing: 1px;
+}
+
+.hero-copy p {
+    font-size: 10px;
+    letter-spacing: 2.6px;
+    line-height: 1.8;
+}
+
+.mesh {
+    position: absolute;
+    inset: 24% -15% -20%;
+    background-image: radial-gradient(#e52032 1.1px, transparent 1.3px);
+    background-size: 19px 19px;
+    transform: perspective(460px) rotateX(57deg);
+    opacity: 0.62;
+    mask-image: linear-gradient(transparent, #000 28%, #000 80%, transparent);
+}
+
+.glow {
+    position: absolute;
+    width: 80%;
+    height: 45%;
+    background: #d60022;
+    filter: blur(140px);
+    left: 10%;
+    top: 10%;
+}
+
+.version {
+    position: absolute;
+    bottom: 28px;
+    left: 44px;
+    font-size: 10px;
+}
+
+.signin {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 45px;
+}
+
+.login-box {
+    width: min(400px, 100%);
+}
+
+.login-box h1 {
+    margin: 14px 0 4px;
+    font-size: 30px;
+    letter-spacing: -1.4px;
+}
+
+.login-box em {
+    color: #d60b22;
+    font-style: normal;
+}
+
+.login-box p {
+    font-size: 13px;
+    margin-bottom: 28px;
+}
+
+.login-box .footnote {
+    text-align: center;
+    margin-top: 45px;
+    color: #999;
+    font-size: 10px;
+}
+
+.login-box button.primary {
+    height: 46px;
+}
+
+/* Responsividade: aplica estas regras quando a largura da tela atende à condição abaixo. */
+@media (max-width: 800px) {
+    .login {
+        grid-template-columns: 1fr;
+    }
+
+    .hero {
+        min-height: 210px;
+        padding: 20px;
+    }
+
+    .brand {
+        font-size: 19px;
+    }
+
+    .logo {
+        font-size: 40px;
+    }
+
+    .hero-copy {
+        top: 58%;
+        width: calc(100% - 40px);
+    }
+
+    .hero-copy h1 {
+        font-size: 19px;
+    }
+
+    .hero-copy p {
+        font-size: 8px;
+    }
+
+    .version {
+        display: none;
+    }
+
+    .signin {
+        padding: 35px 22px;
+    }
+}
+
+/* CORREÇÕES DO LAYOUT DO LOGIN */
+
+:host {
+    display: block;
+    width: 100%;
+    min-height: 100vh;
+}
+
+.login {
+    width: 100%;
+    min-height: 100vh;
+    grid-template-columns: minmax(0, 57fr) minmax(0, 43fr);
+}
+
+.hero {
+    min-width: 0;
+    min-height: 100vh;
+}
+
+.signin {
+    min-width: 0;
+    box-sizing: border-box;
+}
+
+.login-box {
+    width: 100%;
+    max-width: 400px;
+}
+
+.login-box form {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.login-box mat-form-field {
+    display: block;
+    width: 100%;
+}
+
+.login-box button.primary {
+    width: 100%;
+    min-height: 46px;
+}
+
+@media (max-width: 800px) {
+    .login {
+        grid-template-columns: minmax(0, 1fr);
+    }
+
+    .hero {
+        min-height: 210px;
+    }
+}

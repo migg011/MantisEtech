@@ -1,0 +1,5657 @@
+{
+  "captured_at": "2026-10-29T20:19:22.126351-04:00",
+  "modules": {
+    "Estrutura industrial": [
+      "sectors",
+      "lines",
+      "equipment_types",
+      "equipment",
+      "equipment_movements",
+      "equipment_attachments"
+    ],
+    "Acesso e usuários": [
+      "users"
+    ],
+    "Manutenção corretiva": [
+      "problem_types",
+      "work_orders",
+      "line_pendencies",
+      "maintenance_part_requisitions"
+    ],
+    "Manutenção preventiva": [
+      "preventive_checklists",
+      "equipment_preventives",
+      "preventive_orders",
+      "preventive_executions"
+    ],
+    "Peças e documentação técnica": [
+      "spare_parts",
+      "spare_part_compatibility",
+      "spare_part_technical"
+    ],
+    "Compras e aprovação": [
+      "spare_purchase_requests",
+      "spare_purchase_request_items",
+      "spare_purchase_events"
+    ]
+  },
+  "tables": [
+    {
+      "name": "auth_group",
+      "rows": 0,
+      "bytes": 24576,
+      "module": "Infraestrutura Django",
+      "model": "Group",
+      "purpose": "Groups are a generic way of categorizing users to apply permissions, or\nsome other label, to those users. A user can belong to any number of\ngroups.\n\nA user in a group automatically has all the permissions granted to that\ngroup. For example, if the group 'Site editors' has the permission\ncan_edit_home_page, any user in that group will have that permission.\n\nBeyond permissions, groups are a convenient way to categorize users to\napply some label, or extended functionality, to them. For example, you\ncould create a group 'Special users', and you could write code that would\ndo special things to those users -- such as giving them access to a\nmembers-only portion of your site, or sending them members-only email\nmessages.",
+      "source": null,
+      "columns": [
+        {
+          "name": "id",
+          "type": "integer",
+          "pg_type": "int4",
+          "nullable": false,
+          "default": null,
+          "identity": "YES",
+          "length": null,
+          "precision": 32,
+          "scale": 0,
+          "orm_field": "id",
+          "label": "ID",
+          "choices": []
+        },
+        {
+          "name": "name",
+          "type": "character varying",
+          "pg_type": "varchar",
+          "nullable": false,
+          "default": null,
+          "identity": "NO",
+          "length": 150,
+          "precision": null,
+          "scale": null,
+          "orm_field": "name",
+          "label": "nome",
+          "choices": []
+        }
+      ],
+      "constraints": [
+        {
+          "name": "auth_group_name_key",
+          "kind": "u",
+          "definition": "UNIQUE (name)",
+          "validated": true,
+          "target": null,
+          "deferrable": false,
+          "deferred": false
+        },
+        {
+          "name": "auth_group_pkey",
+          "kind": "p",
+          "definition": "PRIMARY KEY (id)",
+          "validated": true,
+          "target": null,
+          "deferrable": false,
+          "deferred": false
+        }
+      ],
+      "indexes": [
+        {
+          "name": "auth_group_name_a6ea08ec_like",
+          "definition": "CREATE INDEX auth_group_name_a6ea08ec_like ON public.auth_group USING btree (name varchar_pattern_ops)"
+        },
+        {
+          "name": "auth_group_name_key",
+          "definition": "CREATE UNIQUE INDEX auth_group_name_key ON public.auth_group USING btree (name)"
+        },
+        {
+          "name": "auth_group_pkey",
+          "definition": "CREATE UNIQUE INDEX auth_group_pkey ON public.auth_group USING btree (id)"
+        }
+      ]
+    },
+    {
+      "name": "auth_group_permissions",
+      "rows": 0,
+      "bytes": 32768,
+      "module": "Infraestrutura Django",
+      "model": null,
+      "purpose": "Controle interno de versões do esquema.",
+      "source": null,
+      "columns": [
+        {
+          "name": "id",
+          "type": "bigint",
+          "pg_type": "int8",
+          "nullable": false,
+          "default": null,
+          "identity": "YES",
+          "length": null,
+          "precision": 64,
+          "scale": 0
+        },
+        {
+          "name": "group_id",
+          "type": "integer",
+          "pg_type": "int4",
+          "nullable": false,
+          "default": null,
+          "identity": "NO",
+          "length": null,
+          "precision": 32,
+          "scale": 0
+        },
+        {
+          "name": "permission_id",
+          "type": "integer",
+          "pg_type": "int4",
+          "nullable": false,
+          "default": null,
+          "identity": "NO",
+          "length": null,
+          "precision": 32,
+          "scale": 0
+        }
+      ],
+      "constraints": [
+        {
+          "name": "auth_group_permissio_permission_id_84c5c92e_fk_auth_perm",
+          "kind": "f",
+          "definition": "FOREIGN KEY (permission_id) REFERENCES auth_permission(id) DEFERRABLE INITIALLY DEFERRED",
+          "validated": true,
+          "target": "auth_permission",
+          "deferrable": true,
+          "deferred": true
+        },
+        {
+          "name": "auth_group_permissions_group_id_b120cbf9_fk_auth_group_id",
+          "kind": "f",
+          "definition": "FOREIGN KEY (group_id) REFERENCES auth_group(id) DEFERRABLE INITIALLY DEFERRED",
+          "validated": true,
+          "target": "auth_group",
+          "deferrable": true,
+          "deferred": true
+        },
+        {
+          "name": "auth_group_permissions_group_id_permission_id_0cd325b0_uniq",
+          "kind": "u",
+          "definition": "UNIQUE (group_id, permission_id)",
+          "validated": true,
+          "target": null,
+          "deferrable": false,
+          "deferred": false
+        },
+        {
+          "name": "auth_group_permissions_pkey",
+          "kind": "p",
+          "definition": "PRIMARY KEY (id)",
+          "validated": true,
+          "target": null,
+          "deferrable": false,
+          "deferred": false
+        }
+      ],
+      "indexes": [
+        {
+          "name": "auth_group_permissions_group_id_b120cbf9",
+          "definition": "CREATE INDEX auth_group_permissions_group_id_b120cbf9 ON public.auth_group_permissions USING btree (group_id)"
+        },
+        {
+          "name": "auth_group_permissions_group_id_permission_id_0cd325b0_uniq",
+          "definition": "CREATE UNIQUE INDEX auth_group_permissions_group_id_permission_id_0cd325b0_uniq ON public.auth_group_permissions USING btree (group_id, permission_id)"
+        },
+        {
+          "name": "auth_group_permissions_permission_id_84c5c92e",
+          "definition": "CREATE INDEX auth_group_permissions_permission_id_84c5c92e ON public.auth_group_permissions USING btree (permission_id)"
+        },
+        {
+          "name": "auth_group_permissions_pkey",
+          "definition": "CREATE UNIQUE INDEX auth_group_permissions_pkey ON public.auth_group_permissions USING btree (id)"
+        }
+      ]
+    },
+    {
+      "name": "auth_permission",
+      "rows": 96,
+      "bytes": 90112,
+      "module": "Infraestrutura Django",
+      "model": "Permission",
+      "purpose": "The permissions system provides a way to assign permissions to specific\nusers and groups of users.\n\nThe permission system is used by the Django admin site, but may also be\nuseful in your own code. The Django admin site uses permissions as follows:\n\n    - The \"add\" permission limits the user's ability to view the \"add\" form\n      and add an object.\n    - The \"change\" permission limits a user's ability to view the change\n      list, view the \"change\" form and change an object.\n    - The \"delete\" permission limits the ability to delete an object.\n    - The \"view\" permission limits the ability to view an object.\n\nPermissions are set globally per type of object, not per specific object\ninstance. It is possible to say \"Mary may change news stories,\" but it's\nnot currently possible to say \"Mary may change news stories, but only the\nones she created herself\" or \"Mary may only change news stories that have a\ncertain status or publication date.\"\n\nThe permissions listed above are automatically created for each model.",
+      "source": null,
+      "columns": [
+        {
+          "name": "id",
+          "type": "integer",
+          "pg_type": "int4",
+          "nullable": false,
+          "default": null,
+          "identity": "YES",
+          "length": null,
+          "precision": 32,
+          "scale": 0,
+          "orm_field": "id",
+          "label": "ID",
+          "choices": []
+        },
+        {
+          "name": "name",
+          "type": "character varying",
+          "pg_type": "varchar",
+          "nullable": false,
+          "default": null,
+          "identity": "NO",
+          "length": 255,
+          "precision": null,
+          "scale": null,
+          "orm_field": "name",
+          "label": "nome",
+          "choices": []
+        },
+        {
+          "name": "content_type_id",
+          "type": "integer",
+          "pg_type": "int4",
+          "nullable": false,
+          "default": null,
+          "identity": "NO",
+          "length": null,
+          "precision": 32,
+          "scale": 0,
+          "orm_field": "content_type",
+          "label": "tipo de conteúdo",
+          "choices": [],
+          "orm_relation": {
+            "table": "django_content_type",
+            "column": "id",
+            "on_delete": "CASCADE",
+            "one_to_one": false
+          }
+        },
+        {
+          "name": "codename",
+          "type": "character varying",
+          "pg_type": "varchar",
+          "nullable": false,
+          "default": null,
+          "identity": "NO",
+          "length": 100,
+          "precision": null,
+          "scale": null,
+          "orm_field": "codename",
+          "label": "apelido",
+          "choices": []
+        }
+      ],
+      "constraints": [
+        {
+          "name": "auth_permission_content_type_id_2f476e4b_fk_django_co",
+          "kind": "f",
+          "definition": "FOREIGN KEY (content_type_id) REFERENCES django_content_type(id) DEFERRABLE INITIALLY DEFERRED",
+          "validated": true,
+          "target": "django_content_type",
+          "deferrable": true,
+          "deferred": true
+        },
+        {
+          "name": "auth_permission_content_type_id_codename_01ab375a_uniq",
+          "kind": "u",
+          "definition": "UNIQUE (content_type_id, codename)",
+          "validated": true,
+          "target": null,
+          "deferrable": false,
+          "deferred": false
+        },
+        {
+          "name": "auth_permission_pkey",
+          "kind": "p",
+          "definition": "PRIMARY KEY (id)",
+          "validated": true,
+          "target": null,
+          "deferrable": false,
+          "deferred": false
+        }
+      ],
+      "indexes": [
+        {
+          "name": "auth_permission_content_type_id_2f476e4b",
+          "definition": "CREATE INDEX auth_permission_content_type_id_2f476e4b ON public.auth_permission USING btree (content_type_id)"
+        },
+        {
+          "name": "auth_permission_content_type_id_codename_01ab375a_uniq",
+          "definition": "CREATE UNIQUE INDEX auth_permission_content_type_id_codename_01ab375a_uniq ON public.auth_permission USING btree (content_type_id, codename)"
+        },
+        {
+          "name": "auth_permission_pkey",
+          "definition": "CREATE UNIQUE INDEX auth_permission_pkey ON public.auth_permission USING btree (id)"
+        }
+      ]
+    },
+    {
+      "name": "django_content_type",
+      "rows": 24,
+      "bytes": 40960,
+      "module": "Infraestrutura Django",
+      "model": "ContentType",
+      "purpose": "ContentType(id, app_label, model)",
+      "source": null,
+      "columns": [
+        {
+          "name": "id",
+          "type": "integer",
+          "pg_type": "int4",
+          "nullable": false,
+          "default": null,
+          "identity": "YES",
+          "length": null,
+          "precision": 32,
+          "scale": 0,
+          "orm_field": "id",
+          "label": "ID",
+          "choices": []
+        },
+        {
+          "name": "app_label",
+          "type": "character varying",
+          "pg_type": "varchar",
+          "nullable": false,
+          "default": null,
+          "identity": "NO",
+          "length": 100,
+          "precision": null,
+          "scale": null,
+          "orm_field": "app_label",
+          "label": "app label",
+          "choices": []
+        },
+        {
+          "name": "model",
+          "type": "character varying",
+          "pg_type": "varchar",
+          "nullable": false,
+          "default": null,
+          "identity": "NO",
+          "length": 100,
+          "precision": null,
+          "scale": null,
+          "orm_field": "model",
+          "label": "nome da classe de modelo em python",
+          "choices": []
+        }
+      ],
+      "constraints": [
+        {
+          "name": "django_content_type_app_label_model_76bd3d3b_uniq",
+          "kind": "u",
+          "definition": "UNIQUE (app_label, model)",
+          "validated": true,
+          "target": null,
+          "deferrable": false,
+          "deferred": false
+        },
+        {
+          "name": "django_content_type_pkey",
+          "kind": "p",
+          "definition": "PRIMARY KEY (id)",
+          "validated": true,
+          "target": null,
+          "deferrable": false,
+          "deferred": false
+        }
+      ],
+      "indexes": [
+        {
+          "name": "django_content_type_app_label_model_76bd3d3b_uniq",
+          "definition": "CREATE UNIQUE INDEX django_content_type_app_label_model_76bd3d3b_uniq ON public.django_content_type USING btree (app_label, model)"
+        },
+        {
+          "name": "django_content_type_pkey",
+          "definition": "CREATE UNIQUE INDEX django_content_type_pkey ON public.django_content_type USING btree (id)"
+        }
+      ]
+    },
+    {
+      "name": "django_migrations",
+      "rows": 25,
+      "bytes": 32768,
+      "module": "Infraestrutura Django",
+      "model": null,
+      "purpose": "Controle interno de versões do esquema.",
+      "source": null,
+      "columns": [
+        {
+          "name": "id",
+          "type": "bigint",
+          "pg_type": "int8",
+          "nullable": false,
+          "default": null,
+          "identity": "YES",
+          "length": null,
+          "precision": 64,
+          "scale": 0
+        },
+        {
+          "name": "app",
+          "type": "character varying",
+          "pg_type": "varchar",
+          "nullable": false,
+          "default": null,
+          "identity": "NO",
+          "length": 255,
+          "precision": null,
+          "scale": null
+        },
+        {
+          "name": "name",
+          "type": "character varying",
+          "pg_type": "varchar",
+          "nullable": false,
+          "default": null,
+          "identity": "NO",
+          "length": 255,
+          "precision": null,
+          "scale": null
+        },
+        {
+          "name": "applied",
+          "type": "timestamp with time zone",
+          "pg_type": "timestamptz",
+          "nullable": false,
+          "default": null,
+          "identity": "NO",
+          "length": null,
+          "precision": null,
+          "scale": null
+        }
+      ],
+      "constraints": [
+        {
+          "name": "django_migrations_pkey",
+          "kind": "p",
+          "definition": "PRIMARY KEY (id)",
+          "validated": true,
+          "target": null,
+          "deferrable": false,
+          "deferred": false
+        }
+      ],
+      "indexes": [
+        {
+          "name": "django_migrations_pkey",
+          "definition": "CREATE UNIQUE INDEX django_migrations_pkey ON public.django_migrations USING btree (id)"
+        }
+      ]
+    },
+    {
+      "name": "equipment",
+      "rows": 14,
+      "bytes": 163840,
+      "module": "Estrutura industrial",
+      "model": "Equipment",
+      "purpose": "Cadastro técnico da máquina; o banco impede posição duplicada ou alocação sem posição válida.",
+      "source": "maintenance/models.py:118",
+      "columns": [
+        {
+          "name": "id",
+          "type": "bigint",
+          "pg_type": "int8",
+          "nullable": false,
+          "default": null,
+          "identity": "YES",
+          "length": null,
+          "precision": 64,
+          "scale": 0,
+          "orm_field": "id",
+          "label": "ID",
+          "choices": []
+        },
+        {
+          "name": "model_number",
+          "type": "character varying",
+          "pg_type": "varchar",
+          "nullable": true,
+          "default": null,
+          "identity": "NO",
+          "length": 100,
+          "precision": null,
+          "scale": null,
+          "orm_field": "model_number",
+          "label": "Número do modelo",
+          "choices": []
+        },
+        {
+          "name": "model",
+          "type": "character varying",
+          "pg_type": "varchar",
+          "nullable": true,
+          "default": null,
+          "identity": "NO",
+          "length": 160,
+          "precision": null,
+          "scale": null,
+          "orm_field": "model",
+          "label": "Modelo",
+          "choices": []
+        },
+        {
+          "name": "serial",
+          "type": "character varying",
+          "pg_type": "varchar",
+          "nullable": true,
+          "default": null,
+          "identity": "NO",
+          "length": 160,
+          "precision": null,
+          "scale": null,
+          "orm_field": "serial",
+          "label": "Número de série",
+          "choices": []
+        },
+        {
+          "name": "manufacturer",
+          "type": "character varying",
+          "pg_type": "varchar",
+          "nullable": true,
+          "default": null,
+          "identity": "NO",
+          "length": 160,
+          "precision": null,
+          "scale": null,
+          "orm_field": "manufacturer",
+          "label": "Fabricante",
+          "choices": []
+        },
+        {
+          "name": "manufacturing_date",
+          "type": "date",
+          "pg_type": "date",
+          "nullable": true,
+          "default": null,
+          "identity": "NO",
+          "length": null,
+          "precision": null,
+          "scale": null,
+          "orm_field": "manufacturing_date",
+          "label": "manufacturing date",
+          "choices": []
+        },
+        {
+          "name": "manufacturing_date_text",
+          "type": "character varying",
+          "pg_type": "varchar",
+          "nullable": true,
+          "default": null,
+          "identity": "NO",
+          "length": 10,
+          "precision": null,
+          "scale": null,
+          "orm_field": "manufacturing_date_text",
+          "label": "Data de fabricação (ano, mês/ano ou dia/mês/ano)",
+          "choices": []
+        },
+        {
+          "name": "length_mm",
+          "type": "numeric",
+          "pg_type": "numeric",
+          "nullable": true,
+          "default": null,
+          "identity": "NO",
+          "length": null,
+          "precision": 12,
+          "scale": 2,
+          "orm_field": "length_mm",
+          "label": "Comprimento (mm)",
+          "choices": []
+        },
+        {
+          "name": "width_mm",
+          "type": "numeric",
+          "pg_type": "numeric",
+          "nullable": true,
+          "default": null,
+          "identity": "NO",
+          "length": null,
+          "precision": 12,
+          "scale": 2,
+          "orm_field": "width_mm",
+          "label": "Largura (mm)",
+          "choices": []
+        },
+        {
+          "name": "height_mm",
+          "type": "numeric",
+          "pg_type": "numeric",
+          "nullable": true,
+          "default": null,
+          "identity": "NO",
+          "length": null,
+          "precision": 12,
+          "scale": 2,
+          "orm_field": "height_mm",
+          "label": "Altura (mm)",
+          "choices": []
+        },
+        {
+          "name": "weight_kg",
+          "type": "numeric",
+          "pg_type": "numeric",
+          "nullable": true,
+          "default": null,
+          "identity": "NO",
+          "length": null,
+          "precision": 12,
+          "scale": 2,
+          "orm_field": "weight_kg",
+          "label": "Peso (kg)",
+          "choices": []
+        },
+        {
+          "name": "voltage_v",
+          "type": "numeric",
+          "pg_type": "numeric",
+          "nullable": true,
+          "default": null,
+          "identity": "NO",
+          "length": null,
+          "precision": 12,
+          "scale": 2,
+          "orm_field": "voltage_v",
+          "label": "Tensão (V)",
+          "choices": []
+        },
+        {
+          "name": "frequency_hz",
+          "type": "numeric",
+          "pg_type": "numeric",
+          "nullable": true,
+          "default": null,
+          "identity": "NO",
+          "length": null,
+          "precision": 12,
+          "scale": 2,
+          "orm_field": "frequency_hz",
+          "label": "Frequência (Hz)",
+          "choices": []
+        },
+        {
+          "name": "current_a",
+          "type": "numeric",
+          "pg_type": "numeric",
+          "nullable": true,
+          "default": null,
+          "identity": "NO",
+          "length": null,
+          "precision": 12,
+          "scale": 2,
+          "orm_field": "current_a",
+          "label": "Corrente (A)",
+          "choices": []
+        },
+        {
+          "name": "power_w",
+          "type": "numeric",
+          "pg_type": "numeric",
+          "nullable": true,
+          "default": null,
+          "identity": "NO",
+          "length": null,
+          "precision": 12,
+          "scale": 2,
+          "orm_field": "power_w",
+          "label": "Potência (W)",
+          "choices": []
+        },
+        {
+          "name": "pneumatic_pressure_bar",
+          "type": "numeric",
+          "pg_type": "numeric",
+          "nullable": true,
+          "default": null,
+          "identity": "NO",
+          "length": null,
+          "precision": 12,
+          "scale": 2,
+          "orm_field": "pneumatic_pressure_bar",
+          "label": "Pressão pneumática (bar)",
+          "choices": []
+        },
+        {
+          "name": "asset_number",
+          "type": "character varying",
+          "pg_type": "varchar",
+          "nullable": true,
+          "default": null,
+          "identity": "NO",
+          "length": 100,
+          "precision": null,
+          "scale": null,
+          "orm_field": "asset_number",
+          "label": "Patrimônio",
+          "choices": []
+        },
+        {
+          "name": "description",
+          "type": "text",
+          "pg_type": "text",
+          "nullable": true,
+          "default": null,
+          "identity": "NO",
+          "length": null,
+          "precision": null,
+          "scale": null,
+          "orm_field": "description",
+          "label": "Descrição",
+          "choices": []
+        },
+        {
+          "name": "process_description",
+          "type": "text",
+          "pg_type": "text",
+          "nullable": true,
+          "default": null,
+          "identity": "NO",
+          "length": null,
+          "precision": null,
+          "scale": null,
+          "orm_field": "process_description",
+          "label": "Descrição do processo",
+          "choices": []
+        },
+        {
+          "name": "position",
+          "type": "integer",
+          "pg_type": "int4",
+          "nullable": true,
+          "default": null,
+          "identity": "NO",
+          "length": null,
+          "precision": 32,
+          "scale": 0,
+          "orm_field": "position",
+          "label": "position",
+          "choices": []
+        },
+        {
+          "name": "active",
+          "type": "boolean",
+          "pg_type": "bool",
+          "nullable": false,
+          "default": null,
+          "identity": "NO",
+          "length": null,
+          "precision": null,
+          "scale": null,
+          "orm_field": "active",
+          "label": "active",
+          "choices": []
+        },
+        {
+          "name": "created_at",
+          "type": "timestamp with time zone",
+          "pg_type": "timestamptz",
+          "nullable": false,
+          "default": null,
+          "identity": "NO",
+          "length": null,
+          "precision": null,
+          "scale": null,
+          "orm_field": "created_at",
+          "label": "created at",
+          "choices": []
+        },
+        {
+          "name": "equipment_type_id",
+          "type": "smallint",
+          "pg_type": "int2",
+          "nullable": false,
+          "default": null,
+          "identity": "NO",
+          "length": null,
+          "precision": 16,
+          "scale": 0,
+          "orm_field": "equipment_type",
+          "label": "Tipo",
+          "choices": [],
+          "orm_relation": {
+            "table": "equipment_types",
+            "column": "id",
+            "on_delete": "PROTECT",
+            "one_to_one": false
+          }
+        },
+        {
+          "name": "line_id",
+          "type": "bigint",
+          "pg_type": "int8",
+          "nullable": true,
+          "default": null,
+          "identity": "NO",
+          "length": null,
+          "precision": 64,
+          "scale": 0,
+          "orm_field": "line",
+          "label": "line",
+          "choices": [],
+          "orm_relation": {
+            "table": "lines",
+            "column": "id",
+            "on_delete": "PROTECT",
+            "one_to_one": false
+          }
+        },
+        {
+          "name": "sector_id",
+          "type": "bigint",
+          "pg_type": "int8",
+          "nullable": true,
+          "default": null,
+          "identity": "NO",
+          "length": null,
+          "precision": 64,
+          "scale": 0,
+          "orm_field": "sector",
+          "label": "Setor proprietário",
+          "choices": [],
+          "orm_relation": {
+            "table": "sectors",
+            "column": "id",
+            "on_delete": "PROTECT",
+            "one_to_one": false
+          }
+        },
+        {
+          "name": "name",
+          "type": "character varying",
+          "pg_type": "varchar",
+          "nullable": false,
+          "default": null,
+          "identity": "NO",
+          "length": 160,
+          "precision": null,
+          "scale": null,
+          "orm_field": "name",
+          "label": "Nome do equipamento",
+          "choices": []
+        }
+      ],
+      "constraints": [
+        {
+          "name": "equipment_asset_number_key",
+          "kind": "u",
+          "definition": "UNIQUE (asset_number)",
+          "validated": true,
+          "target": null,
+          "deferrable": false,
+          "deferred": false
+        },
+        {
+          "name": "equipment_equipment_type_id_9da1655a_fk_equipment_types_id",
+          "kind": "f",
+          "definition": "FOREIGN KEY (equipment_type_id) REFERENCES equipment_types(id) DEFERRABLE INITIALLY DEFERRED",
+          "validated": true,
+          "target": "equipment_types",
+          "deferrable": true,
+          "deferred": true
+        },
+        {
+          "name": "equipment_line_id_d3c0da21_fk_lines_id",
+          "kind": "f",
+          "definition": "FOREIGN KEY (line_id) REFERENCES lines(id) DEFERRABLE INITIALLY DEFERRED",
+          "validated": true,
+          "target": "lines",
+          "deferrable": true,
+          "deferred": true
+        },
+        {
+          "name": "equipment_pkey",
+          "kind": "p",
+          "definition": "PRIMARY KEY (id)",
+          "validated": true,
+          "target": null,
+          "deferrable": false,
+          "deferred": false
+        },
+        {
+          "name": "equipment_sector_id_8bf2e29c_fk_sectors_id",
+          "kind": "f",
+          "definition": "FOREIGN KEY (sector_id) REFERENCES sectors(id) DEFERRABLE INITIALLY DEFERRED",
+          "validated": true,
+          "target": "sectors",
+          "deferrable": true,
+          "deferred": true
+        },
+        {
+          "name": "equipment_serial_key",
+          "kind": "u",
+          "definition": "UNIQUE (serial)",
+          "validated": true,
+          "target": null,
+          "deferrable": false,
+          "deferred": false
+        },
+        {
+          "name": "equipment_valid_placement",
+          "kind": "c",
+          "definition": "CHECK ((((line_id IS NULL) AND (\"position\" IS NULL)) OR ((line_id IS NOT NULL) AND (\"position\" > 0) AND (\"position\" IS NOT NULL))))",
+          "validated": true,
+          "target": null,
+          "deferrable": false,
+          "deferred": false
+        },
+        {
+          "name": "line_position_unique",
+          "kind": "u",
+          "definition": "UNIQUE (line_id, \"position\")",
+          "validated": true,
+          "target": null,
+          "deferrable": false,
+          "deferred": false
+        }
+      ],
+      "indexes": [
+        {
+          "name": "equipment_asset_number_70d6dcdd_like",
+          "definition": "CREATE INDEX equipment_asset_number_70d6dcdd_like ON public.equipment USING btree (asset_number varchar_pattern_ops)"
+        },
+        {
+          "name": "equipment_asset_number_key",
+          "definition": "CREATE UNIQUE INDEX equipment_asset_number_key ON public.equipment USING btree (asset_number)"
+        },
+        {
+          "name": "equipment_equipment_type_id_9da1655a",
+          "definition": "CREATE INDEX equipment_equipment_type_id_9da1655a ON public.equipment USING btree (equipment_type_id)"
+        },
+        {
+          "name": "equipment_line_id_d3c0da21",
+          "definition": "CREATE INDEX equipment_line_id_d3c0da21 ON public.equipment USING btree (line_id)"
+        },
+        {
+          "name": "equipment_pkey",
+          "definition": "CREATE UNIQUE INDEX equipment_pkey ON public.equipment USING btree (id)"
+        },
+        {
+          "name": "equipment_sector_id_8bf2e29c",
+          "definition": "CREATE INDEX equipment_sector_id_8bf2e29c ON public.equipment USING btree (sector_id)"
+        },
+        {
+          "name": "equipment_serial_7d111baa_like",
+          "definition": "CREATE INDEX equipment_serial_7d111baa_like ON public.equipment USING btree (serial varchar_pattern_ops)"
+        },
+        {
+          "name": "equipment_serial_key",
+          "definition": "CREATE UNIQUE INDEX equipment_serial_key ON public.equipment USING btree (serial)"
+        },
+        {
+          "name": "line_position_unique",
+          "definition": "CREATE UNIQUE INDEX line_position_unique ON public.equipment USING btree (line_id, \"position\")"
+        }
+      ]
+    },
+    {
+      "name": "equipment_attachments",
+      "rows": 14,
+      "bytes": 17096704,
+      "module": "Estrutura industrial",
+      "model": "EquipmentAttachment",
+      "purpose": "Armazena o conteúdo de foto/manual no PostgreSQL, com um arquivo por categoria e máquina.",
+      "source": "maintenance/models.py:297",
+      "columns": [
+        {
+          "name": "id",
+          "type": "bigint",
+          "pg_type": "int8",
+          "nullable": false,
+          "default": null,
+          "identity": "YES",
+          "length": null,
+          "precision": 64,
+          "scale": 0,
+          "orm_field": "id",
+          "label": "ID",
+          "choices": []
+        },
+        {
+          "name": "kind",
+          "type": "character varying",
+          "pg_type": "varchar",
+          "nullable": false,
+          "default": null,
+          "identity": "NO",
+          "length": 10,
+          "precision": null,
+          "scale": null,
+          "orm_field": "kind",
+          "label": "kind",
+          "choices": [
+            [
+              "PHOTO",
+              "Foto"
+            ],
+            [
+              "MANUAL",
+              "Manual"
+            ]
+          ]
+        },
+        {
+          "name": "filename",
+          "type": "character varying",
+          "pg_type": "varchar",
+          "nullable": false,
+          "default": null,
+          "identity": "NO",
+          "length": 180,
+          "precision": null,
+          "scale": null,
+          "orm_field": "filename",
+          "label": "filename",
+          "choices": []
+        },
+        {
+          "name": "mime_type",
+          "type": "character varying",
+          "pg_type": "varchar",
+          "nullable": false,
+          "default": null,
+          "identity": "NO",
+          "length": 60,
+          "precision": null,
+          "scale": null,
+          "orm_field": "mime_type",
+          "label": "mime type",
+          "choices": []
+        },
+        {
+          "name": "content",
+          "type": "bytea",
+          "pg_type": "bytea",
+          "nullable": false,
+          "default": null,
+          "identity": "NO",
+          "length": null,
+          "precision": null,
+          "scale": null,
+          "orm_field": "content",
+          "label": "content",
+          "choices": []
+        },
+        {
+          "name": "size_bytes",
+          "type": "integer",
+          "pg_type": "int4",
+          "nullable": false,
+          "default": null,
+          "identity": "NO",
+          "length": null,
+          "precision": 32,
+          "scale": 0,
+          "orm_field": "size_bytes",
+          "label": "size bytes",
+          "choices": []
+        },
+        {
+          "name": "created_at",
+          "type": "timestamp with time zone",
+          "pg_type": "timestamptz",
+          "nullable": false,
+          "default": null,
+          "identity": "NO",
+          "length": null,
+          "precision": null,
+          "scale": null,
+          "orm_field": "created_at",
+          "label": "created at",
+          "choices": []
+        },
+        {
+          "name": "equipment_id",
+          "type": "bigint",
+          "pg_type": "int8",
+          "nullable": false,
+          "default": null,
+          "identity": "NO",
+          "length": null,
+          "precision": 64,
+          "scale": 0,
+          "orm_field": "equipment",
+          "label": "equipment",
+          "choices": [],
+          "orm_relation": {
+            "table": "equipment",
+            "column": "id",
+            "on_delete": "CASCADE",
+            "one_to_one": false
+          }
+        },
+        {
+          "name": "uploaded_by",
+          "type": "bigint",
+          "pg_type": "int8",
+          "nullable": false,
+          "default": null,
+          "identity": "NO",
+          "length": null,
+          "precision": 64,
+          "scale": 0,
+          "orm_field": "uploaded_by",
+          "label": "uploaded by",
+          "choices": [],
+          "orm_relation": {
+            "table": "users",
+            "column": "id",
+            "on_delete": "PROTECT",
+            "one_to_one": false
+          }
+        }
+      ],
+      "constraints": [
+        {
+          "name": "attachment_equipment_kind",
+          "kind": "u",
+          "definition": "UNIQUE (equipment_id, kind)",
+          "validated": true,
+          "target": null,
+          "deferrable": false,
+          "deferred": false
+        },
+        {
+          "name": "equipment_attachments_equipment_id_f490368b_fk_equipment_id",
+          "kind": "f",
+          "definition": "FOREIGN KEY (equipment_id) REFERENCES equipment(id) DEFERRABLE INITIALLY DEFERRED",
+          "validated": true,
+          "target": "equipment",
+          "deferrable": true,
+          "deferred": true
+        },
+        {
+          "name": "equipment_attachments_pkey",
+          "kind": "p",
+          "definition": "PRIMARY KEY (id)",
+          "validated": true,
+          "target": null,
+          "deferrable": false,
+          "deferred": false
+        },
+        {
+          "name": "equipment_attachments_uploaded_by_e94c18a2_fk_users_id",
+          "kind": "f",
+          "definition": "FOREIGN KEY (uploaded_by) REFERENCES users(id) DEFERRABLE INITIALLY DEFERRED",
+          "validated": true,
+          "target": "users",
+          "deferrable": true,
+          "deferred": true
+        }
+      ],
+      "indexes": [
+        {
+          "name": "attachment_equipment_kind",
+          "definition": "CREATE UNIQUE INDEX attachment_equipment_kind ON public.equipment_attachments USING btree (equipment_id, kind)"
+        },
+        {
+          "name": "equipment_attachments_equipment_id_f490368b",
+          "definition": "CREATE INDEX equipment_attachments_equipment_id_f490368b ON public.equipment_attachments USING btree (equipment_id)"
+        },
+        {
+          "name": "equipment_attachments_pkey",
+          "definition": "CREATE UNIQUE INDEX equipment_attachments_pkey ON public.equipment_attachments USING btree (id)"
+        },
+        {
+          "name": "equipment_attachments_uploaded_by_e94c18a2",
+          "definition": "CREATE INDEX equipment_attachments_uploaded_by_e94c18a2 ON public.equipment_attachments USING btree (uploaded_by)"
+        }
+      ]
+    },
+    {
+      "name": "equipment_movements",
+      "rows": 18,
+      "bytes": 90112,
+      "module": "Estrutura industrial",
+      "model": "EquipmentMovement",
+      "purpose": "Registra a origem, destino, posição e autoria das mudanças de montagem.",
+      "source": "maintenance/models.py:312",
+      "columns": [
+        {
+          "name": "id",
+          "type": "bigint",
+          "pg_type": "int8",
+          "nullable": false,
+          "default": null,
+          "identity": "YES",
+          "length": null,
+          "precision": 64,
+          "scale": 0,
+          "orm_field": "id",
+          "label": "ID",
+          "choices": []
+        },
+        {
+          "name": "from_position",
+          "type": "integer",
+          "pg_type": "int4",
+          "nullable": true,
+          "default": null,
+          "identity": "NO",
+          "length": null,
+          "precision": 32,
+          "scale": 0,
+          "orm_field": "from_position",
+          "label": "from position",
+          "choices": []
+        },
+        {
+          "name": "to_position",
+          "type": "integer",
+          "pg_type": "int4",
+          "nullable": true,
+          "default": null,
+          "identity": "NO",
+          "length": null,
+          "precision": 32,
+          "scale": 0,
+          "orm_field": "to_position",
+          "label": "to position",
+          "choices": []
+        },
+        {
+          "name": "action",
+          "type": "character varying",
+          "pg_type": "varchar",
+          "nullable": false,
+          "default": null,
+          "identity": "NO",
+          "length": 20,
+          "precision": null,
+          "scale": null,
+          "orm_field": "action",
+          "label": "action",
+          "choices": []
+        },
+        {
+          "name": "created_at",
+          "type": "timestamp with time zone",
+          "pg_type": "timestamptz",
+          "nullable": false,
+          "default": null,
+          "identity": "NO",
+          "length": null,
+          "precision": null,
+          "scale": null,
+          "orm_field": "created_at",
+          "label": "created at",
+          "choices": []
+        },
+        {
+          "name": "equipment_id",
+          "type": "bigint",
+          "pg_type": "int8",
+          "nullable": false,
+          "default": null,
+          "identity": "NO",
+          "length": null,
+          "precision": 64,
+          "scale": 0,
+          "orm_field": "equipment",
+          "label": "equipment",
+          "choices": [],
+          "orm_relation": {
+            "table": "equipment",
+            "column": "id",
+            "on_delete": "PROTECT",
+            "one_to_one": false
+          }
+        },
+        {
+          "name": "performed_by",
+          "type": "bigint",
+          "pg_type": "int8",
+          "nullable": false,
+          "default": null,
+          "identity": "NO",
+          "length": null,
+          "precision": 64,
+          "scale": 0,
+          "orm_field": "performed_by",
+          "label": "performed by",
+          "choices": [],
+          "orm_relation": {
+            "table": "users",
+            "column": "id",
+            "on_delete": "PROTECT",
+            "one_to_one": false
+          }
+        },
+        {
+          "name": "from_line_id",
+          "type": "bigint",
+          "pg_type": "int8",
+          "nullable": true,
+          "default": null,
+          "identity": "NO",
+          "length": null,
+          "precision": 64,
+          "scale": 0,
+          "orm_field": "from_line",
+          "label": "from line",
+          "choices": [],
+          "orm_relation": {
+            "table": "lines",
+            "column": "id",
+            "on_delete": "PROTECT",
+            "one_to_one": false
+          }
+        },
+        {
+          "name": "to_line_id",
+          "type": "bigint",
+          "pg_type": "int8",
+          "nullable": true,
+          "default": null,
+          "identity": "NO",
+          "length": null,
+          "precision": 64,
+          "scale": 0,
+          "orm_field": "to_line",
+          "label": "to line",
+          "choices": [],
+          "orm_relation": {
+            "table": "lines",
+            "column": "id",
+            "on_delete": "PROTECT",
+            "one_to_one": false
+          }
+        }
+      ],
+      "constraints": [
+        {
+          "name": "equipment_movements_equipment_id_1eeebee8_fk_equipment_id",
+          "kind": "f",
+          "definition": "FOREIGN KEY (equipment_id) REFERENCES equipment(id) DEFERRABLE INITIALLY DEFERRED",
+          "validated": true,
+          "target": "equipment",
+          "deferrable": true,
+          "deferred": true
+        },
+        {
+          "name": "equipment_movements_from_line_id_8a69cdd1_fk_lines_id",
+          "kind": "f",
+          "definition": "FOREIGN KEY (from_line_id) REFERENCES lines(id) DEFERRABLE INITIALLY DEFERRED",
+          "validated": true,
+          "target": "lines",
+          "deferrable": true,
+          "deferred": true
+        },
+        {
+          "name": "equipment_movements_performed_by_303d9396_fk_users_id",
+          "kind": "f",
+          "definition": "FOREIGN KEY (performed_by) REFERENCES users(id) DEFERRABLE INITIALLY DEFERRED",
+          "validated": true,
+          "target": "users",
+          "deferrable": true,
+          "deferred": true
+        },
+        {
+          "name": "equipment_movements_pkey",
+          "kind": "p",
+          "definition": "PRIMARY KEY (id)",
+          "validated": true,
+          "target": null,
+          "deferrable": false,
+          "deferred": false
+        },
+        {
+          "name": "equipment_movements_to_line_id_754441af_fk_lines_id",
+          "kind": "f",
+          "definition": "FOREIGN KEY (to_line_id) REFERENCES lines(id) DEFERRABLE INITIALLY DEFERRED",
+          "validated": true,
+          "target": "lines",
+          "deferrable": true,
+          "deferred": true
+        }
+      ],
+      "indexes": [
+        {
+          "name": "equipment_movements_equipment_id_1eeebee8",
+          "definition": "CREATE INDEX equipment_movements_equipment_id_1eeebee8 ON public.equipment_movements USING btree (equipment_id)"
+        },
+        {
+          "name": "equipment_movements_from_line_id_8a69cdd1",
+          "definition": "CREATE INDEX equipment_movements_from_line_id_8a69cdd1 ON public.equipment_movements USING btree (from_line_id)"
+        },
+        {
+          "name": "equipment_movements_performed_by_303d9396",
+          "definition": "CREATE INDEX equipment_movements_performed_by_303d9396 ON public.equipment_movements USING btree (performed_by)"
+        },
+        {
+          "name": "equipment_movements_pkey",
+          "definition": "CREATE UNIQUE INDEX equipment_movements_pkey ON public.equipment_movements USING btree (id)"
+        },
+        {
+          "name": "equipment_movements_to_line_id_754441af",
+          "definition": "CREATE INDEX equipment_movements_to_line_id_754441af ON public.equipment_movements USING btree (to_line_id)"
+        }
+      ]
+    },
+    {
+      "name": "equipment_preventives",
+      "rows": 0,
+      "bytes": 40960,
+      "module": "Manutenção preventiva",
+      "model": "EquipmentPreventive",
+      "purpose": "Agenda independente por equipamento e periodicidade, preservada quando desmarcada.",
+      "source": "maintenance/models.py:157",
+      "columns": [
+        {
+          "name": "id",
+          "type": "bigint",
+          "pg_type": "int8",
+          "nullable": false,
+          "default": null,
+          "identity": "YES",
+          "length": null,
+          "precision": 64,
+          "scale": 0,
+          "orm_field": "id",
+          "label": "ID",
+          "choices": []
+        },
+        {
+          "name": "frequency",
+          "type": "character varying",
+          "pg_type": "varchar",
+          "nullable": false,
+          "default": null,
+          "identity": "NO",
+          "length": 20,
+          "precision": null,
+          "scale": null,
+          "orm_field": "frequency",
+          "label": "frequency",
+          "choices": [
+            [
+              "QUINZENAL",
+              "Quinzenal"
+            ],
+            [
+              "MENSAL",
+              "Mensal"
+            ],
+            [
+              "BIMESTRAL",
+              "Bimestral"
+            ],
+            [
+              "TRIMESTRAL",
+              "Trimestral"
+            ],
+            [
+              "SEMESTRAL",
+              "Semestral"
+            ],
+            [
+              "ANUAL",
+              "Anual"
+            ]
+          ]
+        },
+        {
+          "name": "next_due",
+          "type": "date",
+          "pg_type": "date",
+          "nullable": false,
+          "default": null,
+          "identity": "NO",
+          "length": null,
+          "precision": null,
+          "scale": null,
+          "orm_field": "next_due",
+          "label": "next due",
+          "choices": []
+        },
+        {
+          "name": "last_performed",
+          "type": "date",
+          "pg_type": "date",
+          "nullable": true,
+          "default": null,
+          "identity": "NO",
+          "length": null,
+          "precision": null,
+          "scale": null,
+          "orm_field": "last_performed",
+          "label": "last performed",
+          "choices": []
+        },
+        {
+          "name": "active",
+          "type": "boolean",
+          "pg_type": "bool",
+          "nullable": false,
+          "default": null,
+          "identity": "NO",
+          "length": null,
+          "precision": null,
+          "scale": null,
+          "orm_field": "active",
+          "label": "active",
+          "choices": []
+        },
+        {
+          "name": "equipment_id",
+          "type": "bigint",
+          "pg_type": "int8",
+          "nullable": false,
+          "default": null,
+          "identity": "NO",
+          "length": null,
+          "precision": 64,
+          "scale": 0,
+          "orm_field": "equipment",
+          "label": "equipment",
+          "choices": [],
+          "orm_relation": {
+            "table": "equipment",
+            "column": "id",
+            "on_delete": "PROTECT",
+            "one_to_one": false
+          }
+        },
+        {
+          "name": "checklist_items",
+          "type": "jsonb",
+          "pg_type": "jsonb",
+          "nullable": true,
+          "default": null,
+          "identity": "NO",
+          "length": null,
+          "precision": null,
+          "scale": null,
+          "orm_field": "checklist_items",
+          "label": "checklist items",
+          "choices": []
+        }
+      ],
+      "constraints": [
+        {
+          "name": "equipment_preventives_equipment_id_683c5810_fk_equipment_id",
+          "kind": "f",
+          "definition": "FOREIGN KEY (equipment_id) REFERENCES equipment(id) DEFERRABLE INITIALLY DEFERRED",
+          "validated": true,
+          "target": "equipment",
+          "deferrable": true,
+          "deferred": true
+        },
+        {
+          "name": "equipment_preventives_pkey",
+          "kind": "p",
+          "definition": "PRIMARY KEY (id)",
+          "validated": true,
+          "target": null,
+          "deferrable": false,
+          "deferred": false
+        },
+        {
+          "name": "unique_equipment_preventive",
+          "kind": "u",
+          "definition": "UNIQUE (equipment_id, frequency)",
+          "validated": true,
+          "target": null,
+          "deferrable": false,
+          "deferred": false
+        }
+      ],
+      "indexes": [
+        {
+          "name": "equipment_preventives_equipment_id_683c5810",
+          "definition": "CREATE INDEX equipment_preventives_equipment_id_683c5810 ON public.equipment_preventives USING btree (equipment_id)"
+        },
+        {
+          "name": "equipment_preventives_next_due_37cfc00b",
+          "definition": "CREATE INDEX equipment_preventives_next_due_37cfc00b ON public.equipment_preventives USING btree (next_due)"
+        },
+        {
+          "name": "equipment_preventives_pkey",
+          "definition": "CREATE UNIQUE INDEX equipment_preventives_pkey ON public.equipment_preventives USING btree (id)"
+        },
+        {
+          "name": "unique_equipment_preventive",
+          "definition": "CREATE UNIQUE INDEX unique_equipment_preventive ON public.equipment_preventives USING btree (equipment_id, frequency)"
+        }
+      ]
+    },
+    {
+      "name": "equipment_types",
+      "rows": 12,
+      "bytes": 57344,
+      "module": "Estrutura industrial",
+      "model": "EquipmentType",
+      "purpose": "Catálogo de tipos de equipamento utilizado pelo cadastro Angular.",
+      "source": "maintenance/models.py:91",
+      "columns": [
+        {
+          "name": "id",
+          "type": "smallint",
+          "pg_type": "int2",
+          "nullable": false,
+          "default": null,
+          "identity": "NO",
+          "length": null,
+          "precision": 16,
+          "scale": 0,
+          "orm_field": "id",
+          "label": "id",
+          "choices": []
+        },
+        {
+          "name": "name",
+          "type": "character varying",
+          "pg_type": "varchar",
+          "nullable": false,
+          "default": null,
+          "identity": "NO",
+          "length": 100,
+          "precision": null,
+          "scale": null,
+          "orm_field": "name",
+          "label": "name",
+          "choices": []
+        }
+      ],
+      "constraints": [
+        {
+          "name": "equipment_types_name_key",
+          "kind": "u",
+          "definition": "UNIQUE (name)",
+          "validated": true,
+          "target": null,
+          "deferrable": false,
+          "deferred": false
+        },
+        {
+          "name": "equipment_types_pkey",
+          "kind": "p",
+          "definition": "PRIMARY KEY (id)",
+          "validated": true,
+          "target": null,
+          "deferrable": false,
+          "deferred": false
+        }
+      ],
+      "indexes": [
+        {
+          "name": "equipment_types_name_66996247_like",
+          "definition": "CREATE INDEX equipment_types_name_66996247_like ON public.equipment_types USING btree (name varchar_pattern_ops)"
+        },
+        {
+          "name": "equipment_types_name_key",
+          "definition": "CREATE UNIQUE INDEX equipment_types_name_key ON public.equipment_types USING btree (name)"
+        },
+        {
+          "name": "equipment_types_pkey",
+          "definition": "CREATE UNIQUE INDEX equipment_types_pkey ON public.equipment_types USING btree (id)"
+        }
+      ]
+    },
+    {
+      "name": "line_pendencies",
+      "rows": 0,
+      "bytes": 114688,
+      "module": "Manutenção corretiva",
+      "model": "LinePendency",
+      "purpose": "Ação pendente originada em uma OS, preservando sua linha e máquina de origem.",
+      "source": "maintenance/models.py:275",
+      "columns": [
+        {
+          "name": "id",
+          "type": "bigint",
+          "pg_type": "int8",
+          "nullable": false,
+          "default": null,
+          "identity": "YES",
+          "length": null,
+          "precision": 64,
+          "scale": 0,
+          "orm_field": "id",
+          "label": "ID",
+          "choices": []
+        },
+        {
+          "name": "equipment_serial",
+          "type": "character varying",
+          "pg_type": "varchar",
+          "nullable": true,
+          "default": null,
+          "identity": "NO",
+          "length": 160,
+          "precision": null,
+          "scale": null,
+          "orm_field": "equipment_serial",
+          "label": "equipment serial",
+          "choices": []
+        },
+        {
+          "name": "description",
+          "type": "text",
+          "pg_type": "text",
+          "nullable": false,
+          "default": null,
+          "identity": "NO",
+          "length": null,
+          "precision": null,
+          "scale": null,
+          "orm_field": "description",
+          "label": "description",
+          "choices": []
+        },
+        {
+          "name": "priority",
+          "type": "character varying",
+          "pg_type": "varchar",
+          "nullable": false,
+          "default": null,
+          "identity": "NO",
+          "length": 20,
+          "precision": null,
+          "scale": null,
+          "orm_field": "priority",
+          "label": "priority",
+          "choices": [
+            [
+              "BAIXA",
+              "Baixa"
+            ],
+            [
+              "MEDIA",
+              "Média"
+            ],
+            [
+              "ALTA",
+              "Alta"
+            ],
+            [
+              "CRITICA",
+              "Crítica"
+            ]
+          ]
+        },
+        {
+          "name": "status",
+          "type": "character varying",
+          "pg_type": "varchar",
+          "nullable": false,
+          "default": null,
+          "identity": "NO",
+          "length": 20,
+          "precision": null,
+          "scale": null,
+          "orm_field": "status",
+          "label": "status",
+          "choices": [
+            [
+              "PENDENTE",
+              "Pendente"
+            ],
+            [
+              "RESOLVIDA",
+              "Resolvida"
+            ]
+          ]
+        },
+        {
+          "name": "created_at",
+          "type": "timestamp with time zone",
+          "pg_type": "timestamptz",
+          "nullable": false,
+          "default": null,
+          "identity": "NO",
+          "length": null,
+          "precision": null,
+          "scale": null,
+          "orm_field": "created_at",
+          "label": "created at",
+          "choices": []
+        },
+        {
+          "name": "resolved_at",
+          "type": "timestamp with time zone",
+          "pg_type": "timestamptz",
+          "nullable": true,
+          "default": null,
+          "identity": "NO",
+          "length": null,
+          "precision": null,
+          "scale": null,
+          "orm_field": "resolved_at",
+          "label": "resolved at",
+          "choices": []
+        },
+        {
+          "name": "resolution",
+          "type": "text",
+          "pg_type": "text",
+          "nullable": false,
+          "default": null,
+          "identity": "NO",
+          "length": null,
+          "precision": null,
+          "scale": null,
+          "orm_field": "resolution",
+          "label": "resolution",
+          "choices": []
+        },
+        {
+          "name": "created_by_id",
+          "type": "bigint",
+          "pg_type": "int8",
+          "nullable": false,
+          "default": null,
+          "identity": "NO",
+          "length": null,
+          "precision": 64,
+          "scale": 0,
+          "orm_field": "created_by",
+          "label": "created by",
+          "choices": [],
+          "orm_relation": {
+            "table": "users",
+            "column": "id",
+            "on_delete": "PROTECT",
+            "one_to_one": false
+          }
+        },
+        {
+          "name": "equipment_id",
+          "type": "bigint",
+          "pg_type": "int8",
+          "nullable": false,
+          "default": null,
+          "identity": "NO",
+          "length": null,
+          "precision": 64,
+          "scale": 0,
+          "orm_field": "equipment",
+          "label": "equipment",
+          "choices": [],
+          "orm_relation": {
+            "table": "equipment",
+            "column": "id",
+            "on_delete": "PROTECT",
+            "one_to_one": false
+          }
+        },
+        {
+          "name": "line_id",
+          "type": "bigint",
+          "pg_type": "int8",
+          "nullable": false,
+          "default": null,
+          "identity": "NO",
+          "length": null,
+          "precision": 64,
+          "scale": 0,
+          "orm_field": "line",
+          "label": "line",
+          "choices": [],
+          "orm_relation": {
+            "table": "lines",
+            "column": "id",
+            "on_delete": "PROTECT",
+            "one_to_one": false
+          }
+        },
+        {
+          "name": "resolved_by_id",
+          "type": "bigint",
+          "pg_type": "int8",
+          "nullable": true,
+          "default": null,
+          "identity": "NO",
+          "length": null,
+          "precision": 64,
+          "scale": 0,
+          "orm_field": "resolved_by",
+          "label": "resolved by",
+          "choices": [],
+          "orm_relation": {
+            "table": "users",
+            "column": "id",
+            "on_delete": "PROTECT",
+            "one_to_one": false
+          }
+        },
+        {
+          "name": "work_order_id",
+          "type": "bigint",
+          "pg_type": "int8",
+          "nullable": false,
+          "default": null,
+          "identity": "NO",
+          "length": null,
+          "precision": 64,
+          "scale": 0,
+          "orm_field": "work_order",
+          "label": "work order",
+          "choices": [],
+          "orm_relation": {
+            "table": "work_orders",
+            "column": "id",
+            "on_delete": "PROTECT",
+            "one_to_one": false
+          }
+        }
+      ],
+      "constraints": [
+        {
+          "name": "line_pendencies_created_by_id_fcc8510a_fk_users_id",
+          "kind": "f",
+          "definition": "FOREIGN KEY (created_by_id) REFERENCES users(id) DEFERRABLE INITIALLY DEFERRED",
+          "validated": true,
+          "target": "users",
+          "deferrable": true,
+          "deferred": true
+        },
+        {
+          "name": "line_pendencies_equipment_id_5696c655_fk_equipment_id",
+          "kind": "f",
+          "definition": "FOREIGN KEY (equipment_id) REFERENCES equipment(id) DEFERRABLE INITIALLY DEFERRED",
+          "validated": true,
+          "target": "equipment",
+          "deferrable": true,
+          "deferred": true
+        },
+        {
+          "name": "line_pendencies_line_id_2e6f5bf0_fk_lines_id",
+          "kind": "f",
+          "definition": "FOREIGN KEY (line_id) REFERENCES lines(id) DEFERRABLE INITIALLY DEFERRED",
+          "validated": true,
+          "target": "lines",
+          "deferrable": true,
+          "deferred": true
+        },
+        {
+          "name": "line_pendencies_pkey",
+          "kind": "p",
+          "definition": "PRIMARY KEY (id)",
+          "validated": true,
+          "target": null,
+          "deferrable": false,
+          "deferred": false
+        },
+        {
+          "name": "line_pendencies_resolved_by_id_611c8985_fk_users_id",
+          "kind": "f",
+          "definition": "FOREIGN KEY (resolved_by_id) REFERENCES users(id) DEFERRABLE INITIALLY DEFERRED",
+          "validated": true,
+          "target": "users",
+          "deferrable": true,
+          "deferred": true
+        },
+        {
+          "name": "line_pendencies_work_order_id_be617bc2_fk_work_orders_id",
+          "kind": "f",
+          "definition": "FOREIGN KEY (work_order_id) REFERENCES work_orders(id) DEFERRABLE INITIALLY DEFERRED",
+          "validated": true,
+          "target": "work_orders",
+          "deferrable": true,
+          "deferred": true
+        }
+      ],
+      "indexes": [
+        {
+          "name": "line_pendencies_created_by_id_fcc8510a",
+          "definition": "CREATE INDEX line_pendencies_created_by_id_fcc8510a ON public.line_pendencies USING btree (created_by_id)"
+        },
+        {
+          "name": "line_pendencies_equipment_id_5696c655",
+          "definition": "CREATE INDEX line_pendencies_equipment_id_5696c655 ON public.line_pendencies USING btree (equipment_id)"
+        },
+        {
+          "name": "line_pendencies_line_id_2e6f5bf0",
+          "definition": "CREATE INDEX line_pendencies_line_id_2e6f5bf0 ON public.line_pendencies USING btree (line_id)"
+        },
+        {
+          "name": "line_pendencies_pkey",
+          "definition": "CREATE UNIQUE INDEX line_pendencies_pkey ON public.line_pendencies USING btree (id)"
+        },
+        {
+          "name": "line_pendencies_resolved_by_id_611c8985",
+          "definition": "CREATE INDEX line_pendencies_resolved_by_id_611c8985 ON public.line_pendencies USING btree (resolved_by_id)"
+        },
+        {
+          "name": "line_pendencies_work_order_id_be617bc2",
+          "definition": "CREATE INDEX line_pendencies_work_order_id_be617bc2 ON public.line_pendencies USING btree (work_order_id)"
+        }
+      ]
+    },
+    {
+      "name": "lines",
+      "rows": 1,
+      "bytes": 81920,
+      "module": "Estrutura industrial",
+      "model": "Line",
+      "purpose": "Representa a linha SMT vinculada a um setor; sua composição vem dos equipamentos alocados.",
+      "source": "maintenance/models.py:28",
+      "columns": [
+        {
+          "name": "id",
+          "type": "bigint",
+          "pg_type": "int8",
+          "nullable": false,
+          "default": null,
+          "identity": "YES",
+          "length": null,
+          "precision": 64,
+          "scale": 0,
+          "orm_field": "id",
+          "label": "ID",
+          "choices": []
+        },
+        {
+          "name": "code",
+          "type": "character varying",
+          "pg_type": "varchar",
+          "nullable": false,
+          "default": null,
+          "identity": "NO",
+          "length": 40,
+          "precision": null,
+          "scale": null,
+          "orm_field": "code",
+          "label": "code",
+          "choices": []
+        },
+        {
+          "name": "name",
+          "type": "character varying",
+          "pg_type": "varchar",
+          "nullable": false,
+          "default": null,
+          "identity": "NO",
+          "length": 120,
+          "precision": null,
+          "scale": null,
+          "orm_field": "name",
+          "label": "Nome",
+          "choices": []
+        },
+        {
+          "name": "description",
+          "type": "text",
+          "pg_type": "text",
+          "nullable": true,
+          "default": null,
+          "identity": "NO",
+          "length": null,
+          "precision": null,
+          "scale": null,
+          "orm_field": "description",
+          "label": "Descrição",
+          "choices": []
+        },
+        {
+          "name": "active",
+          "type": "boolean",
+          "pg_type": "bool",
+          "nullable": false,
+          "default": null,
+          "identity": "NO",
+          "length": null,
+          "precision": null,
+          "scale": null,
+          "orm_field": "active",
+          "label": "active",
+          "choices": []
+        },
+        {
+          "name": "created_at",
+          "type": "timestamp with time zone",
+          "pg_type": "timestamptz",
+          "nullable": false,
+          "default": null,
+          "identity": "NO",
+          "length": null,
+          "precision": null,
+          "scale": null,
+          "orm_field": "created_at",
+          "label": "created at",
+          "choices": []
+        },
+        {
+          "name": "sector_id",
+          "type": "bigint",
+          "pg_type": "int8",
+          "nullable": true,
+          "default": null,
+          "identity": "NO",
+          "length": null,
+          "precision": 64,
+          "scale": 0,
+          "orm_field": "sector",
+          "label": "Setor",
+          "choices": [],
+          "orm_relation": {
+            "table": "sectors",
+            "column": "id",
+            "on_delete": "PROTECT",
+            "one_to_one": false
+          }
+        }
+      ],
+      "constraints": [
+        {
+          "name": "lines_code_key",
+          "kind": "u",
+          "definition": "UNIQUE (code)",
+          "validated": true,
+          "target": null,
+          "deferrable": false,
+          "deferred": false
+        },
+        {
+          "name": "lines_pkey",
+          "kind": "p",
+          "definition": "PRIMARY KEY (id)",
+          "validated": true,
+          "target": null,
+          "deferrable": false,
+          "deferred": false
+        },
+        {
+          "name": "lines_sector_id_5e586a1f_fk_sectors_id",
+          "kind": "f",
+          "definition": "FOREIGN KEY (sector_id) REFERENCES sectors(id) DEFERRABLE INITIALLY DEFERRED",
+          "validated": true,
+          "target": "sectors",
+          "deferrable": true,
+          "deferred": true
+        }
+      ],
+      "indexes": [
+        {
+          "name": "lines_code_bac3c228_like",
+          "definition": "CREATE INDEX lines_code_bac3c228_like ON public.lines USING btree (code varchar_pattern_ops)"
+        },
+        {
+          "name": "lines_code_key",
+          "definition": "CREATE UNIQUE INDEX lines_code_key ON public.lines USING btree (code)"
+        },
+        {
+          "name": "lines_pkey",
+          "definition": "CREATE UNIQUE INDEX lines_pkey ON public.lines USING btree (id)"
+        },
+        {
+          "name": "lines_sector_id_5e586a1f",
+          "definition": "CREATE INDEX lines_sector_id_5e586a1f ON public.lines USING btree (sector_id)"
+        }
+      ]
+    },
+    {
+      "name": "maintenance_part_requisitions",
+      "rows": 0,
+      "bytes": 49152,
+      "module": "Manutenção corretiva",
+      "model": "PartRequisition",
+      "purpose": "Solicitação direta de peça para manutenção, independente do processo de compra.",
+      "source": "maintenance/models.py:393",
+      "columns": [
+        {
+          "name": "id",
+          "type": "bigint",
+          "pg_type": "int8",
+          "nullable": false,
+          "default": null,
+          "identity": "YES",
+          "length": null,
+          "precision": 64,
+          "scale": 0,
+          "orm_field": "id",
+          "label": "ID",
+          "choices": []
+        },
+        {
+          "name": "equipment_serial",
+          "type": "character varying",
+          "pg_type": "varchar",
+          "nullable": true,
+          "default": null,
+          "identity": "NO",
+          "length": 160,
+          "precision": null,
+          "scale": null,
+          "orm_field": "equipment_serial",
+          "label": "equipment serial",
+          "choices": []
+        },
+        {
+          "name": "quantity",
+          "type": "numeric",
+          "pg_type": "numeric",
+          "nullable": false,
+          "default": null,
+          "identity": "NO",
+          "length": null,
+          "precision": 14,
+          "scale": 3,
+          "orm_field": "quantity",
+          "label": "quantity",
+          "choices": []
+        },
+        {
+          "name": "note",
+          "type": "text",
+          "pg_type": "text",
+          "nullable": false,
+          "default": null,
+          "identity": "NO",
+          "length": null,
+          "precision": null,
+          "scale": null,
+          "orm_field": "note",
+          "label": "note",
+          "choices": []
+        },
+        {
+          "name": "created_at",
+          "type": "timestamp with time zone",
+          "pg_type": "timestamptz",
+          "nullable": false,
+          "default": null,
+          "identity": "NO",
+          "length": null,
+          "precision": null,
+          "scale": null,
+          "orm_field": "created_at",
+          "label": "created at",
+          "choices": []
+        },
+        {
+          "name": "equipment_id",
+          "type": "bigint",
+          "pg_type": "int8",
+          "nullable": false,
+          "default": null,
+          "identity": "NO",
+          "length": null,
+          "precision": 64,
+          "scale": 0,
+          "orm_field": "equipment",
+          "label": "equipment",
+          "choices": [],
+          "orm_relation": {
+            "table": "equipment",
+            "column": "id",
+            "on_delete": "PROTECT",
+            "one_to_one": false
+          }
+        },
+        {
+          "name": "requester_id",
+          "type": "bigint",
+          "pg_type": "int8",
+          "nullable": false,
+          "default": null,
+          "identity": "NO",
+          "length": null,
+          "precision": 64,
+          "scale": 0,
+          "orm_field": "requester",
+          "label": "requester",
+          "choices": [],
+          "orm_relation": {
+            "table": "users",
+            "column": "id",
+            "on_delete": "PROTECT",
+            "one_to_one": false
+          }
+        },
+        {
+          "name": "spare_part_id",
+          "type": "bigint",
+          "pg_type": "int8",
+          "nullable": false,
+          "default": null,
+          "identity": "NO",
+          "length": null,
+          "precision": 64,
+          "scale": 0,
+          "orm_field": "spare_part",
+          "label": "spare part",
+          "choices": [],
+          "orm_relation": {
+            "table": "spare_parts",
+            "column": "id",
+            "on_delete": "PROTECT",
+            "one_to_one": false
+          }
+        },
+        {
+          "name": "work_order_id",
+          "type": "bigint",
+          "pg_type": "int8",
+          "nullable": false,
+          "default": null,
+          "identity": "NO",
+          "length": null,
+          "precision": 64,
+          "scale": 0,
+          "orm_field": "work_order",
+          "label": "work order",
+          "choices": [],
+          "orm_relation": {
+            "table": "work_orders",
+            "column": "id",
+            "on_delete": "PROTECT",
+            "one_to_one": false
+          }
+        }
+      ],
+      "constraints": [
+        {
+          "name": "maintenance_part_req_equipment_id_0d833d48_fk_equipment",
+          "kind": "f",
+          "definition": "FOREIGN KEY (equipment_id) REFERENCES equipment(id) DEFERRABLE INITIALLY DEFERRED",
+          "validated": true,
+          "target": "equipment",
+          "deferrable": true,
+          "deferred": true
+        },
+        {
+          "name": "maintenance_part_req_spare_part_id_b1ed5695_fk_spare_par",
+          "kind": "f",
+          "definition": "FOREIGN KEY (spare_part_id) REFERENCES spare_parts(id) DEFERRABLE INITIALLY DEFERRED",
+          "validated": true,
+          "target": "spare_parts",
+          "deferrable": true,
+          "deferred": true
+        },
+        {
+          "name": "maintenance_part_req_work_order_id_fdb2337a_fk_work_orde",
+          "kind": "f",
+          "definition": "FOREIGN KEY (work_order_id) REFERENCES work_orders(id) DEFERRABLE INITIALLY DEFERRED",
+          "validated": true,
+          "target": "work_orders",
+          "deferrable": true,
+          "deferred": true
+        },
+        {
+          "name": "maintenance_part_requisitions_pkey",
+          "kind": "p",
+          "definition": "PRIMARY KEY (id)",
+          "validated": true,
+          "target": null,
+          "deferrable": false,
+          "deferred": false
+        },
+        {
+          "name": "maintenance_part_requisitions_requester_id_bc67dce6_fk_users_id",
+          "kind": "f",
+          "definition": "FOREIGN KEY (requester_id) REFERENCES users(id) DEFERRABLE INITIALLY DEFERRED",
+          "validated": true,
+          "target": "users",
+          "deferrable": true,
+          "deferred": true
+        }
+      ],
+      "indexes": [
+        {
+          "name": "maintenance_part_requisitions_equipment_id_0d833d48",
+          "definition": "CREATE INDEX maintenance_part_requisitions_equipment_id_0d833d48 ON public.maintenance_part_requisitions USING btree (equipment_id)"
+        },
+        {
+          "name": "maintenance_part_requisitions_pkey",
+          "definition": "CREATE UNIQUE INDEX maintenance_part_requisitions_pkey ON public.maintenance_part_requisitions USING btree (id)"
+        },
+        {
+          "name": "maintenance_part_requisitions_requester_id_bc67dce6",
+          "definition": "CREATE INDEX maintenance_part_requisitions_requester_id_bc67dce6 ON public.maintenance_part_requisitions USING btree (requester_id)"
+        },
+        {
+          "name": "maintenance_part_requisitions_spare_part_id_b1ed5695",
+          "definition": "CREATE INDEX maintenance_part_requisitions_spare_part_id_b1ed5695 ON public.maintenance_part_requisitions USING btree (spare_part_id)"
+        },
+        {
+          "name": "maintenance_part_requisitions_work_order_id_fdb2337a",
+          "definition": "CREATE INDEX maintenance_part_requisitions_work_order_id_fdb2337a ON public.maintenance_part_requisitions USING btree (work_order_id)"
+        }
+      ]
+    },
+    {
+      "name": "preventive_checklists",
+      "rows": 0,
+      "bytes": 32768,
+      "module": "Manutenção preventiva",
+      "model": "PreventiveChecklist",
+      "purpose": "Itens aprovados pela equipe para cada tipo de máquina e periodicidade.",
+      "source": "maintenance/models.py:106",
+      "columns": [
+        {
+          "name": "id",
+          "type": "bigint",
+          "pg_type": "int8",
+          "nullable": false,
+          "default": null,
+          "identity": "YES",
+          "length": null,
+          "precision": 64,
+          "scale": 0,
+          "orm_field": "id",
+          "label": "ID",
+          "choices": []
+        },
+        {
+          "name": "frequency",
+          "type": "character varying",
+          "pg_type": "varchar",
+          "nullable": false,
+          "default": null,
+          "identity": "NO",
+          "length": 20,
+          "precision": null,
+          "scale": null,
+          "orm_field": "frequency",
+          "label": "frequency",
+          "choices": [
+            [
+              "QUINZENAL",
+              "Quinzenal"
+            ],
+            [
+              "MENSAL",
+              "Mensal"
+            ],
+            [
+              "BIMESTRAL",
+              "Bimestral"
+            ],
+            [
+              "TRIMESTRAL",
+              "Trimestral"
+            ],
+            [
+              "SEMESTRAL",
+              "Semestral"
+            ],
+            [
+              "ANUAL",
+              "Anual"
+            ]
+          ]
+        },
+        {
+          "name": "items",
+          "type": "jsonb",
+          "pg_type": "jsonb",
+          "nullable": false,
+          "default": null,
+          "identity": "NO",
+          "length": null,
+          "precision": null,
+          "scale": null,
+          "orm_field": "items",
+          "label": "items",
+          "choices": []
+        },
+        {
+          "name": "equipment_type_id",
+          "type": "smallint",
+          "pg_type": "int2",
+          "nullable": false,
+          "default": null,
+          "identity": "NO",
+          "length": null,
+          "precision": 16,
+          "scale": 0,
+          "orm_field": "equipment_type",
+          "label": "equipment type",
+          "choices": [],
+          "orm_relation": {
+            "table": "equipment_types",
+            "column": "id",
+            "on_delete": "PROTECT",
+            "one_to_one": false
+          }
+        }
+      ],
+      "constraints": [
+        {
+          "name": "preventive_checklist_equipment_type_id_47bbcd6e_fk_equipment",
+          "kind": "f",
+          "definition": "FOREIGN KEY (equipment_type_id) REFERENCES equipment_types(id) DEFERRABLE INITIALLY DEFERRED",
+          "validated": true,
+          "target": "equipment_types",
+          "deferrable": true,
+          "deferred": true
+        },
+        {
+          "name": "preventive_checklists_pkey",
+          "kind": "p",
+          "definition": "PRIMARY KEY (id)",
+          "validated": true,
+          "target": null,
+          "deferrable": false,
+          "deferred": false
+        },
+        {
+          "name": "unique_preventive_type_frequency",
+          "kind": "u",
+          "definition": "UNIQUE (equipment_type_id, frequency)",
+          "validated": true,
+          "target": null,
+          "deferrable": false,
+          "deferred": false
+        }
+      ],
+      "indexes": [
+        {
+          "name": "preventive_checklists_equipment_type_id_47bbcd6e",
+          "definition": "CREATE INDEX preventive_checklists_equipment_type_id_47bbcd6e ON public.preventive_checklists USING btree (equipment_type_id)"
+        },
+        {
+          "name": "preventive_checklists_pkey",
+          "definition": "CREATE UNIQUE INDEX preventive_checklists_pkey ON public.preventive_checklists USING btree (id)"
+        },
+        {
+          "name": "unique_preventive_type_frequency",
+          "definition": "CREATE UNIQUE INDEX unique_preventive_type_frequency ON public.preventive_checklists USING btree (equipment_type_id, frequency)"
+        }
+      ]
+    },
+    {
+      "name": "preventive_executions",
+      "rows": 0,
+      "bytes": 40960,
+      "module": "Manutenção preventiva",
+      "model": "PreventiveExecution",
+      "purpose": "Histórico da execução e do vencimento substituído; imprimir não registra execução.",
+      "source": "maintenance/models.py:173",
+      "columns": [
+        {
+          "name": "id",
+          "type": "bigint",
+          "pg_type": "int8",
+          "nullable": false,
+          "default": null,
+          "identity": "YES",
+          "length": null,
+          "precision": 64,
+          "scale": 0,
+          "orm_field": "id",
+          "label": "ID",
+          "choices": []
+        },
+        {
+          "name": "performed_date",
+          "type": "date",
+          "pg_type": "date",
+          "nullable": false,
+          "default": null,
+          "identity": "NO",
+          "length": null,
+          "precision": null,
+          "scale": null,
+          "orm_field": "performed_date",
+          "label": "performed date",
+          "choices": []
+        },
+        {
+          "name": "previous_due",
+          "type": "date",
+          "pg_type": "date",
+          "nullable": false,
+          "default": null,
+          "identity": "NO",
+          "length": null,
+          "precision": null,
+          "scale": null,
+          "orm_field": "previous_due",
+          "label": "previous due",
+          "choices": []
+        },
+        {
+          "name": "next_due",
+          "type": "date",
+          "pg_type": "date",
+          "nullable": false,
+          "default": null,
+          "identity": "NO",
+          "length": null,
+          "precision": null,
+          "scale": null,
+          "orm_field": "next_due",
+          "label": "next due",
+          "choices": []
+        },
+        {
+          "name": "notes",
+          "type": "text",
+          "pg_type": "text",
+          "nullable": false,
+          "default": null,
+          "identity": "NO",
+          "length": null,
+          "precision": null,
+          "scale": null,
+          "orm_field": "notes",
+          "label": "notes",
+          "choices": []
+        },
+        {
+          "name": "created_at",
+          "type": "timestamp with time zone",
+          "pg_type": "timestamptz",
+          "nullable": false,
+          "default": null,
+          "identity": "NO",
+          "length": null,
+          "precision": null,
+          "scale": null,
+          "orm_field": "created_at",
+          "label": "created at",
+          "choices": []
+        },
+        {
+          "name": "schedule_id",
+          "type": "bigint",
+          "pg_type": "int8",
+          "nullable": false,
+          "default": null,
+          "identity": "NO",
+          "length": null,
+          "precision": 64,
+          "scale": 0,
+          "orm_field": "schedule",
+          "label": "schedule",
+          "choices": [],
+          "orm_relation": {
+            "table": "equipment_preventives",
+            "column": "id",
+            "on_delete": "PROTECT",
+            "one_to_one": false
+          }
+        },
+        {
+          "name": "technician_id",
+          "type": "bigint",
+          "pg_type": "int8",
+          "nullable": false,
+          "default": null,
+          "identity": "NO",
+          "length": null,
+          "precision": 64,
+          "scale": 0,
+          "orm_field": "technician",
+          "label": "technician",
+          "choices": [],
+          "orm_relation": {
+            "table": "users",
+            "column": "id",
+            "on_delete": "PROTECT",
+            "one_to_one": false
+          }
+        },
+        {
+          "name": "order_id",
+          "type": "bigint",
+          "pg_type": "int8",
+          "nullable": true,
+          "default": null,
+          "identity": "NO",
+          "length": null,
+          "precision": 64,
+          "scale": 0,
+          "orm_field": "order",
+          "label": "order",
+          "choices": [],
+          "orm_relation": {
+            "table": "preventive_orders",
+            "column": "id",
+            "on_delete": "PROTECT",
+            "one_to_one": true
+          }
+        }
+      ],
+      "constraints": [
+        {
+          "name": "preventive_execution_schedule_id_59fbb7be_fk_equipment",
+          "kind": "f",
+          "definition": "FOREIGN KEY (schedule_id) REFERENCES equipment_preventives(id) DEFERRABLE INITIALLY DEFERRED",
+          "validated": true,
+          "target": "equipment_preventives",
+          "deferrable": true,
+          "deferred": true
+        },
+        {
+          "name": "preventive_executions_order_id_85e42976_fk_preventive_orders_id",
+          "kind": "f",
+          "definition": "FOREIGN KEY (order_id) REFERENCES preventive_orders(id) DEFERRABLE INITIALLY DEFERRED",
+          "validated": true,
+          "target": "preventive_orders",
+          "deferrable": true,
+          "deferred": true
+        },
+        {
+          "name": "preventive_executions_order_id_key",
+          "kind": "u",
+          "definition": "UNIQUE (order_id)",
+          "validated": true,
+          "target": null,
+          "deferrable": false,
+          "deferred": false
+        },
+        {
+          "name": "preventive_executions_pkey",
+          "kind": "p",
+          "definition": "PRIMARY KEY (id)",
+          "validated": true,
+          "target": null,
+          "deferrable": false,
+          "deferred": false
+        },
+        {
+          "name": "preventive_executions_technician_id_84bee232_fk_users_id",
+          "kind": "f",
+          "definition": "FOREIGN KEY (technician_id) REFERENCES users(id) DEFERRABLE INITIALLY DEFERRED",
+          "validated": true,
+          "target": "users",
+          "deferrable": true,
+          "deferred": true
+        }
+      ],
+      "indexes": [
+        {
+          "name": "preventive_executions_order_id_key",
+          "definition": "CREATE UNIQUE INDEX preventive_executions_order_id_key ON public.preventive_executions USING btree (order_id)"
+        },
+        {
+          "name": "preventive_executions_pkey",
+          "definition": "CREATE UNIQUE INDEX preventive_executions_pkey ON public.preventive_executions USING btree (id)"
+        },
+        {
+          "name": "preventive_executions_schedule_id_59fbb7be",
+          "definition": "CREATE INDEX preventive_executions_schedule_id_59fbb7be ON public.preventive_executions USING btree (schedule_id)"
+        },
+        {
+          "name": "preventive_executions_technician_id_84bee232",
+          "definition": "CREATE INDEX preventive_executions_technician_id_84bee232 ON public.preventive_executions USING btree (technician_id)"
+        }
+      ]
+    },
+    {
+      "name": "preventive_orders",
+      "rows": 0,
+      "bytes": 57344,
+      "module": "Manutenção preventiva",
+      "model": "PreventiveOrder",
+      "purpose": "OS preventiva independente da corretiva, com roteiro e identificação congelados na emissão.",
+      "source": "maintenance/models.py:190",
+      "columns": [
+        {
+          "name": "id",
+          "type": "bigint",
+          "pg_type": "int8",
+          "nullable": false,
+          "default": null,
+          "identity": "YES",
+          "length": null,
+          "precision": 64,
+          "scale": 0,
+          "orm_field": "id",
+          "label": "ID",
+          "choices": []
+        },
+        {
+          "name": "status",
+          "type": "character varying",
+          "pg_type": "varchar",
+          "nullable": false,
+          "default": null,
+          "identity": "NO",
+          "length": 20,
+          "precision": null,
+          "scale": null,
+          "orm_field": "status",
+          "label": "status",
+          "choices": [
+            [
+              "ABERTA",
+              "Aberta"
+            ],
+            [
+              "CONCLUIDA",
+              "Concluída"
+            ],
+            [
+              "CANCELADA",
+              "Cancelada"
+            ]
+          ]
+        },
+        {
+          "name": "expected_due",
+          "type": "date",
+          "pg_type": "date",
+          "nullable": false,
+          "default": null,
+          "identity": "NO",
+          "length": null,
+          "precision": null,
+          "scale": null,
+          "orm_field": "expected_due",
+          "label": "expected due",
+          "choices": []
+        },
+        {
+          "name": "planned_date",
+          "type": "date",
+          "pg_type": "date",
+          "nullable": false,
+          "default": null,
+          "identity": "NO",
+          "length": null,
+          "precision": null,
+          "scale": null,
+          "orm_field": "planned_date",
+          "label": "planned date",
+          "choices": []
+        },
+        {
+          "name": "planned_time",
+          "type": "time without time zone",
+          "pg_type": "time",
+          "nullable": true,
+          "default": null,
+          "identity": "NO",
+          "length": null,
+          "precision": null,
+          "scale": null,
+          "orm_field": "planned_time",
+          "label": "planned time",
+          "choices": []
+        },
+        {
+          "name": "recurrence_basis",
+          "type": "character varying",
+          "pg_type": "varchar",
+          "nullable": false,
+          "default": null,
+          "identity": "NO",
+          "length": 20,
+          "precision": null,
+          "scale": null,
+          "orm_field": "recurrence_basis",
+          "label": "recurrence basis",
+          "choices": [
+            [
+              "PLANEJADA",
+              "Calendário planejado"
+            ],
+            [
+              "EXECUCAO",
+              "Data executada"
+            ]
+          ]
+        },
+        {
+          "name": "frequency",
+          "type": "character varying",
+          "pg_type": "varchar",
+          "nullable": false,
+          "default": null,
+          "identity": "NO",
+          "length": 20,
+          "precision": null,
+          "scale": null,
+          "orm_field": "frequency",
+          "label": "frequency",
+          "choices": [
+            [
+              "QUINZENAL",
+              "Quinzenal"
+            ],
+            [
+              "MENSAL",
+              "Mensal"
+            ],
+            [
+              "BIMESTRAL",
+              "Bimestral"
+            ],
+            [
+              "TRIMESTRAL",
+              "Trimestral"
+            ],
+            [
+              "SEMESTRAL",
+              "Semestral"
+            ],
+            [
+              "ANUAL",
+              "Anual"
+            ]
+          ]
+        },
+        {
+          "name": "equipment_snapshot",
+          "type": "jsonb",
+          "pg_type": "jsonb",
+          "nullable": false,
+          "default": null,
+          "identity": "NO",
+          "length": null,
+          "precision": null,
+          "scale": null,
+          "orm_field": "equipment_snapshot",
+          "label": "equipment snapshot",
+          "choices": []
+        },
+        {
+          "name": "items",
+          "type": "jsonb",
+          "pg_type": "jsonb",
+          "nullable": false,
+          "default": null,
+          "identity": "NO",
+          "length": null,
+          "precision": null,
+          "scale": null,
+          "orm_field": "items",
+          "label": "items",
+          "choices": []
+        },
+        {
+          "name": "results",
+          "type": "jsonb",
+          "pg_type": "jsonb",
+          "nullable": false,
+          "default": null,
+          "identity": "NO",
+          "length": null,
+          "precision": null,
+          "scale": null,
+          "orm_field": "results",
+          "label": "results",
+          "choices": []
+        },
+        {
+          "name": "safety_instructions",
+          "type": "text",
+          "pg_type": "text",
+          "nullable": false,
+          "default": null,
+          "identity": "NO",
+          "length": null,
+          "precision": null,
+          "scale": null,
+          "orm_field": "safety_instructions",
+          "label": "safety instructions",
+          "choices": []
+        },
+        {
+          "name": "parts",
+          "type": "jsonb",
+          "pg_type": "jsonb",
+          "nullable": false,
+          "default": null,
+          "identity": "NO",
+          "length": null,
+          "precision": null,
+          "scale": null,
+          "orm_field": "parts",
+          "label": "parts",
+          "choices": []
+        },
+        {
+          "name": "notes",
+          "type": "text",
+          "pg_type": "text",
+          "nullable": false,
+          "default": null,
+          "identity": "NO",
+          "length": null,
+          "precision": null,
+          "scale": null,
+          "orm_field": "notes",
+          "label": "notes",
+          "choices": []
+        },
+        {
+          "name": "performed_date",
+          "type": "date",
+          "pg_type": "date",
+          "nullable": true,
+          "default": null,
+          "identity": "NO",
+          "length": null,
+          "precision": null,
+          "scale": null,
+          "orm_field": "performed_date",
+          "label": "performed date",
+          "choices": []
+        },
+        {
+          "name": "performed_time",
+          "type": "time without time zone",
+          "pg_type": "time",
+          "nullable": true,
+          "default": null,
+          "identity": "NO",
+          "length": null,
+          "precision": null,
+          "scale": null,
+          "orm_field": "performed_time",
+          "label": "performed time",
+          "choices": []
+        },
+        {
+          "name": "assigned_name",
+          "type": "character varying",
+          "pg_type": "varchar",
+          "nullable": false,
+          "default": null,
+          "identity": "NO",
+          "length": 160,
+          "precision": null,
+          "scale": null,
+          "orm_field": "assigned_name",
+          "label": "assigned name",
+          "choices": []
+        },
+        {
+          "name": "created_at",
+          "type": "timestamp with time zone",
+          "pg_type": "timestamptz",
+          "nullable": false,
+          "default": null,
+          "identity": "NO",
+          "length": null,
+          "precision": null,
+          "scale": null,
+          "orm_field": "created_at",
+          "label": "created at",
+          "choices": []
+        },
+        {
+          "name": "executor_name",
+          "type": "character varying",
+          "pg_type": "varchar",
+          "nullable": false,
+          "default": null,
+          "identity": "NO",
+          "length": 160,
+          "precision": null,
+          "scale": null,
+          "orm_field": "executor_name",
+          "label": "executor name",
+          "choices": []
+        },
+        {
+          "name": "finished_at",
+          "type": "timestamp with time zone",
+          "pg_type": "timestamptz",
+          "nullable": true,
+          "default": null,
+          "identity": "NO",
+          "length": null,
+          "precision": null,
+          "scale": null,
+          "orm_field": "finished_at",
+          "label": "finished at",
+          "choices": []
+        },
+        {
+          "name": "cancellation_reason",
+          "type": "text",
+          "pg_type": "text",
+          "nullable": false,
+          "default": null,
+          "identity": "NO",
+          "length": null,
+          "precision": null,
+          "scale": null,
+          "orm_field": "cancellation_reason",
+          "label": "cancellation reason",
+          "choices": []
+        },
+        {
+          "name": "revision",
+          "type": "integer",
+          "pg_type": "int4",
+          "nullable": false,
+          "default": null,
+          "identity": "NO",
+          "length": null,
+          "precision": 32,
+          "scale": 0,
+          "orm_field": "revision",
+          "label": "revision",
+          "choices": []
+        },
+        {
+          "name": "assigned_to_id",
+          "type": "bigint",
+          "pg_type": "int8",
+          "nullable": true,
+          "default": null,
+          "identity": "NO",
+          "length": null,
+          "precision": 64,
+          "scale": 0,
+          "orm_field": "assigned_to",
+          "label": "assigned to",
+          "choices": [],
+          "orm_relation": {
+            "table": "users",
+            "column": "id",
+            "on_delete": "PROTECT",
+            "one_to_one": false
+          }
+        },
+        {
+          "name": "created_by_id",
+          "type": "bigint",
+          "pg_type": "int8",
+          "nullable": false,
+          "default": null,
+          "identity": "NO",
+          "length": null,
+          "precision": 64,
+          "scale": 0,
+          "orm_field": "created_by",
+          "label": "created by",
+          "choices": [],
+          "orm_relation": {
+            "table": "users",
+            "column": "id",
+            "on_delete": "PROTECT",
+            "one_to_one": false
+          }
+        },
+        {
+          "name": "finished_by_id",
+          "type": "bigint",
+          "pg_type": "int8",
+          "nullable": true,
+          "default": null,
+          "identity": "NO",
+          "length": null,
+          "precision": 64,
+          "scale": 0,
+          "orm_field": "finished_by",
+          "label": "finished by",
+          "choices": [],
+          "orm_relation": {
+            "table": "users",
+            "column": "id",
+            "on_delete": "PROTECT",
+            "one_to_one": false
+          }
+        },
+        {
+          "name": "schedule_id",
+          "type": "bigint",
+          "pg_type": "int8",
+          "nullable": false,
+          "default": null,
+          "identity": "NO",
+          "length": null,
+          "precision": 64,
+          "scale": 0,
+          "orm_field": "schedule",
+          "label": "schedule",
+          "choices": [],
+          "orm_relation": {
+            "table": "equipment_preventives",
+            "column": "id",
+            "on_delete": "PROTECT",
+            "one_to_one": false
+          }
+        }
+      ],
+      "constraints": [
+        {
+          "name": "preventive_orders_assigned_to_id_49125343_fk_users_id",
+          "kind": "f",
+          "definition": "FOREIGN KEY (assigned_to_id) REFERENCES users(id) DEFERRABLE INITIALLY DEFERRED",
+          "validated": true,
+          "target": "users",
+          "deferrable": true,
+          "deferred": true
+        },
+        {
+          "name": "preventive_orders_created_by_id_ddd0f19b_fk_users_id",
+          "kind": "f",
+          "definition": "FOREIGN KEY (created_by_id) REFERENCES users(id) DEFERRABLE INITIALLY DEFERRED",
+          "validated": true,
+          "target": "users",
+          "deferrable": true,
+          "deferred": true
+        },
+        {
+          "name": "preventive_orders_finished_by_id_540075ee_fk_users_id",
+          "kind": "f",
+          "definition": "FOREIGN KEY (finished_by_id) REFERENCES users(id) DEFERRABLE INITIALLY DEFERRED",
+          "validated": true,
+          "target": "users",
+          "deferrable": true,
+          "deferred": true
+        },
+        {
+          "name": "preventive_orders_pkey",
+          "kind": "p",
+          "definition": "PRIMARY KEY (id)",
+          "validated": true,
+          "target": null,
+          "deferrable": false,
+          "deferred": false
+        },
+        {
+          "name": "preventive_orders_revision_check",
+          "kind": "c",
+          "definition": "CHECK ((revision >= 0))",
+          "validated": true,
+          "target": null,
+          "deferrable": false,
+          "deferred": false
+        },
+        {
+          "name": "preventive_orders_schedule_id_7044e27c_fk_equipment",
+          "kind": "f",
+          "definition": "FOREIGN KEY (schedule_id) REFERENCES equipment_preventives(id) DEFERRABLE INITIALLY DEFERRED",
+          "validated": true,
+          "target": "equipment_preventives",
+          "deferrable": true,
+          "deferred": true
+        }
+      ],
+      "indexes": [
+        {
+          "name": "one_open_preventive_order",
+          "definition": "CREATE UNIQUE INDEX one_open_preventive_order ON public.preventive_orders USING btree (schedule_id) WHERE ((status)::text = 'ABERTA'::text)"
+        },
+        {
+          "name": "preventive_orders_assigned_to_id_49125343",
+          "definition": "CREATE INDEX preventive_orders_assigned_to_id_49125343 ON public.preventive_orders USING btree (assigned_to_id)"
+        },
+        {
+          "name": "preventive_orders_created_by_id_ddd0f19b",
+          "definition": "CREATE INDEX preventive_orders_created_by_id_ddd0f19b ON public.preventive_orders USING btree (created_by_id)"
+        },
+        {
+          "name": "preventive_orders_finished_by_id_540075ee",
+          "definition": "CREATE INDEX preventive_orders_finished_by_id_540075ee ON public.preventive_orders USING btree (finished_by_id)"
+        },
+        {
+          "name": "preventive_orders_pkey",
+          "definition": "CREATE UNIQUE INDEX preventive_orders_pkey ON public.preventive_orders USING btree (id)"
+        },
+        {
+          "name": "preventive_orders_schedule_id_7044e27c",
+          "definition": "CREATE INDEX preventive_orders_schedule_id_7044e27c ON public.preventive_orders USING btree (schedule_id)"
+        }
+      ]
+    },
+    {
+      "name": "problem_types",
+      "rows": 8,
+      "bytes": 57344,
+      "module": "Manutenção corretiva",
+      "model": "ProblemType",
+      "purpose": "Catálogo de problemas selecionáveis; a desativação preserva o histórico das OS.",
+      "source": "maintenance/models.py:231",
+      "columns": [
+        {
+          "name": "id",
+          "type": "bigint",
+          "pg_type": "int8",
+          "nullable": false,
+          "default": null,
+          "identity": "YES",
+          "length": null,
+          "precision": 64,
+          "scale": 0,
+          "orm_field": "id",
+          "label": "ID",
+          "choices": []
+        },
+        {
+          "name": "name",
+          "type": "character varying",
+          "pg_type": "varchar",
+          "nullable": false,
+          "default": null,
+          "identity": "NO",
+          "length": 180,
+          "precision": null,
+          "scale": null,
+          "orm_field": "name",
+          "label": "Problema",
+          "choices": []
+        },
+        {
+          "name": "priority",
+          "type": "character varying",
+          "pg_type": "varchar",
+          "nullable": false,
+          "default": null,
+          "identity": "NO",
+          "length": 20,
+          "precision": null,
+          "scale": null,
+          "orm_field": "priority",
+          "label": "Prioridade padrão",
+          "choices": [
+            [
+              "BAIXA",
+              "Baixa"
+            ],
+            [
+              "MEDIA",
+              "Média"
+            ],
+            [
+              "ALTA",
+              "Alta"
+            ],
+            [
+              "CRITICA",
+              "Crítica"
+            ]
+          ]
+        },
+        {
+          "name": "active",
+          "type": "boolean",
+          "pg_type": "bool",
+          "nullable": false,
+          "default": null,
+          "identity": "NO",
+          "length": null,
+          "precision": null,
+          "scale": null,
+          "orm_field": "active",
+          "label": "active",
+          "choices": []
+        },
+        {
+          "name": "equipment_type_id",
+          "type": "smallint",
+          "pg_type": "int2",
+          "nullable": true,
+          "default": null,
+          "identity": "NO",
+          "length": null,
+          "precision": 16,
+          "scale": 0,
+          "orm_field": "equipment_type",
+          "label": "Tipo de equipamento",
+          "choices": [],
+          "orm_relation": {
+            "table": "equipment_types",
+            "column": "id",
+            "on_delete": "PROTECT",
+            "one_to_one": false
+          }
+        }
+      ],
+      "constraints": [
+        {
+          "name": "problem_types_equipment_type_id_a130a296_fk_equipment_types_id",
+          "kind": "f",
+          "definition": "FOREIGN KEY (equipment_type_id) REFERENCES equipment_types(id) DEFERRABLE INITIALLY DEFERRED",
+          "validated": true,
+          "target": "equipment_types",
+          "deferrable": true,
+          "deferred": true
+        },
+        {
+          "name": "problem_types_pkey",
+          "kind": "p",
+          "definition": "PRIMARY KEY (id)",
+          "validated": true,
+          "target": null,
+          "deferrable": false,
+          "deferred": false
+        }
+      ],
+      "indexes": [
+        {
+          "name": "problem_type_name_ci_unique",
+          "definition": "CREATE UNIQUE INDEX problem_type_name_ci_unique ON public.problem_types USING btree (lower((name)::text))"
+        },
+        {
+          "name": "problem_types_equipment_type_id_a130a296",
+          "definition": "CREATE INDEX problem_types_equipment_type_id_a130a296 ON public.problem_types USING btree (equipment_type_id)"
+        },
+        {
+          "name": "problem_types_pkey",
+          "definition": "CREATE UNIQUE INDEX problem_types_pkey ON public.problem_types USING btree (id)"
+        }
+      ]
+    },
+    {
+      "name": "sectors",
+      "rows": 1,
+      "bytes": 65536,
+      "module": "Estrutura industrial",
+      "model": "Sector",
+      "purpose": "Agrupa linhas e equipamentos, preservando o cadastro por desativação lógica.",
+      "source": "maintenance/models.py:13",
+      "columns": [
+        {
+          "name": "id",
+          "type": "bigint",
+          "pg_type": "int8",
+          "nullable": false,
+          "default": null,
+          "identity": "YES",
+          "length": null,
+          "precision": 64,
+          "scale": 0,
+          "orm_field": "id",
+          "label": "ID",
+          "choices": []
+        },
+        {
+          "name": "code",
+          "type": "character varying",
+          "pg_type": "varchar",
+          "nullable": false,
+          "default": null,
+          "identity": "NO",
+          "length": 40,
+          "precision": null,
+          "scale": null,
+          "orm_field": "code",
+          "label": "code",
+          "choices": []
+        },
+        {
+          "name": "name",
+          "type": "character varying",
+          "pg_type": "varchar",
+          "nullable": false,
+          "default": null,
+          "identity": "NO",
+          "length": 120,
+          "precision": null,
+          "scale": null,
+          "orm_field": "name",
+          "label": "Nome",
+          "choices": []
+        },
+        {
+          "name": "description",
+          "type": "text",
+          "pg_type": "text",
+          "nullable": true,
+          "default": null,
+          "identity": "NO",
+          "length": null,
+          "precision": null,
+          "scale": null,
+          "orm_field": "description",
+          "label": "Descrição",
+          "choices": []
+        },
+        {
+          "name": "active",
+          "type": "boolean",
+          "pg_type": "bool",
+          "nullable": false,
+          "default": null,
+          "identity": "NO",
+          "length": null,
+          "precision": null,
+          "scale": null,
+          "orm_field": "active",
+          "label": "active",
+          "choices": []
+        },
+        {
+          "name": "created_at",
+          "type": "timestamp with time zone",
+          "pg_type": "timestamptz",
+          "nullable": false,
+          "default": null,
+          "identity": "NO",
+          "length": null,
+          "precision": null,
+          "scale": null,
+          "orm_field": "created_at",
+          "label": "created at",
+          "choices": []
+        }
+      ],
+      "constraints": [
+        {
+          "name": "sectors_code_key",
+          "kind": "u",
+          "definition": "UNIQUE (code)",
+          "validated": true,
+          "target": null,
+          "deferrable": false,
+          "deferred": false
+        },
+        {
+          "name": "sectors_pkey",
+          "kind": "p",
+          "definition": "PRIMARY KEY (id)",
+          "validated": true,
+          "target": null,
+          "deferrable": false,
+          "deferred": false
+        }
+      ],
+      "indexes": [
+        {
+          "name": "sectors_code_d191beb0_like",
+          "definition": "CREATE INDEX sectors_code_d191beb0_like ON public.sectors USING btree (code varchar_pattern_ops)"
+        },
+        {
+          "name": "sectors_code_key",
+          "definition": "CREATE UNIQUE INDEX sectors_code_key ON public.sectors USING btree (code)"
+        },
+        {
+          "name": "sectors_pkey",
+          "definition": "CREATE UNIQUE INDEX sectors_pkey ON public.sectors USING btree (id)"
+        }
+      ]
+    },
+    {
+      "name": "spare_part_compatibility",
+      "rows": 0,
+      "bytes": 57344,
+      "module": "Peças e documentação técnica",
+      "model": "SparePartCompatibility",
+      "purpose": "Relaciona peças aos equipamentos compatíveis, impedindo pares duplicados pela chave composta.",
+      "source": "maintenance/models.py:358",
+      "columns": [
+        {
+          "name": "equipment_id",
+          "type": "bigint",
+          "pg_type": "int8",
+          "nullable": false,
+          "default": null,
+          "identity": "NO",
+          "length": null,
+          "precision": 64,
+          "scale": 0,
+          "orm_field": "equipment",
+          "label": "equipment",
+          "choices": [],
+          "orm_relation": {
+            "table": "equipment",
+            "column": "id",
+            "on_delete": "PROTECT",
+            "one_to_one": false
+          }
+        },
+        {
+          "name": "spare_part_id",
+          "type": "bigint",
+          "pg_type": "int8",
+          "nullable": false,
+          "default": null,
+          "identity": "NO",
+          "length": null,
+          "precision": 64,
+          "scale": 0,
+          "orm_field": "spare_part",
+          "label": "spare part",
+          "choices": [],
+          "orm_relation": {
+            "table": "spare_parts",
+            "column": "id",
+            "on_delete": "CASCADE",
+            "one_to_one": false
+          }
+        }
+      ],
+      "constraints": [
+        {
+          "name": "spare_part_compatibi_spare_part_id_1a0483b6_fk_spare_par",
+          "kind": "f",
+          "definition": "FOREIGN KEY (spare_part_id) REFERENCES spare_parts(id) DEFERRABLE INITIALLY DEFERRED",
+          "validated": true,
+          "target": "spare_parts",
+          "deferrable": true,
+          "deferred": true
+        },
+        {
+          "name": "spare_part_compatibility_equipment_id_ba188d2e_fk_equipment_id",
+          "kind": "f",
+          "definition": "FOREIGN KEY (equipment_id) REFERENCES equipment(id) DEFERRABLE INITIALLY DEFERRED",
+          "validated": true,
+          "target": "equipment",
+          "deferrable": true,
+          "deferred": true
+        },
+        {
+          "name": "spare_part_compatibility_pkey",
+          "kind": "p",
+          "definition": "PRIMARY KEY (spare_part_id, equipment_id)",
+          "validated": true,
+          "target": null,
+          "deferrable": false,
+          "deferred": false
+        }
+      ],
+      "indexes": [
+        {
+          "name": "spare_part_compatibility_equipment_id_ba188d2e",
+          "definition": "CREATE INDEX spare_part_compatibility_equipment_id_ba188d2e ON public.spare_part_compatibility USING btree (equipment_id)"
+        },
+        {
+          "name": "spare_part_compatibility_pkey",
+          "definition": "CREATE UNIQUE INDEX spare_part_compatibility_pkey ON public.spare_part_compatibility USING btree (spare_part_id, equipment_id)"
+        },
+        {
+          "name": "spare_part_compatibility_spare_part_id_1a0483b6",
+          "definition": "CREATE INDEX spare_part_compatibility_spare_part_id_1a0483b6 ON public.spare_part_compatibility USING btree (spare_part_id)"
+        }
+      ]
+    },
+    {
+      "name": "spare_part_technical",
+      "rows": 0,
+      "bytes": 24576,
+      "module": "Peças e documentação técnica",
+      "model": "SparePartTechnical",
+      "purpose": "Ficha reutilizável da peça e registro de sua validação fiscal interna.",
+      "source": "maintenance/models.py:378",
+      "columns": [
+        {
+          "name": "spare_part_id",
+          "type": "bigint",
+          "pg_type": "int8",
+          "nullable": false,
+          "default": null,
+          "identity": "NO",
+          "length": null,
+          "precision": 64,
+          "scale": 0,
+          "orm_field": "spare_part",
+          "label": "spare part",
+          "choices": [],
+          "orm_relation": {
+            "table": "spare_parts",
+            "column": "id",
+            "on_delete": "PROTECT",
+            "one_to_one": true
+          }
+        },
+        {
+          "name": "fiscal_status",
+          "type": "character varying",
+          "pg_type": "varchar",
+          "nullable": false,
+          "default": null,
+          "identity": "NO",
+          "length": 20,
+          "precision": null,
+          "scale": null,
+          "orm_field": "fiscal_status",
+          "label": "fiscal status",
+          "choices": []
+        },
+        {
+          "name": "fiscal_validated_at",
+          "type": "timestamp with time zone",
+          "pg_type": "timestamptz",
+          "nullable": true,
+          "default": null,
+          "identity": "NO",
+          "length": null,
+          "precision": null,
+          "scale": null,
+          "orm_field": "fiscal_validated_at",
+          "label": "fiscal validated at",
+          "choices": []
+        },
+        {
+          "name": "updated_at",
+          "type": "timestamp with time zone",
+          "pg_type": "timestamptz",
+          "nullable": false,
+          "default": null,
+          "identity": "NO",
+          "length": null,
+          "precision": null,
+          "scale": null,
+          "orm_field": "updated_at",
+          "label": "updated at",
+          "choices": []
+        },
+        {
+          "name": "description_en",
+          "type": "text",
+          "pg_type": "text",
+          "nullable": true,
+          "default": null,
+          "identity": "NO",
+          "length": null,
+          "precision": null,
+          "scale": null,
+          "orm_field": "description_en",
+          "label": "Descrição em inglês",
+          "choices": []
+        },
+        {
+          "name": "ncm",
+          "type": "character varying",
+          "pg_type": "varchar",
+          "nullable": true,
+          "default": null,
+          "identity": "NO",
+          "length": 10,
+          "precision": null,
+          "scale": null,
+          "orm_field": "ncm",
+          "label": "NCM",
+          "choices": []
+        },
+        {
+          "name": "pli_description",
+          "type": "text",
+          "pg_type": "text",
+          "nullable": true,
+          "default": null,
+          "identity": "NO",
+          "length": null,
+          "precision": null,
+          "scale": null,
+          "orm_field": "pli_description",
+          "label": "Descrição para PLI",
+          "choices": []
+        },
+        {
+          "name": "description_pt",
+          "type": "text",
+          "pg_type": "text",
+          "nullable": true,
+          "default": null,
+          "identity": "NO",
+          "length": null,
+          "precision": null,
+          "scale": null,
+          "orm_field": "description_pt",
+          "label": "Descrição detalhada em português",
+          "choices": []
+        },
+        {
+          "name": "classification",
+          "type": "text",
+          "pg_type": "text",
+          "nullable": true,
+          "default": null,
+          "identity": "NO",
+          "length": null,
+          "precision": null,
+          "scale": null,
+          "orm_field": "classification",
+          "label": "Classificação do material",
+          "choices": []
+        },
+        {
+          "name": "independent_function",
+          "type": "text",
+          "pg_type": "text",
+          "nullable": true,
+          "default": null,
+          "identity": "NO",
+          "length": null,
+          "precision": null,
+          "scale": null,
+          "orm_field": "independent_function",
+          "label": "Tem função própria? Funciona sozinho?",
+          "choices": []
+        },
+        {
+          "name": "connection_details",
+          "type": "text",
+          "pg_type": "text",
+          "nullable": true,
+          "default": null,
+          "identity": "NO",
+          "length": null,
+          "precision": null,
+          "scale": null,
+          "orm_field": "connection_details",
+          "label": "Dispositivos e conexões",
+          "choices": []
+        },
+        {
+          "name": "useful_life",
+          "type": "text",
+          "pg_type": "text",
+          "nullable": true,
+          "default": null,
+          "identity": "NO",
+          "length": null,
+          "precision": null,
+          "scale": null,
+          "orm_field": "useful_life",
+          "label": "Vida útil",
+          "choices": []
+        },
+        {
+          "name": "asset_classification",
+          "type": "text",
+          "pg_type": "text",
+          "nullable": true,
+          "default": null,
+          "identity": "NO",
+          "length": null,
+          "precision": null,
+          "scale": null,
+          "orm_field": "asset_classification",
+          "label": "Ativo fixo ou uso e consumo",
+          "choices": []
+        },
+        {
+          "name": "main_function",
+          "type": "text",
+          "pg_type": "text",
+          "nullable": true,
+          "default": null,
+          "identity": "NO",
+          "length": null,
+          "precision": null,
+          "scale": null,
+          "orm_field": "main_function",
+          "label": "Função principal",
+          "choices": []
+        },
+        {
+          "name": "secondary_function",
+          "type": "text",
+          "pg_type": "text",
+          "nullable": true,
+          "default": null,
+          "identity": "NO",
+          "length": null,
+          "precision": null,
+          "scale": null,
+          "orm_field": "secondary_function",
+          "label": "Função secundária",
+          "choices": []
+        },
+        {
+          "name": "raw_material",
+          "type": "text",
+          "pg_type": "text",
+          "nullable": true,
+          "default": null,
+          "identity": "NO",
+          "length": null,
+          "precision": null,
+          "scale": null,
+          "orm_field": "raw_material",
+          "label": "Matéria-prima",
+          "choices": []
+        },
+        {
+          "name": "intended_use",
+          "type": "text",
+          "pg_type": "text",
+          "nullable": true,
+          "default": null,
+          "identity": "NO",
+          "length": null,
+          "precision": null,
+          "scale": null,
+          "orm_field": "intended_use",
+          "label": "Utilização / linha de produção",
+          "choices": []
+        },
+        {
+          "name": "application_machine",
+          "type": "text",
+          "pg_type": "text",
+          "nullable": true,
+          "default": null,
+          "identity": "NO",
+          "length": null,
+          "precision": null,
+          "scale": null,
+          "orm_field": "application_machine",
+          "label": "Máquina de aplicação e série",
+          "choices": []
+        },
+        {
+          "name": "mechanical_electrical",
+          "type": "text",
+          "pg_type": "text",
+          "nullable": true,
+          "default": null,
+          "identity": "NO",
+          "length": null,
+          "precision": null,
+          "scale": null,
+          "orm_field": "mechanical_electrical",
+          "label": "Mecânico ou elétrico",
+          "choices": []
+        },
+        {
+          "name": "current_type",
+          "type": "text",
+          "pg_type": "text",
+          "nullable": true,
+          "default": null,
+          "identity": "NO",
+          "length": null,
+          "precision": null,
+          "scale": null,
+          "orm_field": "current_type",
+          "label": "Tipo de corrente",
+          "choices": []
+        },
+        {
+          "name": "power",
+          "type": "text",
+          "pg_type": "text",
+          "nullable": true,
+          "default": null,
+          "identity": "NO",
+          "length": null,
+          "precision": null,
+          "scale": null,
+          "orm_field": "power",
+          "label": "Potência",
+          "choices": []
+        },
+        {
+          "name": "voltage",
+          "type": "text",
+          "pg_type": "text",
+          "nullable": true,
+          "default": null,
+          "identity": "NO",
+          "length": null,
+          "precision": null,
+          "scale": null,
+          "orm_field": "voltage",
+          "label": "Tensão",
+          "choices": []
+        },
+        {
+          "name": "amperage",
+          "type": "text",
+          "pg_type": "text",
+          "nullable": true,
+          "default": null,
+          "identity": "NO",
+          "length": null,
+          "precision": null,
+          "scale": null,
+          "orm_field": "amperage",
+          "label": "Amperagem",
+          "choices": []
+        },
+        {
+          "name": "picture_reference",
+          "type": "text",
+          "pg_type": "text",
+          "nullable": true,
+          "default": null,
+          "identity": "NO",
+          "length": null,
+          "precision": null,
+          "scale": null,
+          "orm_field": "picture_reference",
+          "label": "Referência da imagem",
+          "choices": []
+        },
+        {
+          "name": "fiscal_validated_by",
+          "type": "bigint",
+          "pg_type": "int8",
+          "nullable": true,
+          "default": null,
+          "identity": "NO",
+          "length": null,
+          "precision": 64,
+          "scale": 0,
+          "orm_field": "fiscal_validated_by",
+          "label": "fiscal validated by",
+          "choices": [],
+          "orm_relation": {
+            "table": "users",
+            "column": "id",
+            "on_delete": "PROTECT",
+            "one_to_one": false
+          }
+        }
+      ],
+      "constraints": [
+        {
+          "name": "spare_part_technical_fiscal_validated_by_02e3bc1d_fk_users_id",
+          "kind": "f",
+          "definition": "FOREIGN KEY (fiscal_validated_by) REFERENCES users(id) DEFERRABLE INITIALLY DEFERRED",
+          "validated": true,
+          "target": "users",
+          "deferrable": true,
+          "deferred": true
+        },
+        {
+          "name": "spare_part_technical_pkey",
+          "kind": "p",
+          "definition": "PRIMARY KEY (spare_part_id)",
+          "validated": true,
+          "target": null,
+          "deferrable": false,
+          "deferred": false
+        },
+        {
+          "name": "spare_part_technical_spare_part_id_7c031136_fk_spare_parts_id",
+          "kind": "f",
+          "definition": "FOREIGN KEY (spare_part_id) REFERENCES spare_parts(id) DEFERRABLE INITIALLY DEFERRED",
+          "validated": true,
+          "target": "spare_parts",
+          "deferrable": true,
+          "deferred": true
+        }
+      ],
+      "indexes": [
+        {
+          "name": "spare_part_technical_fiscal_validated_by_02e3bc1d",
+          "definition": "CREATE INDEX spare_part_technical_fiscal_validated_by_02e3bc1d ON public.spare_part_technical USING btree (fiscal_validated_by)"
+        },
+        {
+          "name": "spare_part_technical_pkey",
+          "definition": "CREATE UNIQUE INDEX spare_part_technical_pkey ON public.spare_part_technical USING btree (spare_part_id)"
+        }
+      ]
+    },
+    {
+      "name": "spare_parts",
+      "rows": 0,
+      "bytes": 65536,
+      "module": "Peças e documentação técnica",
+      "model": "SparePart",
+      "purpose": "Cadastro mestre de reposição com referências de estoque e custos, sem um saldo movimentado.",
+      "source": "maintenance/models.py:327",
+      "columns": [
+        {
+          "name": "id",
+          "type": "bigint",
+          "pg_type": "int8",
+          "nullable": false,
+          "default": null,
+          "identity": "YES",
+          "length": null,
+          "precision": 64,
+          "scale": 0,
+          "orm_field": "id",
+          "label": "ID",
+          "choices": []
+        },
+        {
+          "name": "code",
+          "type": "character varying",
+          "pg_type": "varchar",
+          "nullable": false,
+          "default": null,
+          "identity": "NO",
+          "length": 40,
+          "precision": null,
+          "scale": null,
+          "orm_field": "code",
+          "label": "code",
+          "choices": []
+        },
+        {
+          "name": "description",
+          "type": "character varying",
+          "pg_type": "varchar",
+          "nullable": false,
+          "default": null,
+          "identity": "NO",
+          "length": 250,
+          "precision": null,
+          "scale": null,
+          "orm_field": "description",
+          "label": "Descrição",
+          "choices": []
+        },
+        {
+          "name": "part_number",
+          "type": "character varying",
+          "pg_type": "varchar",
+          "nullable": true,
+          "default": null,
+          "identity": "NO",
+          "length": 120,
+          "precision": null,
+          "scale": null,
+          "orm_field": "part_number",
+          "label": "Part number",
+          "choices": []
+        },
+        {
+          "name": "manufacturer",
+          "type": "character varying",
+          "pg_type": "varchar",
+          "nullable": true,
+          "default": null,
+          "identity": "NO",
+          "length": 160,
+          "precision": null,
+          "scale": null,
+          "orm_field": "manufacturer",
+          "label": "Fabricante",
+          "choices": []
+        },
+        {
+          "name": "category",
+          "type": "character varying",
+          "pg_type": "varchar",
+          "nullable": true,
+          "default": null,
+          "identity": "NO",
+          "length": 100,
+          "precision": null,
+          "scale": null,
+          "orm_field": "category",
+          "label": "Categoria",
+          "choices": []
+        },
+        {
+          "name": "unit",
+          "type": "character varying",
+          "pg_type": "varchar",
+          "nullable": false,
+          "default": null,
+          "identity": "NO",
+          "length": 20,
+          "precision": null,
+          "scale": null,
+          "orm_field": "unit",
+          "label": "Unidade",
+          "choices": []
+        },
+        {
+          "name": "minimum_stock",
+          "type": "numeric",
+          "pg_type": "numeric",
+          "nullable": false,
+          "default": null,
+          "identity": "NO",
+          "length": null,
+          "precision": 14,
+          "scale": 3,
+          "orm_field": "minimum_stock",
+          "label": "Estoque mínimo",
+          "choices": []
+        },
+        {
+          "name": "maximum_stock",
+          "type": "numeric",
+          "pg_type": "numeric",
+          "nullable": true,
+          "default": null,
+          "identity": "NO",
+          "length": null,
+          "precision": 14,
+          "scale": 3,
+          "orm_field": "maximum_stock",
+          "label": "Estoque máximo",
+          "choices": []
+        },
+        {
+          "name": "reorder_point",
+          "type": "numeric",
+          "pg_type": "numeric",
+          "nullable": false,
+          "default": null,
+          "identity": "NO",
+          "length": null,
+          "precision": 14,
+          "scale": 3,
+          "orm_field": "reorder_point",
+          "label": "Ponto de reposição",
+          "choices": []
+        },
+        {
+          "name": "storage_location",
+          "type": "character varying",
+          "pg_type": "varchar",
+          "nullable": true,
+          "default": null,
+          "identity": "NO",
+          "length": 160,
+          "precision": null,
+          "scale": null,
+          "orm_field": "storage_location",
+          "label": "Localização",
+          "choices": []
+        },
+        {
+          "name": "preferred_supplier",
+          "type": "character varying",
+          "pg_type": "varchar",
+          "nullable": true,
+          "default": null,
+          "identity": "NO",
+          "length": 160,
+          "precision": null,
+          "scale": null,
+          "orm_field": "preferred_supplier",
+          "label": "Fornecedor preferencial",
+          "choices": []
+        },
+        {
+          "name": "average_cost",
+          "type": "numeric",
+          "pg_type": "numeric",
+          "nullable": true,
+          "default": null,
+          "identity": "NO",
+          "length": null,
+          "precision": 14,
+          "scale": 2,
+          "orm_field": "average_cost",
+          "label": "Custo médio",
+          "choices": []
+        },
+        {
+          "name": "last_cost",
+          "type": "numeric",
+          "pg_type": "numeric",
+          "nullable": true,
+          "default": null,
+          "identity": "NO",
+          "length": null,
+          "precision": 14,
+          "scale": 2,
+          "orm_field": "last_cost",
+          "label": "Último custo",
+          "choices": []
+        },
+        {
+          "name": "photo_filename",
+          "type": "character varying",
+          "pg_type": "varchar",
+          "nullable": true,
+          "default": null,
+          "identity": "NO",
+          "length": 255,
+          "precision": null,
+          "scale": null,
+          "orm_field": "photo_filename",
+          "label": "photo filename",
+          "choices": []
+        },
+        {
+          "name": "photo_mime",
+          "type": "character varying",
+          "pg_type": "varchar",
+          "nullable": true,
+          "default": null,
+          "identity": "NO",
+          "length": 100,
+          "precision": null,
+          "scale": null,
+          "orm_field": "photo_mime",
+          "label": "photo mime",
+          "choices": []
+        },
+        {
+          "name": "photo_data",
+          "type": "bytea",
+          "pg_type": "bytea",
+          "nullable": true,
+          "default": null,
+          "identity": "NO",
+          "length": null,
+          "precision": null,
+          "scale": null,
+          "orm_field": "photo_data",
+          "label": "photo data",
+          "choices": []
+        },
+        {
+          "name": "datasheet_filename",
+          "type": "character varying",
+          "pg_type": "varchar",
+          "nullable": true,
+          "default": null,
+          "identity": "NO",
+          "length": 255,
+          "precision": null,
+          "scale": null,
+          "orm_field": "datasheet_filename",
+          "label": "datasheet filename",
+          "choices": []
+        },
+        {
+          "name": "datasheet_data",
+          "type": "bytea",
+          "pg_type": "bytea",
+          "nullable": true,
+          "default": null,
+          "identity": "NO",
+          "length": null,
+          "precision": null,
+          "scale": null,
+          "orm_field": "datasheet_data",
+          "label": "datasheet data",
+          "choices": []
+        },
+        {
+          "name": "active",
+          "type": "boolean",
+          "pg_type": "bool",
+          "nullable": false,
+          "default": null,
+          "identity": "NO",
+          "length": null,
+          "precision": null,
+          "scale": null,
+          "orm_field": "active",
+          "label": "active",
+          "choices": []
+        },
+        {
+          "name": "created_at",
+          "type": "timestamp with time zone",
+          "pg_type": "timestamptz",
+          "nullable": false,
+          "default": null,
+          "identity": "NO",
+          "length": null,
+          "precision": null,
+          "scale": null,
+          "orm_field": "created_at",
+          "label": "created at",
+          "choices": []
+        },
+        {
+          "name": "updated_at",
+          "type": "timestamp with time zone",
+          "pg_type": "timestamptz",
+          "nullable": false,
+          "default": null,
+          "identity": "NO",
+          "length": null,
+          "precision": null,
+          "scale": null,
+          "orm_field": "updated_at",
+          "label": "updated at",
+          "choices": []
+        }
+      ],
+      "constraints": [
+        {
+          "name": "spare_parts_code_key",
+          "kind": "u",
+          "definition": "UNIQUE (code)",
+          "validated": true,
+          "target": null,
+          "deferrable": false,
+          "deferred": false
+        },
+        {
+          "name": "spare_parts_pkey",
+          "kind": "p",
+          "definition": "PRIMARY KEY (id)",
+          "validated": true,
+          "target": null,
+          "deferrable": false,
+          "deferred": false
+        }
+      ],
+      "indexes": [
+        {
+          "name": "spare_parts_code_0c4409aa_like",
+          "definition": "CREATE INDEX spare_parts_code_0c4409aa_like ON public.spare_parts USING btree (code varchar_pattern_ops)"
+        },
+        {
+          "name": "spare_parts_code_key",
+          "definition": "CREATE UNIQUE INDEX spare_parts_code_key ON public.spare_parts USING btree (code)"
+        },
+        {
+          "name": "spare_parts_pkey",
+          "definition": "CREATE UNIQUE INDEX spare_parts_pkey ON public.spare_parts USING btree (id)"
+        }
+      ]
+    },
+    {
+      "name": "spare_purchase_events",
+      "rows": 0,
+      "bytes": 65536,
+      "module": "Compras e aprovação",
+      "model": "PurchaseEvent",
+      "purpose": "Histórico de autoria e ações da solicitação, separado do seu estado atual.",
+      "source": "maintenance/models.py:442",
+      "columns": [
+        {
+          "name": "id",
+          "type": "bigint",
+          "pg_type": "int8",
+          "nullable": false,
+          "default": null,
+          "identity": "YES",
+          "length": null,
+          "precision": 64,
+          "scale": 0,
+          "orm_field": "id",
+          "label": "ID",
+          "choices": []
+        },
+        {
+          "name": "action",
+          "type": "character varying",
+          "pg_type": "varchar",
+          "nullable": false,
+          "default": null,
+          "identity": "NO",
+          "length": 32,
+          "precision": null,
+          "scale": null,
+          "orm_field": "action",
+          "label": "action",
+          "choices": []
+        },
+        {
+          "name": "details",
+          "type": "text",
+          "pg_type": "text",
+          "nullable": true,
+          "default": null,
+          "identity": "NO",
+          "length": null,
+          "precision": null,
+          "scale": null,
+          "orm_field": "details",
+          "label": "details",
+          "choices": []
+        },
+        {
+          "name": "created_at",
+          "type": "timestamp with time zone",
+          "pg_type": "timestamptz",
+          "nullable": false,
+          "default": null,
+          "identity": "NO",
+          "length": null,
+          "precision": null,
+          "scale": null,
+          "orm_field": "created_at",
+          "label": "created at",
+          "choices": []
+        },
+        {
+          "name": "actor_id",
+          "type": "bigint",
+          "pg_type": "int8",
+          "nullable": false,
+          "default": null,
+          "identity": "NO",
+          "length": null,
+          "precision": 64,
+          "scale": 0,
+          "orm_field": "actor",
+          "label": "actor",
+          "choices": [],
+          "orm_relation": {
+            "table": "users",
+            "column": "id",
+            "on_delete": "PROTECT",
+            "one_to_one": false
+          }
+        },
+        {
+          "name": "request_id",
+          "type": "bigint",
+          "pg_type": "int8",
+          "nullable": false,
+          "default": null,
+          "identity": "NO",
+          "length": null,
+          "precision": 64,
+          "scale": 0,
+          "orm_field": "request",
+          "label": "request",
+          "choices": [],
+          "orm_relation": {
+            "table": "spare_purchase_requests",
+            "column": "id",
+            "on_delete": "PROTECT",
+            "one_to_one": false
+          }
+        }
+      ],
+      "constraints": [
+        {
+          "name": "spare_purchase_event_request_id_dd6b04a2_fk_spare_pur",
+          "kind": "f",
+          "definition": "FOREIGN KEY (request_id) REFERENCES spare_purchase_requests(id) DEFERRABLE INITIALLY DEFERRED",
+          "validated": true,
+          "target": "spare_purchase_requests",
+          "deferrable": true,
+          "deferred": true
+        },
+        {
+          "name": "spare_purchase_events_actor_id_3e612bfb_fk_users_id",
+          "kind": "f",
+          "definition": "FOREIGN KEY (actor_id) REFERENCES users(id) DEFERRABLE INITIALLY DEFERRED",
+          "validated": true,
+          "target": "users",
+          "deferrable": true,
+          "deferred": true
+        },
+        {
+          "name": "spare_purchase_events_pkey",
+          "kind": "p",
+          "definition": "PRIMARY KEY (id)",
+          "validated": true,
+          "target": null,
+          "deferrable": false,
+          "deferred": false
+        }
+      ],
+      "indexes": [
+        {
+          "name": "spare_purchase_events_actor_id_3e612bfb",
+          "definition": "CREATE INDEX spare_purchase_events_actor_id_3e612bfb ON public.spare_purchase_events USING btree (actor_id)"
+        },
+        {
+          "name": "spare_purchase_events_pkey",
+          "definition": "CREATE UNIQUE INDEX spare_purchase_events_pkey ON public.spare_purchase_events USING btree (id)"
+        },
+        {
+          "name": "spare_purchase_events_request_id_dd6b04a2",
+          "definition": "CREATE INDEX spare_purchase_events_request_id_dd6b04a2 ON public.spare_purchase_events USING btree (request_id)"
+        }
+      ]
+    },
+    {
+      "name": "spare_purchase_request_items",
+      "rows": 0,
+      "bytes": 65536,
+      "module": "Compras e aprovação",
+      "model": "PurchaseItem",
+      "purpose": "Relaciona a peça e a quantidade à compra e mantém os dados técnicos congelados no envio.",
+      "source": "maintenance/models.py:431",
+      "columns": [
+        {
+          "name": "id",
+          "type": "bigint",
+          "pg_type": "int8",
+          "nullable": false,
+          "default": null,
+          "identity": "YES",
+          "length": null,
+          "precision": 64,
+          "scale": 0,
+          "orm_field": "id",
+          "label": "ID",
+          "choices": []
+        },
+        {
+          "name": "quantity",
+          "type": "numeric",
+          "pg_type": "numeric",
+          "nullable": false,
+          "default": null,
+          "identity": "NO",
+          "length": null,
+          "precision": 14,
+          "scale": 3,
+          "orm_field": "quantity",
+          "label": "Quantidade",
+          "choices": []
+        },
+        {
+          "name": "item_note",
+          "type": "text",
+          "pg_type": "text",
+          "nullable": true,
+          "default": null,
+          "identity": "NO",
+          "length": null,
+          "precision": null,
+          "scale": null,
+          "orm_field": "item_note",
+          "label": "Observação",
+          "choices": []
+        },
+        {
+          "name": "technical_snapshot",
+          "type": "jsonb",
+          "pg_type": "jsonb",
+          "nullable": true,
+          "default": null,
+          "identity": "NO",
+          "length": null,
+          "precision": null,
+          "scale": null,
+          "orm_field": "technical_snapshot",
+          "label": "technical snapshot",
+          "choices": []
+        },
+        {
+          "name": "request_id",
+          "type": "bigint",
+          "pg_type": "int8",
+          "nullable": false,
+          "default": null,
+          "identity": "NO",
+          "length": null,
+          "precision": 64,
+          "scale": 0,
+          "orm_field": "request",
+          "label": "request",
+          "choices": [],
+          "orm_relation": {
+            "table": "spare_purchase_requests",
+            "column": "id",
+            "on_delete": "PROTECT",
+            "one_to_one": false
+          }
+        },
+        {
+          "name": "spare_part_id",
+          "type": "bigint",
+          "pg_type": "int8",
+          "nullable": false,
+          "default": null,
+          "identity": "NO",
+          "length": null,
+          "precision": 64,
+          "scale": 0,
+          "orm_field": "spare_part",
+          "label": "Peça",
+          "choices": [],
+          "orm_relation": {
+            "table": "spare_parts",
+            "column": "id",
+            "on_delete": "PROTECT",
+            "one_to_one": false
+          }
+        }
+      ],
+      "constraints": [
+        {
+          "name": "spare_purchase_reque_request_id_d472b5a8_fk_spare_pur",
+          "kind": "f",
+          "definition": "FOREIGN KEY (request_id) REFERENCES spare_purchase_requests(id) DEFERRABLE INITIALLY DEFERRED",
+          "validated": true,
+          "target": "spare_purchase_requests",
+          "deferrable": true,
+          "deferred": true
+        },
+        {
+          "name": "spare_purchase_reque_spare_part_id_966d92bd_fk_spare_par",
+          "kind": "f",
+          "definition": "FOREIGN KEY (spare_part_id) REFERENCES spare_parts(id) DEFERRABLE INITIALLY DEFERRED",
+          "validated": true,
+          "target": "spare_parts",
+          "deferrable": true,
+          "deferred": true
+        },
+        {
+          "name": "spare_purchase_request_items_pkey",
+          "kind": "p",
+          "definition": "PRIMARY KEY (id)",
+          "validated": true,
+          "target": null,
+          "deferrable": false,
+          "deferred": false
+        }
+      ],
+      "indexes": [
+        {
+          "name": "spare_purchase_request_items_pkey",
+          "definition": "CREATE UNIQUE INDEX spare_purchase_request_items_pkey ON public.spare_purchase_request_items USING btree (id)"
+        },
+        {
+          "name": "spare_purchase_request_items_request_id_d472b5a8",
+          "definition": "CREATE INDEX spare_purchase_request_items_request_id_d472b5a8 ON public.spare_purchase_request_items USING btree (request_id)"
+        },
+        {
+          "name": "spare_purchase_request_items_spare_part_id_966d92bd",
+          "definition": "CREATE INDEX spare_purchase_request_items_spare_part_id_966d92bd ON public.spare_purchase_request_items USING btree (spare_part_id)"
+        }
+      ]
+    },
+    {
+      "name": "spare_purchase_requests",
+      "rows": 0,
+      "bytes": 98304,
+      "module": "Compras e aprovação",
+      "model": "PurchaseRequest",
+      "purpose": "Cabeçalho da compra com solicitante, gestor designado, justificativa e estado de aprovação.",
+      "source": "maintenance/models.py:410",
+      "columns": [
+        {
+          "name": "id",
+          "type": "bigint",
+          "pg_type": "int8",
+          "nullable": false,
+          "default": null,
+          "identity": "YES",
+          "length": null,
+          "precision": 64,
+          "scale": 0,
+          "orm_field": "id",
+          "label": "ID",
+          "choices": []
+        },
+        {
+          "name": "purchase_type",
+          "type": "character varying",
+          "pg_type": "varchar",
+          "nullable": false,
+          "default": null,
+          "identity": "NO",
+          "length": 16,
+          "precision": null,
+          "scale": null,
+          "orm_field": "purchase_type",
+          "label": "Tipo de compra",
+          "choices": [
+            [
+              "NACIONAL",
+              "Nacional"
+            ],
+            [
+              "IMPORTACAO",
+              "Importação"
+            ]
+          ]
+        },
+        {
+          "name": "status",
+          "type": "character varying",
+          "pg_type": "varchar",
+          "nullable": false,
+          "default": null,
+          "identity": "NO",
+          "length": 24,
+          "precision": null,
+          "scale": null,
+          "orm_field": "status",
+          "label": "status",
+          "choices": []
+        },
+        {
+          "name": "justification",
+          "type": "text",
+          "pg_type": "text",
+          "nullable": false,
+          "default": null,
+          "identity": "NO",
+          "length": null,
+          "precision": null,
+          "scale": null,
+          "orm_field": "justification",
+          "label": "Justificativa",
+          "choices": []
+        },
+        {
+          "name": "priority",
+          "type": "character varying",
+          "pg_type": "varchar",
+          "nullable": false,
+          "default": null,
+          "identity": "NO",
+          "length": 12,
+          "precision": null,
+          "scale": null,
+          "orm_field": "priority",
+          "label": "Prioridade",
+          "choices": [
+            [
+              "BAIXA",
+              "Baixa"
+            ],
+            [
+              "MEDIA",
+              "Média"
+            ],
+            [
+              "ALTA",
+              "Alta"
+            ],
+            [
+              "CRITICA",
+              "Crítica"
+            ]
+          ]
+        },
+        {
+          "name": "manager_comment",
+          "type": "text",
+          "pg_type": "text",
+          "nullable": true,
+          "default": null,
+          "identity": "NO",
+          "length": null,
+          "precision": null,
+          "scale": null,
+          "orm_field": "manager_comment",
+          "label": "manager comment",
+          "choices": []
+        },
+        {
+          "name": "submitted_at",
+          "type": "timestamp with time zone",
+          "pg_type": "timestamptz",
+          "nullable": true,
+          "default": null,
+          "identity": "NO",
+          "length": null,
+          "precision": null,
+          "scale": null,
+          "orm_field": "submitted_at",
+          "label": "submitted at",
+          "choices": []
+        },
+        {
+          "name": "decided_at",
+          "type": "timestamp with time zone",
+          "pg_type": "timestamptz",
+          "nullable": true,
+          "default": null,
+          "identity": "NO",
+          "length": null,
+          "precision": null,
+          "scale": null,
+          "orm_field": "decided_at",
+          "label": "decided at",
+          "choices": []
+        },
+        {
+          "name": "created_at",
+          "type": "timestamp with time zone",
+          "pg_type": "timestamptz",
+          "nullable": false,
+          "default": null,
+          "identity": "NO",
+          "length": null,
+          "precision": null,
+          "scale": null,
+          "orm_field": "created_at",
+          "label": "created at",
+          "choices": []
+        },
+        {
+          "name": "updated_at",
+          "type": "timestamp with time zone",
+          "pg_type": "timestamptz",
+          "nullable": false,
+          "default": null,
+          "identity": "NO",
+          "length": null,
+          "precision": null,
+          "scale": null,
+          "orm_field": "updated_at",
+          "label": "updated at",
+          "choices": []
+        },
+        {
+          "name": "equipment_id",
+          "type": "bigint",
+          "pg_type": "int8",
+          "nullable": true,
+          "default": null,
+          "identity": "NO",
+          "length": null,
+          "precision": 64,
+          "scale": 0,
+          "orm_field": "equipment",
+          "label": "Equipamento",
+          "choices": [],
+          "orm_relation": {
+            "table": "equipment",
+            "column": "id",
+            "on_delete": "PROTECT",
+            "one_to_one": false
+          }
+        },
+        {
+          "name": "manager_id",
+          "type": "bigint",
+          "pg_type": "int8",
+          "nullable": false,
+          "default": null,
+          "identity": "NO",
+          "length": null,
+          "precision": 64,
+          "scale": 0,
+          "orm_field": "manager",
+          "label": "Gestor responsável",
+          "choices": [],
+          "orm_relation": {
+            "table": "users",
+            "column": "id",
+            "on_delete": "PROTECT",
+            "one_to_one": false
+          }
+        },
+        {
+          "name": "requester_id",
+          "type": "bigint",
+          "pg_type": "int8",
+          "nullable": false,
+          "default": null,
+          "identity": "NO",
+          "length": null,
+          "precision": 64,
+          "scale": 0,
+          "orm_field": "requester",
+          "label": "requester",
+          "choices": [],
+          "orm_relation": {
+            "table": "users",
+            "column": "id",
+            "on_delete": "PROTECT",
+            "one_to_one": false
+          }
+        },
+        {
+          "name": "work_order_id",
+          "type": "bigint",
+          "pg_type": "int8",
+          "nullable": true,
+          "default": null,
+          "identity": "NO",
+          "length": null,
+          "precision": 64,
+          "scale": 0,
+          "orm_field": "work_order",
+          "label": "Ordem de serviço",
+          "choices": [],
+          "orm_relation": {
+            "table": "work_orders",
+            "column": "id",
+            "on_delete": "PROTECT",
+            "one_to_one": false
+          }
+        },
+        {
+          "name": "equipment_serial",
+          "type": "character varying",
+          "pg_type": "varchar",
+          "nullable": true,
+          "default": null,
+          "identity": "NO",
+          "length": 160,
+          "precision": null,
+          "scale": null,
+          "orm_field": "equipment_serial",
+          "label": "Serial da máquina na solicitação",
+          "choices": []
+        }
+      ],
+      "constraints": [
+        {
+          "name": "spare_purchase_reque_work_order_id_27461ce9_fk_work_orde",
+          "kind": "f",
+          "definition": "FOREIGN KEY (work_order_id) REFERENCES work_orders(id) DEFERRABLE INITIALLY DEFERRED",
+          "validated": true,
+          "target": "work_orders",
+          "deferrable": true,
+          "deferred": true
+        },
+        {
+          "name": "spare_purchase_requests_equipment_id_7c0cf8bb_fk_equipment_id",
+          "kind": "f",
+          "definition": "FOREIGN KEY (equipment_id) REFERENCES equipment(id) DEFERRABLE INITIALLY DEFERRED",
+          "validated": true,
+          "target": "equipment",
+          "deferrable": true,
+          "deferred": true
+        },
+        {
+          "name": "spare_purchase_requests_manager_id_66c9fd95_fk_users_id",
+          "kind": "f",
+          "definition": "FOREIGN KEY (manager_id) REFERENCES users(id) DEFERRABLE INITIALLY DEFERRED",
+          "validated": true,
+          "target": "users",
+          "deferrable": true,
+          "deferred": true
+        },
+        {
+          "name": "spare_purchase_requests_pkey",
+          "kind": "p",
+          "definition": "PRIMARY KEY (id)",
+          "validated": true,
+          "target": null,
+          "deferrable": false,
+          "deferred": false
+        },
+        {
+          "name": "spare_purchase_requests_requester_id_1c2507f3_fk_users_id",
+          "kind": "f",
+          "definition": "FOREIGN KEY (requester_id) REFERENCES users(id) DEFERRABLE INITIALLY DEFERRED",
+          "validated": true,
+          "target": "users",
+          "deferrable": true,
+          "deferred": true
+        }
+      ],
+      "indexes": [
+        {
+          "name": "spare_purchase_requests_equipment_id_7c0cf8bb",
+          "definition": "CREATE INDEX spare_purchase_requests_equipment_id_7c0cf8bb ON public.spare_purchase_requests USING btree (equipment_id)"
+        },
+        {
+          "name": "spare_purchase_requests_manager_id_66c9fd95",
+          "definition": "CREATE INDEX spare_purchase_requests_manager_id_66c9fd95 ON public.spare_purchase_requests USING btree (manager_id)"
+        },
+        {
+          "name": "spare_purchase_requests_pkey",
+          "definition": "CREATE UNIQUE INDEX spare_purchase_requests_pkey ON public.spare_purchase_requests USING btree (id)"
+        },
+        {
+          "name": "spare_purchase_requests_requester_id_1c2507f3",
+          "definition": "CREATE INDEX spare_purchase_requests_requester_id_1c2507f3 ON public.spare_purchase_requests USING btree (requester_id)"
+        },
+        {
+          "name": "spare_purchase_requests_work_order_id_27461ce9",
+          "definition": "CREATE INDEX spare_purchase_requests_work_order_id_27461ce9 ON public.spare_purchase_requests USING btree (work_order_id)"
+        }
+      ]
+    },
+    {
+      "name": "users",
+      "rows": 2,
+      "bytes": 81920,
+      "module": "Acesso e usuários",
+      "model": "User",
+      "purpose": "Conta por matrícula, com perfil e linha do operador; usa a tabela users e sua coluna password_hash.",
+      "source": "maintenance/models.py:58",
+      "columns": [
+        {
+          "name": "id",
+          "type": "bigint",
+          "pg_type": "int8",
+          "nullable": false,
+          "default": null,
+          "identity": "YES",
+          "length": null,
+          "precision": 64,
+          "scale": 0,
+          "orm_field": "id",
+          "label": "ID",
+          "choices": []
+        },
+        {
+          "name": "last_login",
+          "type": "timestamp with time zone",
+          "pg_type": "timestamptz",
+          "nullable": true,
+          "default": null,
+          "identity": "NO",
+          "length": null,
+          "precision": null,
+          "scale": null,
+          "orm_field": "last_login",
+          "label": "último login",
+          "choices": []
+        },
+        {
+          "name": "name",
+          "type": "character varying",
+          "pg_type": "varchar",
+          "nullable": false,
+          "default": null,
+          "identity": "NO",
+          "length": 160,
+          "precision": null,
+          "scale": null,
+          "orm_field": "name",
+          "label": "Nome",
+          "choices": []
+        },
+        {
+          "name": "registration",
+          "type": "character varying",
+          "pg_type": "varchar",
+          "nullable": false,
+          "default": null,
+          "identity": "NO",
+          "length": 50,
+          "precision": null,
+          "scale": null,
+          "orm_field": "registration",
+          "label": "Matrícula",
+          "choices": []
+        },
+        {
+          "name": "password_hash",
+          "type": "text",
+          "pg_type": "text",
+          "nullable": false,
+          "default": null,
+          "identity": "NO",
+          "length": null,
+          "precision": null,
+          "scale": null,
+          "orm_field": "password",
+          "label": "password",
+          "choices": []
+        },
+        {
+          "name": "role",
+          "type": "character varying",
+          "pg_type": "varchar",
+          "nullable": false,
+          "default": null,
+          "identity": "NO",
+          "length": 20,
+          "precision": null,
+          "scale": null,
+          "orm_field": "role",
+          "label": "Perfil",
+          "choices": [
+            [
+              "ADMINISTRADOR",
+              "Administrador"
+            ],
+            [
+              "TECNICO",
+              "Técnico"
+            ],
+            [
+              "OPERADOR",
+              "Operador"
+            ]
+          ]
+        },
+        {
+          "name": "active",
+          "type": "boolean",
+          "pg_type": "bool",
+          "nullable": false,
+          "default": null,
+          "identity": "NO",
+          "length": null,
+          "precision": null,
+          "scale": null,
+          "orm_field": "active",
+          "label": "active",
+          "choices": []
+        },
+        {
+          "name": "created_at",
+          "type": "timestamp with time zone",
+          "pg_type": "timestamptz",
+          "nullable": false,
+          "default": null,
+          "identity": "NO",
+          "length": null,
+          "precision": null,
+          "scale": null,
+          "orm_field": "created_at",
+          "label": "created at",
+          "choices": []
+        },
+        {
+          "name": "line_id",
+          "type": "bigint",
+          "pg_type": "int8",
+          "nullable": true,
+          "default": null,
+          "identity": "NO",
+          "length": null,
+          "precision": 64,
+          "scale": 0,
+          "orm_field": "line",
+          "label": "Linha SMT",
+          "choices": [],
+          "orm_relation": {
+            "table": "lines",
+            "column": "id",
+            "on_delete": "PROTECT",
+            "one_to_one": false
+          }
+        }
+      ],
+      "constraints": [
+        {
+          "name": "operator_requires_line",
+          "kind": "c",
+          "definition": "CHECK (((NOT ((role)::text = 'OPERADOR'::text)) OR (line_id IS NOT NULL)))",
+          "validated": true,
+          "target": null,
+          "deferrable": false,
+          "deferred": false
+        },
+        {
+          "name": "users_line_id_69f7dd73_fk_lines_id",
+          "kind": "f",
+          "definition": "FOREIGN KEY (line_id) REFERENCES lines(id) DEFERRABLE INITIALLY DEFERRED",
+          "validated": true,
+          "target": "lines",
+          "deferrable": true,
+          "deferred": true
+        },
+        {
+          "name": "users_pkey",
+          "kind": "p",
+          "definition": "PRIMARY KEY (id)",
+          "validated": true,
+          "target": null,
+          "deferrable": false,
+          "deferred": false
+        },
+        {
+          "name": "users_registration_key",
+          "kind": "u",
+          "definition": "UNIQUE (registration)",
+          "validated": true,
+          "target": null,
+          "deferrable": false,
+          "deferred": false
+        }
+      ],
+      "indexes": [
+        {
+          "name": "users_line_id_69f7dd73",
+          "definition": "CREATE INDEX users_line_id_69f7dd73 ON public.users USING btree (line_id)"
+        },
+        {
+          "name": "users_pkey",
+          "definition": "CREATE UNIQUE INDEX users_pkey ON public.users USING btree (id)"
+        },
+        {
+          "name": "users_registration_60955230_like",
+          "definition": "CREATE INDEX users_registration_60955230_like ON public.users USING btree (registration varchar_pattern_ops)"
+        },
+        {
+          "name": "users_registration_key",
+          "definition": "CREATE UNIQUE INDEX users_registration_key ON public.users USING btree (registration)"
+        }
+      ]
+    },
+    {
+      "name": "work_orders",
+      "rows": 1,
+      "bytes": 98304,
+      "module": "Manutenção corretiva",
+      "model": "WorkOrder",
+      "purpose": "Preserva o problema, responsáveis, ações e horários do atendimento de manutenção.",
+      "source": "maintenance/models.py:248",
+      "columns": [
+        {
+          "name": "id",
+          "type": "bigint",
+          "pg_type": "int8",
+          "nullable": false,
+          "default": null,
+          "identity": "YES",
+          "length": null,
+          "precision": 64,
+          "scale": 0,
+          "orm_field": "id",
+          "label": "ID",
+          "choices": []
+        },
+        {
+          "name": "priority",
+          "type": "character varying",
+          "pg_type": "varchar",
+          "nullable": false,
+          "default": null,
+          "identity": "NO",
+          "length": 20,
+          "precision": null,
+          "scale": null,
+          "orm_field": "priority",
+          "label": "Prioridade",
+          "choices": [
+            [
+              "BAIXA",
+              "Baixa"
+            ],
+            [
+              "MEDIA",
+              "Média"
+            ],
+            [
+              "ALTA",
+              "Alta"
+            ],
+            [
+              "CRITICA",
+              "Crítica"
+            ]
+          ]
+        },
+        {
+          "name": "status",
+          "type": "character varying",
+          "pg_type": "varchar",
+          "nullable": false,
+          "default": null,
+          "identity": "NO",
+          "length": 20,
+          "precision": null,
+          "scale": null,
+          "orm_field": "status",
+          "label": "Situação",
+          "choices": [
+            [
+              "ABERTA",
+              "Aberta"
+            ],
+            [
+              "EM_ANDAMENTO",
+              "Em andamento"
+            ],
+            [
+              "CONCLUIDA",
+              "Concluída"
+            ]
+          ]
+        },
+        {
+          "name": "problem",
+          "type": "text",
+          "pg_type": "text",
+          "nullable": false,
+          "default": null,
+          "identity": "NO",
+          "length": null,
+          "precision": null,
+          "scale": null,
+          "orm_field": "problem",
+          "label": "Problema relatado",
+          "choices": []
+        },
+        {
+          "name": "root_cause",
+          "type": "text",
+          "pg_type": "text",
+          "nullable": true,
+          "default": null,
+          "identity": "NO",
+          "length": null,
+          "precision": null,
+          "scale": null,
+          "orm_field": "root_cause",
+          "label": "Causa raiz",
+          "choices": []
+        },
+        {
+          "name": "corrective_action",
+          "type": "text",
+          "pg_type": "text",
+          "nullable": true,
+          "default": null,
+          "identity": "NO",
+          "length": null,
+          "precision": null,
+          "scale": null,
+          "orm_field": "corrective_action",
+          "label": "Ação corretiva",
+          "choices": []
+        },
+        {
+          "name": "preventive_action",
+          "type": "text",
+          "pg_type": "text",
+          "nullable": true,
+          "default": null,
+          "identity": "NO",
+          "length": null,
+          "precision": null,
+          "scale": null,
+          "orm_field": "preventive_action",
+          "label": "Ação preventiva",
+          "choices": []
+        },
+        {
+          "name": "started_at",
+          "type": "timestamp with time zone",
+          "pg_type": "timestamptz",
+          "nullable": true,
+          "default": null,
+          "identity": "NO",
+          "length": null,
+          "precision": null,
+          "scale": null,
+          "orm_field": "started_at",
+          "label": "started at",
+          "choices": []
+        },
+        {
+          "name": "finished_at",
+          "type": "timestamp with time zone",
+          "pg_type": "timestamptz",
+          "nullable": true,
+          "default": null,
+          "identity": "NO",
+          "length": null,
+          "precision": null,
+          "scale": null,
+          "orm_field": "finished_at",
+          "label": "finished at",
+          "choices": []
+        },
+        {
+          "name": "created_at",
+          "type": "timestamp with time zone",
+          "pg_type": "timestamptz",
+          "nullable": false,
+          "default": null,
+          "identity": "NO",
+          "length": null,
+          "precision": null,
+          "scale": null,
+          "orm_field": "created_at",
+          "label": "created at",
+          "choices": []
+        },
+        {
+          "name": "assigned_to",
+          "type": "bigint",
+          "pg_type": "int8",
+          "nullable": true,
+          "default": null,
+          "identity": "NO",
+          "length": null,
+          "precision": 64,
+          "scale": 0,
+          "orm_field": "assigned_to",
+          "label": "assigned to",
+          "choices": [],
+          "orm_relation": {
+            "table": "users",
+            "column": "id",
+            "on_delete": "PROTECT",
+            "one_to_one": false
+          }
+        },
+        {
+          "name": "equipment_id",
+          "type": "bigint",
+          "pg_type": "int8",
+          "nullable": false,
+          "default": null,
+          "identity": "NO",
+          "length": null,
+          "precision": 64,
+          "scale": 0,
+          "orm_field": "equipment",
+          "label": "Equipamento",
+          "choices": [],
+          "orm_relation": {
+            "table": "equipment",
+            "column": "id",
+            "on_delete": "PROTECT",
+            "one_to_one": false
+          }
+        },
+        {
+          "name": "opened_by",
+          "type": "bigint",
+          "pg_type": "int8",
+          "nullable": false,
+          "default": null,
+          "identity": "NO",
+          "length": null,
+          "precision": 64,
+          "scale": 0,
+          "orm_field": "opened_by",
+          "label": "opened by",
+          "choices": [],
+          "orm_relation": {
+            "table": "users",
+            "column": "id",
+            "on_delete": "PROTECT",
+            "one_to_one": false
+          }
+        },
+        {
+          "name": "problem_type_id",
+          "type": "bigint",
+          "pg_type": "int8",
+          "nullable": true,
+          "default": null,
+          "identity": "NO",
+          "length": null,
+          "precision": 64,
+          "scale": 0,
+          "orm_field": "problem_type",
+          "label": "Problema cadastrado",
+          "choices": [],
+          "orm_relation": {
+            "table": "problem_types",
+            "column": "id",
+            "on_delete": "PROTECT",
+            "one_to_one": false
+          }
+        },
+        {
+          "name": "downtime_seconds",
+          "type": "integer",
+          "pg_type": "int4",
+          "nullable": true,
+          "default": null,
+          "identity": "NO",
+          "length": null,
+          "precision": 32,
+          "scale": 0,
+          "orm_field": "downtime_seconds",
+          "label": "downtime seconds",
+          "choices": []
+        }
+      ],
+      "constraints": [
+        {
+          "name": "work_orders_assigned_to_4b6e75b8_fk_users_id",
+          "kind": "f",
+          "definition": "FOREIGN KEY (assigned_to) REFERENCES users(id) DEFERRABLE INITIALLY DEFERRED",
+          "validated": true,
+          "target": "users",
+          "deferrable": true,
+          "deferred": true
+        },
+        {
+          "name": "work_orders_downtime_seconds_check",
+          "kind": "c",
+          "definition": "CHECK ((downtime_seconds >= 0))",
+          "validated": true,
+          "target": null,
+          "deferrable": false,
+          "deferred": false
+        },
+        {
+          "name": "work_orders_equipment_id_ddd84ea8_fk_equipment_id",
+          "kind": "f",
+          "definition": "FOREIGN KEY (equipment_id) REFERENCES equipment(id) DEFERRABLE INITIALLY DEFERRED",
+          "validated": true,
+          "target": "equipment",
+          "deferrable": true,
+          "deferred": true
+        },
+        {
+          "name": "work_orders_opened_by_72a0f94d_fk_users_id",
+          "kind": "f",
+          "definition": "FOREIGN KEY (opened_by) REFERENCES users(id) DEFERRABLE INITIALLY DEFERRED",
+          "validated": true,
+          "target": "users",
+          "deferrable": true,
+          "deferred": true
+        },
+        {
+          "name": "work_orders_pkey",
+          "kind": "p",
+          "definition": "PRIMARY KEY (id)",
+          "validated": true,
+          "target": null,
+          "deferrable": false,
+          "deferred": false
+        },
+        {
+          "name": "work_orders_problem_type_id_21c9e4c8_fk_problem_types_id",
+          "kind": "f",
+          "definition": "FOREIGN KEY (problem_type_id) REFERENCES problem_types(id) DEFERRABLE INITIALLY DEFERRED",
+          "validated": true,
+          "target": "problem_types",
+          "deferrable": true,
+          "deferred": true
+        }
+      ],
+      "indexes": [
+        {
+          "name": "work_orders_assigned_to_4b6e75b8",
+          "definition": "CREATE INDEX work_orders_assigned_to_4b6e75b8 ON public.work_orders USING btree (assigned_to)"
+        },
+        {
+          "name": "work_orders_equipment_id_ddd84ea8",
+          "definition": "CREATE INDEX work_orders_equipment_id_ddd84ea8 ON public.work_orders USING btree (equipment_id)"
+        },
+        {
+          "name": "work_orders_opened_by_72a0f94d",
+          "definition": "CREATE INDEX work_orders_opened_by_72a0f94d ON public.work_orders USING btree (opened_by)"
+        },
+        {
+          "name": "work_orders_pkey",
+          "definition": "CREATE UNIQUE INDEX work_orders_pkey ON public.work_orders USING btree (id)"
+        },
+        {
+          "name": "work_orders_problem_type_id_21c9e4c8",
+          "definition": "CREATE INDEX work_orders_problem_type_id_21c9e4c8 ON public.work_orders USING btree (problem_type_id)"
+        }
+      ]
+    }
+  ],
+  "database": "mantis_django",
+  "server_version": "17.11",
+  "schema": "public",
+  "pending_migrations": [],
+  "applied_migrations": [
+    "auth.0001_initial",
+    "auth.0002_alter_permission_name_max_length",
+    "auth.0003_alter_user_email_max_length",
+    "auth.0004_alter_user_username_opts",
+    "auth.0005_alter_user_last_login_null",
+    "auth.0006_require_contenttypes_0002",
+    "auth.0007_alter_validators_add_error_messages",
+    "auth.0008_alter_user_username_max_length",
+    "auth.0009_alter_user_last_name_max_length",
+    "auth.0010_alter_group_name_max_length",
+    "auth.0011_update_proxy_permissions",
+    "auth.0012_alter_user_first_name_max_length",
+    "contenttypes.0001_initial",
+    "contenttypes.0002_remove_content_type_name",
+    "maintenance.0001_initial",
+    "maintenance.0002_equipment_types",
+    "maintenance.0003_problem_catalog",
+    "maintenance.0004_default_problems",
+    "maintenance.0005_purchase_equipment_serial",
+    "maintenance.0006_partrequisition",
+    "maintenance.0007_workorder_downtime_seconds",
+    "maintenance.0008_linependency",
+    "maintenance.0009_preventivechecklist",
+    "maintenance.0010_equipment_name_alter_preventivechecklist_frequency_and_more",
+    "maintenance.0011_equipmentpreventive_checklist_items_and_more"
+  ],
+  "views": [],
+  "triggers": [],
+  "missing_model_tables": [],
+  "missing_model_columns": []
+}

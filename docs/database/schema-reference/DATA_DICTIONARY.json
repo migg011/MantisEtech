@@ -1,0 +1,2081 @@
+[
+  {
+    "tabela": "agendas_preventiva",
+    "tabela_anterior": "equipment_preventives",
+    "modelo_python": "EquipmentPreventive",
+    "nome_portugues": "AgendaPreventiva",
+    "campo_codigo": "id",
+    "coluna_portugues": "id",
+    "referencia": ""
+  },
+  {
+    "tabela": "agendas_preventiva",
+    "tabela_anterior": "equipment_preventives",
+    "modelo_python": "EquipmentPreventive",
+    "nome_portugues": "AgendaPreventiva",
+    "campo_codigo": "equipment_id",
+    "coluna_portugues": "equipamento_id",
+    "referencia": "equipamentos.id"
+  },
+  {
+    "tabela": "agendas_preventiva",
+    "tabela_anterior": "equipment_preventives",
+    "modelo_python": "EquipmentPreventive",
+    "nome_portugues": "AgendaPreventiva",
+    "campo_codigo": "frequency",
+    "coluna_portugues": "periodicidade",
+    "referencia": ""
+  },
+  {
+    "tabela": "agendas_preventiva",
+    "tabela_anterior": "equipment_preventives",
+    "modelo_python": "EquipmentPreventive",
+    "nome_portugues": "AgendaPreventiva",
+    "campo_codigo": "next_due",
+    "coluna_portugues": "proximo_vencimento",
+    "referencia": ""
+  },
+  {
+    "tabela": "agendas_preventiva",
+    "tabela_anterior": "equipment_preventives",
+    "modelo_python": "EquipmentPreventive",
+    "nome_portugues": "AgendaPreventiva",
+    "campo_codigo": "last_performed",
+    "coluna_portugues": "ultima_execucao",
+    "referencia": ""
+  },
+  {
+    "tabela": "agendas_preventiva",
+    "tabela_anterior": "equipment_preventives",
+    "modelo_python": "EquipmentPreventive",
+    "nome_portugues": "AgendaPreventiva",
+    "campo_codigo": "active",
+    "coluna_portugues": "ativo",
+    "referencia": ""
+  },
+  {
+    "tabela": "agendas_preventiva",
+    "tabela_anterior": "equipment_preventives",
+    "modelo_python": "EquipmentPreventive",
+    "nome_portugues": "AgendaPreventiva",
+    "campo_codigo": "checklist_items",
+    "coluna_portugues": "itens_roteiro",
+    "referencia": ""
+  },
+  {
+    "tabela": "anexos_equipamento",
+    "tabela_anterior": "equipment_attachments",
+    "modelo_python": "EquipmentAttachment",
+    "nome_portugues": "AnexoEquipamento",
+    "campo_codigo": "id",
+    "coluna_portugues": "id",
+    "referencia": ""
+  },
+  {
+    "tabela": "anexos_equipamento",
+    "tabela_anterior": "equipment_attachments",
+    "modelo_python": "EquipmentAttachment",
+    "nome_portugues": "AnexoEquipamento",
+    "campo_codigo": "equipment_id",
+    "coluna_portugues": "equipamento_id",
+    "referencia": "equipamentos.id"
+  },
+  {
+    "tabela": "anexos_equipamento",
+    "tabela_anterior": "equipment_attachments",
+    "modelo_python": "EquipmentAttachment",
+    "nome_portugues": "AnexoEquipamento",
+    "campo_codigo": "kind",
+    "coluna_portugues": "categoria",
+    "referencia": ""
+  },
+  {
+    "tabela": "anexos_equipamento",
+    "tabela_anterior": "equipment_attachments",
+    "modelo_python": "EquipmentAttachment",
+    "nome_portugues": "AnexoEquipamento",
+    "campo_codigo": "filename",
+    "coluna_portugues": "nome_arquivo",
+    "referencia": ""
+  },
+  {
+    "tabela": "anexos_equipamento",
+    "tabela_anterior": "equipment_attachments",
+    "modelo_python": "EquipmentAttachment",
+    "nome_portugues": "AnexoEquipamento",
+    "campo_codigo": "mime_type",
+    "coluna_portugues": "tipo_mime",
+    "referencia": ""
+  },
+  {
+    "tabela": "anexos_equipamento",
+    "tabela_anterior": "equipment_attachments",
+    "modelo_python": "EquipmentAttachment",
+    "nome_portugues": "AnexoEquipamento",
+    "campo_codigo": "content",
+    "coluna_portugues": "conteudo",
+    "referencia": ""
+  },
+  {
+    "tabela": "anexos_equipamento",
+    "tabela_anterior": "equipment_attachments",
+    "modelo_python": "EquipmentAttachment",
+    "nome_portugues": "AnexoEquipamento",
+    "campo_codigo": "size_bytes",
+    "coluna_portugues": "tamanho_bytes",
+    "referencia": ""
+  },
+  {
+    "tabela": "anexos_equipamento",
+    "tabela_anterior": "equipment_attachments",
+    "modelo_python": "EquipmentAttachment",
+    "nome_portugues": "AnexoEquipamento",
+    "campo_codigo": "uploaded_by_id",
+    "coluna_portugues": "enviado_por_id",
+    "referencia": "usuarios.id"
+  },
+  {
+    "tabela": "anexos_equipamento",
+    "tabela_anterior": "equipment_attachments",
+    "modelo_python": "EquipmentAttachment",
+    "nome_portugues": "AnexoEquipamento",
+    "campo_codigo": "created_at",
+    "coluna_portugues": "criado_em",
+    "referencia": ""
+  },
+  {
+    "tabela": "compatibilidade_pecas_equipamentos",
+    "tabela_anterior": "spare_part_compatibility",
+    "modelo_python": "SparePartCompatibility",
+    "nome_portugues": "CompatibilidadePeca",
+    "campo_codigo": "spare_part_id",
+    "coluna_portugues": "peca_id",
+    "referencia": "pecas_reposicao.id"
+  },
+  {
+    "tabela": "compatibilidade_pecas_equipamentos",
+    "tabela_anterior": "spare_part_compatibility",
+    "modelo_python": "SparePartCompatibility",
+    "nome_portugues": "CompatibilidadePeca",
+    "campo_codigo": "equipment_id",
+    "coluna_portugues": "equipamento_id",
+    "referencia": "equipamentos.id"
+  },
+  {
+    "tabela": "equipamentos",
+    "tabela_anterior": "equipment",
+    "modelo_python": "Equipment",
+    "nome_portugues": "Equipamento",
+    "campo_codigo": "id",
+    "coluna_portugues": "id",
+    "referencia": ""
+  },
+  {
+    "tabela": "equipamentos",
+    "tabela_anterior": "equipment",
+    "modelo_python": "Equipment",
+    "nome_portugues": "Equipamento",
+    "campo_codigo": "equipment_type_id",
+    "coluna_portugues": "tipo_equipamento_id",
+    "referencia": "tipos_equipamento.id"
+  },
+  {
+    "tabela": "equipamentos",
+    "tabela_anterior": "equipment",
+    "modelo_python": "Equipment",
+    "nome_portugues": "Equipamento",
+    "campo_codigo": "name",
+    "coluna_portugues": "nome",
+    "referencia": ""
+  },
+  {
+    "tabela": "equipamentos",
+    "tabela_anterior": "equipment",
+    "modelo_python": "Equipment",
+    "nome_portugues": "Equipamento",
+    "campo_codigo": "sector_id",
+    "coluna_portugues": "setor_id",
+    "referencia": "setores.id"
+  },
+  {
+    "tabela": "equipamentos",
+    "tabela_anterior": "equipment",
+    "modelo_python": "Equipment",
+    "nome_portugues": "Equipamento",
+    "campo_codigo": "model_number",
+    "coluna_portugues": "numero_modelo",
+    "referencia": ""
+  },
+  {
+    "tabela": "equipamentos",
+    "tabela_anterior": "equipment",
+    "modelo_python": "Equipment",
+    "nome_portugues": "Equipamento",
+    "campo_codigo": "model",
+    "coluna_portugues": "modelo",
+    "referencia": ""
+  },
+  {
+    "tabela": "equipamentos",
+    "tabela_anterior": "equipment",
+    "modelo_python": "Equipment",
+    "nome_portugues": "Equipamento",
+    "campo_codigo": "serial",
+    "coluna_portugues": "numero_serie",
+    "referencia": ""
+  },
+  {
+    "tabela": "equipamentos",
+    "tabela_anterior": "equipment",
+    "modelo_python": "Equipment",
+    "nome_portugues": "Equipamento",
+    "campo_codigo": "manufacturer",
+    "coluna_portugues": "fabricante",
+    "referencia": ""
+  },
+  {
+    "tabela": "equipamentos",
+    "tabela_anterior": "equipment",
+    "modelo_python": "Equipment",
+    "nome_portugues": "Equipamento",
+    "campo_codigo": "manufacturing_date",
+    "coluna_portugues": "data_fabricacao",
+    "referencia": ""
+  },
+  {
+    "tabela": "equipamentos",
+    "tabela_anterior": "equipment",
+    "modelo_python": "Equipment",
+    "nome_portugues": "Equipamento",
+    "campo_codigo": "manufacturing_date_text",
+    "coluna_portugues": "data_fabricacao_texto",
+    "referencia": ""
+  },
+  {
+    "tabela": "equipamentos",
+    "tabela_anterior": "equipment",
+    "modelo_python": "Equipment",
+    "nome_portugues": "Equipamento",
+    "campo_codigo": "length_mm",
+    "coluna_portugues": "comprimento_mm",
+    "referencia": ""
+  },
+  {
+    "tabela": "equipamentos",
+    "tabela_anterior": "equipment",
+    "modelo_python": "Equipment",
+    "nome_portugues": "Equipamento",
+    "campo_codigo": "width_mm",
+    "coluna_portugues": "largura_mm",
+    "referencia": ""
+  },
+  {
+    "tabela": "equipamentos",
+    "tabela_anterior": "equipment",
+    "modelo_python": "Equipment",
+    "nome_portugues": "Equipamento",
+    "campo_codigo": "height_mm",
+    "coluna_portugues": "altura_mm",
+    "referencia": ""
+  },
+  {
+    "tabela": "equipamentos",
+    "tabela_anterior": "equipment",
+    "modelo_python": "Equipment",
+    "nome_portugues": "Equipamento",
+    "campo_codigo": "weight_kg",
+    "coluna_portugues": "peso_kg",
+    "referencia": ""
+  },
+  {
+    "tabela": "equipamentos",
+    "tabela_anterior": "equipment",
+    "modelo_python": "Equipment",
+    "nome_portugues": "Equipamento",
+    "campo_codigo": "voltage_v",
+    "coluna_portugues": "tensao_v",
+    "referencia": ""
+  },
+  {
+    "tabela": "equipamentos",
+    "tabela_anterior": "equipment",
+    "modelo_python": "Equipment",
+    "nome_portugues": "Equipamento",
+    "campo_codigo": "frequency_hz",
+    "coluna_portugues": "frequencia_hz",
+    "referencia": ""
+  },
+  {
+    "tabela": "equipamentos",
+    "tabela_anterior": "equipment",
+    "modelo_python": "Equipment",
+    "nome_portugues": "Equipamento",
+    "campo_codigo": "current_a",
+    "coluna_portugues": "corrente_a",
+    "referencia": ""
+  },
+  {
+    "tabela": "equipamentos",
+    "tabela_anterior": "equipment",
+    "modelo_python": "Equipment",
+    "nome_portugues": "Equipamento",
+    "campo_codigo": "power_w",
+    "coluna_portugues": "potencia_w",
+    "referencia": ""
+  },
+  {
+    "tabela": "equipamentos",
+    "tabela_anterior": "equipment",
+    "modelo_python": "Equipment",
+    "nome_portugues": "Equipamento",
+    "campo_codigo": "pneumatic_pressure_bar",
+    "coluna_portugues": "pressao_pneumatica_bar",
+    "referencia": ""
+  },
+  {
+    "tabela": "equipamentos",
+    "tabela_anterior": "equipment",
+    "modelo_python": "Equipment",
+    "nome_portugues": "Equipamento",
+    "campo_codigo": "asset_number",
+    "coluna_portugues": "numero_patrimonio",
+    "referencia": ""
+  },
+  {
+    "tabela": "equipamentos",
+    "tabela_anterior": "equipment",
+    "modelo_python": "Equipment",
+    "nome_portugues": "Equipamento",
+    "campo_codigo": "description",
+    "coluna_portugues": "descricao",
+    "referencia": ""
+  },
+  {
+    "tabela": "equipamentos",
+    "tabela_anterior": "equipment",
+    "modelo_python": "Equipment",
+    "nome_portugues": "Equipamento",
+    "campo_codigo": "process_description",
+    "coluna_portugues": "descricao_processo",
+    "referencia": ""
+  },
+  {
+    "tabela": "equipamentos",
+    "tabela_anterior": "equipment",
+    "modelo_python": "Equipment",
+    "nome_portugues": "Equipamento",
+    "campo_codigo": "line_id",
+    "coluna_portugues": "linha_id",
+    "referencia": "linhas.id"
+  },
+  {
+    "tabela": "equipamentos",
+    "tabela_anterior": "equipment",
+    "modelo_python": "Equipment",
+    "nome_portugues": "Equipamento",
+    "campo_codigo": "position",
+    "coluna_portugues": "posicao",
+    "referencia": ""
+  },
+  {
+    "tabela": "equipamentos",
+    "tabela_anterior": "equipment",
+    "modelo_python": "Equipment",
+    "nome_portugues": "Equipamento",
+    "campo_codigo": "active",
+    "coluna_portugues": "ativo",
+    "referencia": ""
+  },
+  {
+    "tabela": "equipamentos",
+    "tabela_anterior": "equipment",
+    "modelo_python": "Equipment",
+    "nome_portugues": "Equipamento",
+    "campo_codigo": "created_at",
+    "coluna_portugues": "criado_em",
+    "referencia": ""
+  },
+  {
+    "tabela": "eventos_solicitacao_compra",
+    "tabela_anterior": "spare_purchase_events",
+    "modelo_python": "PurchaseEvent",
+    "nome_portugues": "EventoCompra",
+    "campo_codigo": "id",
+    "coluna_portugues": "id",
+    "referencia": ""
+  },
+  {
+    "tabela": "eventos_solicitacao_compra",
+    "tabela_anterior": "spare_purchase_events",
+    "modelo_python": "PurchaseEvent",
+    "nome_portugues": "EventoCompra",
+    "campo_codigo": "request_id",
+    "coluna_portugues": "solicitacao_id",
+    "referencia": "solicitacoes_compra.id"
+  },
+  {
+    "tabela": "eventos_solicitacao_compra",
+    "tabela_anterior": "spare_purchase_events",
+    "modelo_python": "PurchaseEvent",
+    "nome_portugues": "EventoCompra",
+    "campo_codigo": "actor_id",
+    "coluna_portugues": "autor_id",
+    "referencia": "usuarios.id"
+  },
+  {
+    "tabela": "eventos_solicitacao_compra",
+    "tabela_anterior": "spare_purchase_events",
+    "modelo_python": "PurchaseEvent",
+    "nome_portugues": "EventoCompra",
+    "campo_codigo": "action",
+    "coluna_portugues": "acao",
+    "referencia": ""
+  },
+  {
+    "tabela": "eventos_solicitacao_compra",
+    "tabela_anterior": "spare_purchase_events",
+    "modelo_python": "PurchaseEvent",
+    "nome_portugues": "EventoCompra",
+    "campo_codigo": "details",
+    "coluna_portugues": "detalhes",
+    "referencia": ""
+  },
+  {
+    "tabela": "eventos_solicitacao_compra",
+    "tabela_anterior": "spare_purchase_events",
+    "modelo_python": "PurchaseEvent",
+    "nome_portugues": "EventoCompra",
+    "campo_codigo": "created_at",
+    "coluna_portugues": "criado_em",
+    "referencia": ""
+  },
+  {
+    "tabela": "execucoes_preventiva",
+    "tabela_anterior": "preventive_executions",
+    "modelo_python": "PreventiveExecution",
+    "nome_portugues": "ExecucaoPreventiva",
+    "campo_codigo": "id",
+    "coluna_portugues": "id",
+    "referencia": ""
+  },
+  {
+    "tabela": "execucoes_preventiva",
+    "tabela_anterior": "preventive_executions",
+    "modelo_python": "PreventiveExecution",
+    "nome_portugues": "ExecucaoPreventiva",
+    "campo_codigo": "schedule_id",
+    "coluna_portugues": "agenda_id",
+    "referencia": "agendas_preventiva.id"
+  },
+  {
+    "tabela": "execucoes_preventiva",
+    "tabela_anterior": "preventive_executions",
+    "modelo_python": "PreventiveExecution",
+    "nome_portugues": "ExecucaoPreventiva",
+    "campo_codigo": "performed_date",
+    "coluna_portugues": "data_execucao",
+    "referencia": ""
+  },
+  {
+    "tabela": "execucoes_preventiva",
+    "tabela_anterior": "preventive_executions",
+    "modelo_python": "PreventiveExecution",
+    "nome_portugues": "ExecucaoPreventiva",
+    "campo_codigo": "previous_due",
+    "coluna_portugues": "vencimento_anterior",
+    "referencia": ""
+  },
+  {
+    "tabela": "execucoes_preventiva",
+    "tabela_anterior": "preventive_executions",
+    "modelo_python": "PreventiveExecution",
+    "nome_portugues": "ExecucaoPreventiva",
+    "campo_codigo": "next_due",
+    "coluna_portugues": "proximo_vencimento",
+    "referencia": ""
+  },
+  {
+    "tabela": "execucoes_preventiva",
+    "tabela_anterior": "preventive_executions",
+    "modelo_python": "PreventiveExecution",
+    "nome_portugues": "ExecucaoPreventiva",
+    "campo_codigo": "technician_id",
+    "coluna_portugues": "tecnico_id",
+    "referencia": "usuarios.id"
+  },
+  {
+    "tabela": "execucoes_preventiva",
+    "tabela_anterior": "preventive_executions",
+    "modelo_python": "PreventiveExecution",
+    "nome_portugues": "ExecucaoPreventiva",
+    "campo_codigo": "notes",
+    "coluna_portugues": "observacoes",
+    "referencia": ""
+  },
+  {
+    "tabela": "execucoes_preventiva",
+    "tabela_anterior": "preventive_executions",
+    "modelo_python": "PreventiveExecution",
+    "nome_portugues": "ExecucaoPreventiva",
+    "campo_codigo": "created_at",
+    "coluna_portugues": "criado_em",
+    "referencia": ""
+  },
+  {
+    "tabela": "execucoes_preventiva",
+    "tabela_anterior": "preventive_executions",
+    "modelo_python": "PreventiveExecution",
+    "nome_portugues": "ExecucaoPreventiva",
+    "campo_codigo": "order_id",
+    "coluna_portugues": "ordem_preventiva_id",
+    "referencia": "ordens_preventiva.id"
+  },
+  {
+    "tabela": "fichas_tecnicas_pecas",
+    "tabela_anterior": "spare_part_technical",
+    "modelo_python": "SparePartTechnical",
+    "nome_portugues": "FichaTecnicaPeca",
+    "campo_codigo": "spare_part_id",
+    "coluna_portugues": "peca_id",
+    "referencia": "pecas_reposicao.id"
+  },
+  {
+    "tabela": "fichas_tecnicas_pecas",
+    "tabela_anterior": "spare_part_technical",
+    "modelo_python": "SparePartTechnical",
+    "nome_portugues": "FichaTecnicaPeca",
+    "campo_codigo": "fiscal_status",
+    "coluna_portugues": "situacao_fiscal",
+    "referencia": ""
+  },
+  {
+    "tabela": "fichas_tecnicas_pecas",
+    "tabela_anterior": "spare_part_technical",
+    "modelo_python": "SparePartTechnical",
+    "nome_portugues": "FichaTecnicaPeca",
+    "campo_codigo": "fiscal_validated_by_id",
+    "coluna_portugues": "validado_por_id",
+    "referencia": "usuarios.id"
+  },
+  {
+    "tabela": "fichas_tecnicas_pecas",
+    "tabela_anterior": "spare_part_technical",
+    "modelo_python": "SparePartTechnical",
+    "nome_portugues": "FichaTecnicaPeca",
+    "campo_codigo": "fiscal_validated_at",
+    "coluna_portugues": "validado_em",
+    "referencia": ""
+  },
+  {
+    "tabela": "fichas_tecnicas_pecas",
+    "tabela_anterior": "spare_part_technical",
+    "modelo_python": "SparePartTechnical",
+    "nome_portugues": "FichaTecnicaPeca",
+    "campo_codigo": "updated_at",
+    "coluna_portugues": "atualizado_em",
+    "referencia": ""
+  },
+  {
+    "tabela": "fichas_tecnicas_pecas",
+    "tabela_anterior": "spare_part_technical",
+    "modelo_python": "SparePartTechnical",
+    "nome_portugues": "FichaTecnicaPeca",
+    "campo_codigo": "description_en",
+    "coluna_portugues": "descricao_ingles",
+    "referencia": ""
+  },
+  {
+    "tabela": "fichas_tecnicas_pecas",
+    "tabela_anterior": "spare_part_technical",
+    "modelo_python": "SparePartTechnical",
+    "nome_portugues": "FichaTecnicaPeca",
+    "campo_codigo": "ncm",
+    "coluna_portugues": "ncm",
+    "referencia": ""
+  },
+  {
+    "tabela": "fichas_tecnicas_pecas",
+    "tabela_anterior": "spare_part_technical",
+    "modelo_python": "SparePartTechnical",
+    "nome_portugues": "FichaTecnicaPeca",
+    "campo_codigo": "pli_description",
+    "coluna_portugues": "descricao_pli",
+    "referencia": ""
+  },
+  {
+    "tabela": "fichas_tecnicas_pecas",
+    "tabela_anterior": "spare_part_technical",
+    "modelo_python": "SparePartTechnical",
+    "nome_portugues": "FichaTecnicaPeca",
+    "campo_codigo": "description_pt",
+    "coluna_portugues": "descricao_portugues",
+    "referencia": ""
+  },
+  {
+    "tabela": "fichas_tecnicas_pecas",
+    "tabela_anterior": "spare_part_technical",
+    "modelo_python": "SparePartTechnical",
+    "nome_portugues": "FichaTecnicaPeca",
+    "campo_codigo": "classification",
+    "coluna_portugues": "classificacao",
+    "referencia": ""
+  },
+  {
+    "tabela": "fichas_tecnicas_pecas",
+    "tabela_anterior": "spare_part_technical",
+    "modelo_python": "SparePartTechnical",
+    "nome_portugues": "FichaTecnicaPeca",
+    "campo_codigo": "independent_function",
+    "coluna_portugues": "funcao_independente",
+    "referencia": ""
+  },
+  {
+    "tabela": "fichas_tecnicas_pecas",
+    "tabela_anterior": "spare_part_technical",
+    "modelo_python": "SparePartTechnical",
+    "nome_portugues": "FichaTecnicaPeca",
+    "campo_codigo": "connection_details",
+    "coluna_portugues": "detalhes_conexoes",
+    "referencia": ""
+  },
+  {
+    "tabela": "fichas_tecnicas_pecas",
+    "tabela_anterior": "spare_part_technical",
+    "modelo_python": "SparePartTechnical",
+    "nome_portugues": "FichaTecnicaPeca",
+    "campo_codigo": "useful_life",
+    "coluna_portugues": "vida_util",
+    "referencia": ""
+  },
+  {
+    "tabela": "fichas_tecnicas_pecas",
+    "tabela_anterior": "spare_part_technical",
+    "modelo_python": "SparePartTechnical",
+    "nome_portugues": "FichaTecnicaPeca",
+    "campo_codigo": "asset_classification",
+    "coluna_portugues": "classificacao_patrimonial",
+    "referencia": ""
+  },
+  {
+    "tabela": "fichas_tecnicas_pecas",
+    "tabela_anterior": "spare_part_technical",
+    "modelo_python": "SparePartTechnical",
+    "nome_portugues": "FichaTecnicaPeca",
+    "campo_codigo": "main_function",
+    "coluna_portugues": "funcao_principal",
+    "referencia": ""
+  },
+  {
+    "tabela": "fichas_tecnicas_pecas",
+    "tabela_anterior": "spare_part_technical",
+    "modelo_python": "SparePartTechnical",
+    "nome_portugues": "FichaTecnicaPeca",
+    "campo_codigo": "secondary_function",
+    "coluna_portugues": "funcao_secundaria",
+    "referencia": ""
+  },
+  {
+    "tabela": "fichas_tecnicas_pecas",
+    "tabela_anterior": "spare_part_technical",
+    "modelo_python": "SparePartTechnical",
+    "nome_portugues": "FichaTecnicaPeca",
+    "campo_codigo": "raw_material",
+    "coluna_portugues": "materia_prima",
+    "referencia": ""
+  },
+  {
+    "tabela": "fichas_tecnicas_pecas",
+    "tabela_anterior": "spare_part_technical",
+    "modelo_python": "SparePartTechnical",
+    "nome_portugues": "FichaTecnicaPeca",
+    "campo_codigo": "intended_use",
+    "coluna_portugues": "utilizacao",
+    "referencia": ""
+  },
+  {
+    "tabela": "fichas_tecnicas_pecas",
+    "tabela_anterior": "spare_part_technical",
+    "modelo_python": "SparePartTechnical",
+    "nome_portugues": "FichaTecnicaPeca",
+    "campo_codigo": "application_machine",
+    "coluna_portugues": "maquina_aplicacao",
+    "referencia": ""
+  },
+  {
+    "tabela": "fichas_tecnicas_pecas",
+    "tabela_anterior": "spare_part_technical",
+    "modelo_python": "SparePartTechnical",
+    "nome_portugues": "FichaTecnicaPeca",
+    "campo_codigo": "mechanical_electrical",
+    "coluna_portugues": "mecanico_eletrico",
+    "referencia": ""
+  },
+  {
+    "tabela": "fichas_tecnicas_pecas",
+    "tabela_anterior": "spare_part_technical",
+    "modelo_python": "SparePartTechnical",
+    "nome_portugues": "FichaTecnicaPeca",
+    "campo_codigo": "current_type",
+    "coluna_portugues": "tipo_corrente",
+    "referencia": ""
+  },
+  {
+    "tabela": "fichas_tecnicas_pecas",
+    "tabela_anterior": "spare_part_technical",
+    "modelo_python": "SparePartTechnical",
+    "nome_portugues": "FichaTecnicaPeca",
+    "campo_codigo": "power",
+    "coluna_portugues": "potencia",
+    "referencia": ""
+  },
+  {
+    "tabela": "fichas_tecnicas_pecas",
+    "tabela_anterior": "spare_part_technical",
+    "modelo_python": "SparePartTechnical",
+    "nome_portugues": "FichaTecnicaPeca",
+    "campo_codigo": "voltage",
+    "coluna_portugues": "tensao",
+    "referencia": ""
+  },
+  {
+    "tabela": "fichas_tecnicas_pecas",
+    "tabela_anterior": "spare_part_technical",
+    "modelo_python": "SparePartTechnical",
+    "nome_portugues": "FichaTecnicaPeca",
+    "campo_codigo": "amperage",
+    "coluna_portugues": "amperagem",
+    "referencia": ""
+  },
+  {
+    "tabela": "fichas_tecnicas_pecas",
+    "tabela_anterior": "spare_part_technical",
+    "modelo_python": "SparePartTechnical",
+    "nome_portugues": "FichaTecnicaPeca",
+    "campo_codigo": "picture_reference",
+    "coluna_portugues": "referencia_imagem",
+    "referencia": ""
+  },
+  {
+    "tabela": "itens_solicitacao_compra",
+    "tabela_anterior": "spare_purchase_request_items",
+    "modelo_python": "PurchaseItem",
+    "nome_portugues": "ItemCompra",
+    "campo_codigo": "id",
+    "coluna_portugues": "id",
+    "referencia": ""
+  },
+  {
+    "tabela": "itens_solicitacao_compra",
+    "tabela_anterior": "spare_purchase_request_items",
+    "modelo_python": "PurchaseItem",
+    "nome_portugues": "ItemCompra",
+    "campo_codigo": "request_id",
+    "coluna_portugues": "solicitacao_id",
+    "referencia": "solicitacoes_compra.id"
+  },
+  {
+    "tabela": "itens_solicitacao_compra",
+    "tabela_anterior": "spare_purchase_request_items",
+    "modelo_python": "PurchaseItem",
+    "nome_portugues": "ItemCompra",
+    "campo_codigo": "spare_part_id",
+    "coluna_portugues": "peca_id",
+    "referencia": "pecas_reposicao.id"
+  },
+  {
+    "tabela": "itens_solicitacao_compra",
+    "tabela_anterior": "spare_purchase_request_items",
+    "modelo_python": "PurchaseItem",
+    "nome_portugues": "ItemCompra",
+    "campo_codigo": "quantity",
+    "coluna_portugues": "quantidade",
+    "referencia": ""
+  },
+  {
+    "tabela": "itens_solicitacao_compra",
+    "tabela_anterior": "spare_purchase_request_items",
+    "modelo_python": "PurchaseItem",
+    "nome_portugues": "ItemCompra",
+    "campo_codigo": "item_note",
+    "coluna_portugues": "observacao_item",
+    "referencia": ""
+  },
+  {
+    "tabela": "itens_solicitacao_compra",
+    "tabela_anterior": "spare_purchase_request_items",
+    "modelo_python": "PurchaseItem",
+    "nome_portugues": "ItemCompra",
+    "campo_codigo": "technical_snapshot",
+    "coluna_portugues": "retrato_ficha_tecnica",
+    "referencia": ""
+  },
+  {
+    "tabela": "linhas",
+    "tabela_anterior": "lines",
+    "modelo_python": "Line",
+    "nome_portugues": "Linha",
+    "campo_codigo": "id",
+    "coluna_portugues": "id",
+    "referencia": ""
+  },
+  {
+    "tabela": "linhas",
+    "tabela_anterior": "lines",
+    "modelo_python": "Line",
+    "nome_portugues": "Linha",
+    "campo_codigo": "code",
+    "coluna_portugues": "codigo",
+    "referencia": ""
+  },
+  {
+    "tabela": "linhas",
+    "tabela_anterior": "lines",
+    "modelo_python": "Line",
+    "nome_portugues": "Linha",
+    "campo_codigo": "name",
+    "coluna_portugues": "nome",
+    "referencia": ""
+  },
+  {
+    "tabela": "linhas",
+    "tabela_anterior": "lines",
+    "modelo_python": "Line",
+    "nome_portugues": "Linha",
+    "campo_codigo": "description",
+    "coluna_portugues": "descricao",
+    "referencia": ""
+  },
+  {
+    "tabela": "linhas",
+    "tabela_anterior": "lines",
+    "modelo_python": "Line",
+    "nome_portugues": "Linha",
+    "campo_codigo": "sector_id",
+    "coluna_portugues": "setor_id",
+    "referencia": "setores.id"
+  },
+  {
+    "tabela": "linhas",
+    "tabela_anterior": "lines",
+    "modelo_python": "Line",
+    "nome_portugues": "Linha",
+    "campo_codigo": "active",
+    "coluna_portugues": "ativo",
+    "referencia": ""
+  },
+  {
+    "tabela": "linhas",
+    "tabela_anterior": "lines",
+    "modelo_python": "Line",
+    "nome_portugues": "Linha",
+    "campo_codigo": "created_at",
+    "coluna_portugues": "criado_em",
+    "referencia": ""
+  },
+  {
+    "tabela": "movimentacoes_equipamento",
+    "tabela_anterior": "equipment_movements",
+    "modelo_python": "EquipmentMovement",
+    "nome_portugues": "MovimentacaoEquipamento",
+    "campo_codigo": "id",
+    "coluna_portugues": "id",
+    "referencia": ""
+  },
+  {
+    "tabela": "movimentacoes_equipamento",
+    "tabela_anterior": "equipment_movements",
+    "modelo_python": "EquipmentMovement",
+    "nome_portugues": "MovimentacaoEquipamento",
+    "campo_codigo": "equipment_id",
+    "coluna_portugues": "equipamento_id",
+    "referencia": "equipamentos.id"
+  },
+  {
+    "tabela": "movimentacoes_equipamento",
+    "tabela_anterior": "equipment_movements",
+    "modelo_python": "EquipmentMovement",
+    "nome_portugues": "MovimentacaoEquipamento",
+    "campo_codigo": "from_line_id",
+    "coluna_portugues": "linha_origem_id",
+    "referencia": "linhas.id"
+  },
+  {
+    "tabela": "movimentacoes_equipamento",
+    "tabela_anterior": "equipment_movements",
+    "modelo_python": "EquipmentMovement",
+    "nome_portugues": "MovimentacaoEquipamento",
+    "campo_codigo": "from_position",
+    "coluna_portugues": "posicao_origem",
+    "referencia": ""
+  },
+  {
+    "tabela": "movimentacoes_equipamento",
+    "tabela_anterior": "equipment_movements",
+    "modelo_python": "EquipmentMovement",
+    "nome_portugues": "MovimentacaoEquipamento",
+    "campo_codigo": "to_line_id",
+    "coluna_portugues": "linha_destino_id",
+    "referencia": "linhas.id"
+  },
+  {
+    "tabela": "movimentacoes_equipamento",
+    "tabela_anterior": "equipment_movements",
+    "modelo_python": "EquipmentMovement",
+    "nome_portugues": "MovimentacaoEquipamento",
+    "campo_codigo": "to_position",
+    "coluna_portugues": "posicao_destino",
+    "referencia": ""
+  },
+  {
+    "tabela": "movimentacoes_equipamento",
+    "tabela_anterior": "equipment_movements",
+    "modelo_python": "EquipmentMovement",
+    "nome_portugues": "MovimentacaoEquipamento",
+    "campo_codigo": "action",
+    "coluna_portugues": "acao",
+    "referencia": ""
+  },
+  {
+    "tabela": "movimentacoes_equipamento",
+    "tabela_anterior": "equipment_movements",
+    "modelo_python": "EquipmentMovement",
+    "nome_portugues": "MovimentacaoEquipamento",
+    "campo_codigo": "performed_by_id",
+    "coluna_portugues": "executado_por_id",
+    "referencia": "usuarios.id"
+  },
+  {
+    "tabela": "movimentacoes_equipamento",
+    "tabela_anterior": "equipment_movements",
+    "modelo_python": "EquipmentMovement",
+    "nome_portugues": "MovimentacaoEquipamento",
+    "campo_codigo": "created_at",
+    "coluna_portugues": "criado_em",
+    "referencia": ""
+  },
+  {
+    "tabela": "ordens_preventiva",
+    "tabela_anterior": "preventive_orders",
+    "modelo_python": "PreventiveOrder",
+    "nome_portugues": "OrdemPreventiva",
+    "campo_codigo": "id",
+    "coluna_portugues": "id",
+    "referencia": ""
+  },
+  {
+    "tabela": "ordens_preventiva",
+    "tabela_anterior": "preventive_orders",
+    "modelo_python": "PreventiveOrder",
+    "nome_portugues": "OrdemPreventiva",
+    "campo_codigo": "schedule_id",
+    "coluna_portugues": "agenda_id",
+    "referencia": "agendas_preventiva.id"
+  },
+  {
+    "tabela": "ordens_preventiva",
+    "tabela_anterior": "preventive_orders",
+    "modelo_python": "PreventiveOrder",
+    "nome_portugues": "OrdemPreventiva",
+    "campo_codigo": "status",
+    "coluna_portugues": "situacao",
+    "referencia": ""
+  },
+  {
+    "tabela": "ordens_preventiva",
+    "tabela_anterior": "preventive_orders",
+    "modelo_python": "PreventiveOrder",
+    "nome_portugues": "OrdemPreventiva",
+    "campo_codigo": "expected_due",
+    "coluna_portugues": "vencimento_previsto",
+    "referencia": ""
+  },
+  {
+    "tabela": "ordens_preventiva",
+    "tabela_anterior": "preventive_orders",
+    "modelo_python": "PreventiveOrder",
+    "nome_portugues": "OrdemPreventiva",
+    "campo_codigo": "planned_date",
+    "coluna_portugues": "data_planejada",
+    "referencia": ""
+  },
+  {
+    "tabela": "ordens_preventiva",
+    "tabela_anterior": "preventive_orders",
+    "modelo_python": "PreventiveOrder",
+    "nome_portugues": "OrdemPreventiva",
+    "campo_codigo": "planned_time",
+    "coluna_portugues": "hora_planejada",
+    "referencia": ""
+  },
+  {
+    "tabela": "ordens_preventiva",
+    "tabela_anterior": "preventive_orders",
+    "modelo_python": "PreventiveOrder",
+    "nome_portugues": "OrdemPreventiva",
+    "campo_codigo": "recurrence_basis",
+    "coluna_portugues": "base_recorrencia",
+    "referencia": ""
+  },
+  {
+    "tabela": "ordens_preventiva",
+    "tabela_anterior": "preventive_orders",
+    "modelo_python": "PreventiveOrder",
+    "nome_portugues": "OrdemPreventiva",
+    "campo_codigo": "frequency",
+    "coluna_portugues": "periodicidade",
+    "referencia": ""
+  },
+  {
+    "tabela": "ordens_preventiva",
+    "tabela_anterior": "preventive_orders",
+    "modelo_python": "PreventiveOrder",
+    "nome_portugues": "OrdemPreventiva",
+    "campo_codigo": "equipment_snapshot",
+    "coluna_portugues": "retrato_equipamento",
+    "referencia": ""
+  },
+  {
+    "tabela": "ordens_preventiva",
+    "tabela_anterior": "preventive_orders",
+    "modelo_python": "PreventiveOrder",
+    "nome_portugues": "OrdemPreventiva",
+    "campo_codigo": "items",
+    "coluna_portugues": "itens",
+    "referencia": ""
+  },
+  {
+    "tabela": "ordens_preventiva",
+    "tabela_anterior": "preventive_orders",
+    "modelo_python": "PreventiveOrder",
+    "nome_portugues": "OrdemPreventiva",
+    "campo_codigo": "results",
+    "coluna_portugues": "resultados",
+    "referencia": ""
+  },
+  {
+    "tabela": "ordens_preventiva",
+    "tabela_anterior": "preventive_orders",
+    "modelo_python": "PreventiveOrder",
+    "nome_portugues": "OrdemPreventiva",
+    "campo_codigo": "safety_instructions",
+    "coluna_portugues": "instrucoes_seguranca",
+    "referencia": ""
+  },
+  {
+    "tabela": "ordens_preventiva",
+    "tabela_anterior": "preventive_orders",
+    "modelo_python": "PreventiveOrder",
+    "nome_portugues": "OrdemPreventiva",
+    "campo_codigo": "parts",
+    "coluna_portugues": "pecas",
+    "referencia": ""
+  },
+  {
+    "tabela": "ordens_preventiva",
+    "tabela_anterior": "preventive_orders",
+    "modelo_python": "PreventiveOrder",
+    "nome_portugues": "OrdemPreventiva",
+    "campo_codigo": "notes",
+    "coluna_portugues": "observacoes",
+    "referencia": ""
+  },
+  {
+    "tabela": "ordens_preventiva",
+    "tabela_anterior": "preventive_orders",
+    "modelo_python": "PreventiveOrder",
+    "nome_portugues": "OrdemPreventiva",
+    "campo_codigo": "performed_date",
+    "coluna_portugues": "data_execucao",
+    "referencia": ""
+  },
+  {
+    "tabela": "ordens_preventiva",
+    "tabela_anterior": "preventive_orders",
+    "modelo_python": "PreventiveOrder",
+    "nome_portugues": "OrdemPreventiva",
+    "campo_codigo": "performed_time",
+    "coluna_portugues": "hora_execucao",
+    "referencia": ""
+  },
+  {
+    "tabela": "ordens_preventiva",
+    "tabela_anterior": "preventive_orders",
+    "modelo_python": "PreventiveOrder",
+    "nome_portugues": "OrdemPreventiva",
+    "campo_codigo": "assigned_to_id",
+    "coluna_portugues": "responsavel_id",
+    "referencia": "usuarios.id"
+  },
+  {
+    "tabela": "ordens_preventiva",
+    "tabela_anterior": "preventive_orders",
+    "modelo_python": "PreventiveOrder",
+    "nome_portugues": "OrdemPreventiva",
+    "campo_codigo": "assigned_name",
+    "coluna_portugues": "nome_responsavel",
+    "referencia": ""
+  },
+  {
+    "tabela": "ordens_preventiva",
+    "tabela_anterior": "preventive_orders",
+    "modelo_python": "PreventiveOrder",
+    "nome_portugues": "OrdemPreventiva",
+    "campo_codigo": "created_by_id",
+    "coluna_portugues": "criado_por_id",
+    "referencia": "usuarios.id"
+  },
+  {
+    "tabela": "ordens_preventiva",
+    "tabela_anterior": "preventive_orders",
+    "modelo_python": "PreventiveOrder",
+    "nome_portugues": "OrdemPreventiva",
+    "campo_codigo": "created_at",
+    "coluna_portugues": "criado_em",
+    "referencia": ""
+  },
+  {
+    "tabela": "ordens_preventiva",
+    "tabela_anterior": "preventive_orders",
+    "modelo_python": "PreventiveOrder",
+    "nome_portugues": "OrdemPreventiva",
+    "campo_codigo": "finished_by_id",
+    "coluna_portugues": "concluido_por_id",
+    "referencia": "usuarios.id"
+  },
+  {
+    "tabela": "ordens_preventiva",
+    "tabela_anterior": "preventive_orders",
+    "modelo_python": "PreventiveOrder",
+    "nome_portugues": "OrdemPreventiva",
+    "campo_codigo": "executor_name",
+    "coluna_portugues": "nome_executor",
+    "referencia": ""
+  },
+  {
+    "tabela": "ordens_preventiva",
+    "tabela_anterior": "preventive_orders",
+    "modelo_python": "PreventiveOrder",
+    "nome_portugues": "OrdemPreventiva",
+    "campo_codigo": "finished_at",
+    "coluna_portugues": "concluido_em",
+    "referencia": ""
+  },
+  {
+    "tabela": "ordens_preventiva",
+    "tabela_anterior": "preventive_orders",
+    "modelo_python": "PreventiveOrder",
+    "nome_portugues": "OrdemPreventiva",
+    "campo_codigo": "cancellation_reason",
+    "coluna_portugues": "motivo_cancelamento",
+    "referencia": ""
+  },
+  {
+    "tabela": "ordens_preventiva",
+    "tabela_anterior": "preventive_orders",
+    "modelo_python": "PreventiveOrder",
+    "nome_portugues": "OrdemPreventiva",
+    "campo_codigo": "revision",
+    "coluna_portugues": "revisao",
+    "referencia": ""
+  },
+  {
+    "tabela": "ordens_servico",
+    "tabela_anterior": "work_orders",
+    "modelo_python": "WorkOrder",
+    "nome_portugues": "OrdemServico",
+    "campo_codigo": "id",
+    "coluna_portugues": "id",
+    "referencia": ""
+  },
+  {
+    "tabela": "ordens_servico",
+    "tabela_anterior": "work_orders",
+    "modelo_python": "WorkOrder",
+    "nome_portugues": "OrdemServico",
+    "campo_codigo": "equipment_id",
+    "coluna_portugues": "equipamento_id",
+    "referencia": "equipamentos.id"
+  },
+  {
+    "tabela": "ordens_servico",
+    "tabela_anterior": "work_orders",
+    "modelo_python": "WorkOrder",
+    "nome_portugues": "OrdemServico",
+    "campo_codigo": "opened_by_id",
+    "coluna_portugues": "aberto_por_id",
+    "referencia": "usuarios.id"
+  },
+  {
+    "tabela": "ordens_servico",
+    "tabela_anterior": "work_orders",
+    "modelo_python": "WorkOrder",
+    "nome_portugues": "OrdemServico",
+    "campo_codigo": "assigned_to_id",
+    "coluna_portugues": "responsavel_id",
+    "referencia": "usuarios.id"
+  },
+  {
+    "tabela": "ordens_servico",
+    "tabela_anterior": "work_orders",
+    "modelo_python": "WorkOrder",
+    "nome_portugues": "OrdemServico",
+    "campo_codigo": "priority",
+    "coluna_portugues": "prioridade",
+    "referencia": ""
+  },
+  {
+    "tabela": "ordens_servico",
+    "tabela_anterior": "work_orders",
+    "modelo_python": "WorkOrder",
+    "nome_portugues": "OrdemServico",
+    "campo_codigo": "status",
+    "coluna_portugues": "situacao",
+    "referencia": ""
+  },
+  {
+    "tabela": "ordens_servico",
+    "tabela_anterior": "work_orders",
+    "modelo_python": "WorkOrder",
+    "nome_portugues": "OrdemServico",
+    "campo_codigo": "problem",
+    "coluna_portugues": "problema",
+    "referencia": ""
+  },
+  {
+    "tabela": "ordens_servico",
+    "tabela_anterior": "work_orders",
+    "modelo_python": "WorkOrder",
+    "nome_portugues": "OrdemServico",
+    "campo_codigo": "problem_type_id",
+    "coluna_portugues": "tipo_problema_id",
+    "referencia": "tipos_problema.id"
+  },
+  {
+    "tabela": "ordens_servico",
+    "tabela_anterior": "work_orders",
+    "modelo_python": "WorkOrder",
+    "nome_portugues": "OrdemServico",
+    "campo_codigo": "root_cause",
+    "coluna_portugues": "causa_raiz",
+    "referencia": ""
+  },
+  {
+    "tabela": "ordens_servico",
+    "tabela_anterior": "work_orders",
+    "modelo_python": "WorkOrder",
+    "nome_portugues": "OrdemServico",
+    "campo_codigo": "corrective_action",
+    "coluna_portugues": "acao_corretiva",
+    "referencia": ""
+  },
+  {
+    "tabela": "ordens_servico",
+    "tabela_anterior": "work_orders",
+    "modelo_python": "WorkOrder",
+    "nome_portugues": "OrdemServico",
+    "campo_codigo": "preventive_action",
+    "coluna_portugues": "acao_preventiva",
+    "referencia": ""
+  },
+  {
+    "tabela": "ordens_servico",
+    "tabela_anterior": "work_orders",
+    "modelo_python": "WorkOrder",
+    "nome_portugues": "OrdemServico",
+    "campo_codigo": "started_at",
+    "coluna_portugues": "iniciado_em",
+    "referencia": ""
+  },
+  {
+    "tabela": "ordens_servico",
+    "tabela_anterior": "work_orders",
+    "modelo_python": "WorkOrder",
+    "nome_portugues": "OrdemServico",
+    "campo_codigo": "finished_at",
+    "coluna_portugues": "concluido_em",
+    "referencia": ""
+  },
+  {
+    "tabela": "ordens_servico",
+    "tabela_anterior": "work_orders",
+    "modelo_python": "WorkOrder",
+    "nome_portugues": "OrdemServico",
+    "campo_codigo": "downtime_seconds",
+    "coluna_portugues": "tempo_parado_segundos",
+    "referencia": ""
+  },
+  {
+    "tabela": "ordens_servico",
+    "tabela_anterior": "work_orders",
+    "modelo_python": "WorkOrder",
+    "nome_portugues": "OrdemServico",
+    "campo_codigo": "created_at",
+    "coluna_portugues": "criado_em",
+    "referencia": ""
+  },
+  {
+    "tabela": "pecas_reposicao",
+    "tabela_anterior": "spare_parts",
+    "modelo_python": "SparePart",
+    "nome_portugues": "PecaReposicao",
+    "campo_codigo": "id",
+    "coluna_portugues": "id",
+    "referencia": ""
+  },
+  {
+    "tabela": "pecas_reposicao",
+    "tabela_anterior": "spare_parts",
+    "modelo_python": "SparePart",
+    "nome_portugues": "PecaReposicao",
+    "campo_codigo": "code",
+    "coluna_portugues": "codigo",
+    "referencia": ""
+  },
+  {
+    "tabela": "pecas_reposicao",
+    "tabela_anterior": "spare_parts",
+    "modelo_python": "SparePart",
+    "nome_portugues": "PecaReposicao",
+    "campo_codigo": "description",
+    "coluna_portugues": "descricao",
+    "referencia": ""
+  },
+  {
+    "tabela": "pecas_reposicao",
+    "tabela_anterior": "spare_parts",
+    "modelo_python": "SparePart",
+    "nome_portugues": "PecaReposicao",
+    "campo_codigo": "part_number",
+    "coluna_portugues": "numero_peca",
+    "referencia": ""
+  },
+  {
+    "tabela": "pecas_reposicao",
+    "tabela_anterior": "spare_parts",
+    "modelo_python": "SparePart",
+    "nome_portugues": "PecaReposicao",
+    "campo_codigo": "manufacturer",
+    "coluna_portugues": "fabricante",
+    "referencia": ""
+  },
+  {
+    "tabela": "pecas_reposicao",
+    "tabela_anterior": "spare_parts",
+    "modelo_python": "SparePart",
+    "nome_portugues": "PecaReposicao",
+    "campo_codigo": "category",
+    "coluna_portugues": "categoria",
+    "referencia": ""
+  },
+  {
+    "tabela": "pecas_reposicao",
+    "tabela_anterior": "spare_parts",
+    "modelo_python": "SparePart",
+    "nome_portugues": "PecaReposicao",
+    "campo_codigo": "unit",
+    "coluna_portugues": "unidade",
+    "referencia": ""
+  },
+  {
+    "tabela": "pecas_reposicao",
+    "tabela_anterior": "spare_parts",
+    "modelo_python": "SparePart",
+    "nome_portugues": "PecaReposicao",
+    "campo_codigo": "minimum_stock",
+    "coluna_portugues": "estoque_minimo",
+    "referencia": ""
+  },
+  {
+    "tabela": "pecas_reposicao",
+    "tabela_anterior": "spare_parts",
+    "modelo_python": "SparePart",
+    "nome_portugues": "PecaReposicao",
+    "campo_codigo": "maximum_stock",
+    "coluna_portugues": "estoque_maximo",
+    "referencia": ""
+  },
+  {
+    "tabela": "pecas_reposicao",
+    "tabela_anterior": "spare_parts",
+    "modelo_python": "SparePart",
+    "nome_portugues": "PecaReposicao",
+    "campo_codigo": "reorder_point",
+    "coluna_portugues": "ponto_reposicao",
+    "referencia": ""
+  },
+  {
+    "tabela": "pecas_reposicao",
+    "tabela_anterior": "spare_parts",
+    "modelo_python": "SparePart",
+    "nome_portugues": "PecaReposicao",
+    "campo_codigo": "storage_location",
+    "coluna_portugues": "local_armazenamento",
+    "referencia": ""
+  },
+  {
+    "tabela": "pecas_reposicao",
+    "tabela_anterior": "spare_parts",
+    "modelo_python": "SparePart",
+    "nome_portugues": "PecaReposicao",
+    "campo_codigo": "preferred_supplier",
+    "coluna_portugues": "fornecedor_preferencial",
+    "referencia": ""
+  },
+  {
+    "tabela": "pecas_reposicao",
+    "tabela_anterior": "spare_parts",
+    "modelo_python": "SparePart",
+    "nome_portugues": "PecaReposicao",
+    "campo_codigo": "average_cost",
+    "coluna_portugues": "custo_medio",
+    "referencia": ""
+  },
+  {
+    "tabela": "pecas_reposicao",
+    "tabela_anterior": "spare_parts",
+    "modelo_python": "SparePart",
+    "nome_portugues": "PecaReposicao",
+    "campo_codigo": "last_cost",
+    "coluna_portugues": "ultimo_custo",
+    "referencia": ""
+  },
+  {
+    "tabela": "pecas_reposicao",
+    "tabela_anterior": "spare_parts",
+    "modelo_python": "SparePart",
+    "nome_portugues": "PecaReposicao",
+    "campo_codigo": "photo_filename",
+    "coluna_portugues": "nome_arquivo_foto",
+    "referencia": ""
+  },
+  {
+    "tabela": "pecas_reposicao",
+    "tabela_anterior": "spare_parts",
+    "modelo_python": "SparePart",
+    "nome_portugues": "PecaReposicao",
+    "campo_codigo": "photo_mime",
+    "coluna_portugues": "tipo_mime_foto",
+    "referencia": ""
+  },
+  {
+    "tabela": "pecas_reposicao",
+    "tabela_anterior": "spare_parts",
+    "modelo_python": "SparePart",
+    "nome_portugues": "PecaReposicao",
+    "campo_codigo": "photo_data",
+    "coluna_portugues": "conteudo_foto",
+    "referencia": ""
+  },
+  {
+    "tabela": "pecas_reposicao",
+    "tabela_anterior": "spare_parts",
+    "modelo_python": "SparePart",
+    "nome_portugues": "PecaReposicao",
+    "campo_codigo": "datasheet_filename",
+    "coluna_portugues": "nome_arquivo_ficha",
+    "referencia": ""
+  },
+  {
+    "tabela": "pecas_reposicao",
+    "tabela_anterior": "spare_parts",
+    "modelo_python": "SparePart",
+    "nome_portugues": "PecaReposicao",
+    "campo_codigo": "datasheet_data",
+    "coluna_portugues": "conteudo_ficha",
+    "referencia": ""
+  },
+  {
+    "tabela": "pecas_reposicao",
+    "tabela_anterior": "spare_parts",
+    "modelo_python": "SparePart",
+    "nome_portugues": "PecaReposicao",
+    "campo_codigo": "active",
+    "coluna_portugues": "ativo",
+    "referencia": ""
+  },
+  {
+    "tabela": "pecas_reposicao",
+    "tabela_anterior": "spare_parts",
+    "modelo_python": "SparePart",
+    "nome_portugues": "PecaReposicao",
+    "campo_codigo": "created_at",
+    "coluna_portugues": "criado_em",
+    "referencia": ""
+  },
+  {
+    "tabela": "pecas_reposicao",
+    "tabela_anterior": "spare_parts",
+    "modelo_python": "SparePart",
+    "nome_portugues": "PecaReposicao",
+    "campo_codigo": "updated_at",
+    "coluna_portugues": "atualizado_em",
+    "referencia": ""
+  },
+  {
+    "tabela": "pendencias_linha",
+    "tabela_anterior": "line_pendencies",
+    "modelo_python": "LinePendency",
+    "nome_portugues": "PendenciaLinha",
+    "campo_codigo": "id",
+    "coluna_portugues": "id",
+    "referencia": ""
+  },
+  {
+    "tabela": "pendencias_linha",
+    "tabela_anterior": "line_pendencies",
+    "modelo_python": "LinePendency",
+    "nome_portugues": "PendenciaLinha",
+    "campo_codigo": "work_order_id",
+    "coluna_portugues": "ordem_servico_id",
+    "referencia": "ordens_servico.id"
+  },
+  {
+    "tabela": "pendencias_linha",
+    "tabela_anterior": "line_pendencies",
+    "modelo_python": "LinePendency",
+    "nome_portugues": "PendenciaLinha",
+    "campo_codigo": "line_id",
+    "coluna_portugues": "linha_id",
+    "referencia": "linhas.id"
+  },
+  {
+    "tabela": "pendencias_linha",
+    "tabela_anterior": "line_pendencies",
+    "modelo_python": "LinePendency",
+    "nome_portugues": "PendenciaLinha",
+    "campo_codigo": "equipment_id",
+    "coluna_portugues": "equipamento_id",
+    "referencia": "equipamentos.id"
+  },
+  {
+    "tabela": "pendencias_linha",
+    "tabela_anterior": "line_pendencies",
+    "modelo_python": "LinePendency",
+    "nome_portugues": "PendenciaLinha",
+    "campo_codigo": "equipment_serial",
+    "coluna_portugues": "serie_equipamento",
+    "referencia": ""
+  },
+  {
+    "tabela": "pendencias_linha",
+    "tabela_anterior": "line_pendencies",
+    "modelo_python": "LinePendency",
+    "nome_portugues": "PendenciaLinha",
+    "campo_codigo": "description",
+    "coluna_portugues": "descricao",
+    "referencia": ""
+  },
+  {
+    "tabela": "pendencias_linha",
+    "tabela_anterior": "line_pendencies",
+    "modelo_python": "LinePendency",
+    "nome_portugues": "PendenciaLinha",
+    "campo_codigo": "priority",
+    "coluna_portugues": "prioridade",
+    "referencia": ""
+  },
+  {
+    "tabela": "pendencias_linha",
+    "tabela_anterior": "line_pendencies",
+    "modelo_python": "LinePendency",
+    "nome_portugues": "PendenciaLinha",
+    "campo_codigo": "status",
+    "coluna_portugues": "situacao",
+    "referencia": ""
+  },
+  {
+    "tabela": "pendencias_linha",
+    "tabela_anterior": "line_pendencies",
+    "modelo_python": "LinePendency",
+    "nome_portugues": "PendenciaLinha",
+    "campo_codigo": "created_by_id",
+    "coluna_portugues": "criado_por_id",
+    "referencia": "usuarios.id"
+  },
+  {
+    "tabela": "pendencias_linha",
+    "tabela_anterior": "line_pendencies",
+    "modelo_python": "LinePendency",
+    "nome_portugues": "PendenciaLinha",
+    "campo_codigo": "created_at",
+    "coluna_portugues": "criado_em",
+    "referencia": ""
+  },
+  {
+    "tabela": "pendencias_linha",
+    "tabela_anterior": "line_pendencies",
+    "modelo_python": "LinePendency",
+    "nome_portugues": "PendenciaLinha",
+    "campo_codigo": "resolved_by_id",
+    "coluna_portugues": "resolvido_por_id",
+    "referencia": "usuarios.id"
+  },
+  {
+    "tabela": "pendencias_linha",
+    "tabela_anterior": "line_pendencies",
+    "modelo_python": "LinePendency",
+    "nome_portugues": "PendenciaLinha",
+    "campo_codigo": "resolved_at",
+    "coluna_portugues": "resolvido_em",
+    "referencia": ""
+  },
+  {
+    "tabela": "pendencias_linha",
+    "tabela_anterior": "line_pendencies",
+    "modelo_python": "LinePendency",
+    "nome_portugues": "PendenciaLinha",
+    "campo_codigo": "resolution",
+    "coluna_portugues": "resolucao",
+    "referencia": ""
+  },
+  {
+    "tabela": "roteiros_preventiva",
+    "tabela_anterior": "preventive_checklists",
+    "modelo_python": "PreventiveChecklist",
+    "nome_portugues": "RoteiroPreventiva",
+    "campo_codigo": "id",
+    "coluna_portugues": "id",
+    "referencia": ""
+  },
+  {
+    "tabela": "roteiros_preventiva",
+    "tabela_anterior": "preventive_checklists",
+    "modelo_python": "PreventiveChecklist",
+    "nome_portugues": "RoteiroPreventiva",
+    "campo_codigo": "equipment_type_id",
+    "coluna_portugues": "tipo_equipamento_id",
+    "referencia": "tipos_equipamento.id"
+  },
+  {
+    "tabela": "roteiros_preventiva",
+    "tabela_anterior": "preventive_checklists",
+    "modelo_python": "PreventiveChecklist",
+    "nome_portugues": "RoteiroPreventiva",
+    "campo_codigo": "frequency",
+    "coluna_portugues": "periodicidade",
+    "referencia": ""
+  },
+  {
+    "tabela": "roteiros_preventiva",
+    "tabela_anterior": "preventive_checklists",
+    "modelo_python": "PreventiveChecklist",
+    "nome_portugues": "RoteiroPreventiva",
+    "campo_codigo": "items",
+    "coluna_portugues": "itens",
+    "referencia": ""
+  },
+  {
+    "tabela": "setores",
+    "tabela_anterior": "sectors",
+    "modelo_python": "Sector",
+    "nome_portugues": "Setor",
+    "campo_codigo": "id",
+    "coluna_portugues": "id",
+    "referencia": ""
+  },
+  {
+    "tabela": "setores",
+    "tabela_anterior": "sectors",
+    "modelo_python": "Sector",
+    "nome_portugues": "Setor",
+    "campo_codigo": "code",
+    "coluna_portugues": "codigo",
+    "referencia": ""
+  },
+  {
+    "tabela": "setores",
+    "tabela_anterior": "sectors",
+    "modelo_python": "Sector",
+    "nome_portugues": "Setor",
+    "campo_codigo": "name",
+    "coluna_portugues": "nome",
+    "referencia": ""
+  },
+  {
+    "tabela": "setores",
+    "tabela_anterior": "sectors",
+    "modelo_python": "Sector",
+    "nome_portugues": "Setor",
+    "campo_codigo": "description",
+    "coluna_portugues": "descricao",
+    "referencia": ""
+  },
+  {
+    "tabela": "setores",
+    "tabela_anterior": "sectors",
+    "modelo_python": "Sector",
+    "nome_portugues": "Setor",
+    "campo_codigo": "active",
+    "coluna_portugues": "ativo",
+    "referencia": ""
+  },
+  {
+    "tabela": "setores",
+    "tabela_anterior": "sectors",
+    "modelo_python": "Sector",
+    "nome_portugues": "Setor",
+    "campo_codigo": "created_at",
+    "coluna_portugues": "criado_em",
+    "referencia": ""
+  },
+  {
+    "tabela": "solicitacoes_compra",
+    "tabela_anterior": "spare_purchase_requests",
+    "modelo_python": "PurchaseRequest",
+    "nome_portugues": "SolicitacaoCompra",
+    "campo_codigo": "id",
+    "coluna_portugues": "id",
+    "referencia": ""
+  },
+  {
+    "tabela": "solicitacoes_compra",
+    "tabela_anterior": "spare_purchase_requests",
+    "modelo_python": "PurchaseRequest",
+    "nome_portugues": "SolicitacaoCompra",
+    "campo_codigo": "purchase_type",
+    "coluna_portugues": "tipo_compra",
+    "referencia": ""
+  },
+  {
+    "tabela": "solicitacoes_compra",
+    "tabela_anterior": "spare_purchase_requests",
+    "modelo_python": "PurchaseRequest",
+    "nome_portugues": "SolicitacaoCompra",
+    "campo_codigo": "status",
+    "coluna_portugues": "situacao",
+    "referencia": ""
+  },
+  {
+    "tabela": "solicitacoes_compra",
+    "tabela_anterior": "spare_purchase_requests",
+    "modelo_python": "PurchaseRequest",
+    "nome_portugues": "SolicitacaoCompra",
+    "campo_codigo": "requester_id",
+    "coluna_portugues": "solicitante_id",
+    "referencia": "usuarios.id"
+  },
+  {
+    "tabela": "solicitacoes_compra",
+    "tabela_anterior": "spare_purchase_requests",
+    "modelo_python": "PurchaseRequest",
+    "nome_portugues": "SolicitacaoCompra",
+    "campo_codigo": "manager_id",
+    "coluna_portugues": "gestor_id",
+    "referencia": "usuarios.id"
+  },
+  {
+    "tabela": "solicitacoes_compra",
+    "tabela_anterior": "spare_purchase_requests",
+    "modelo_python": "PurchaseRequest",
+    "nome_portugues": "SolicitacaoCompra",
+    "campo_codigo": "work_order_id",
+    "coluna_portugues": "ordem_servico_id",
+    "referencia": "ordens_servico.id"
+  },
+  {
+    "tabela": "solicitacoes_compra",
+    "tabela_anterior": "spare_purchase_requests",
+    "modelo_python": "PurchaseRequest",
+    "nome_portugues": "SolicitacaoCompra",
+    "campo_codigo": "equipment_id",
+    "coluna_portugues": "equipamento_id",
+    "referencia": "equipamentos.id"
+  },
+  {
+    "tabela": "solicitacoes_compra",
+    "tabela_anterior": "spare_purchase_requests",
+    "modelo_python": "PurchaseRequest",
+    "nome_portugues": "SolicitacaoCompra",
+    "campo_codigo": "equipment_serial",
+    "coluna_portugues": "serie_equipamento",
+    "referencia": ""
+  },
+  {
+    "tabela": "solicitacoes_compra",
+    "tabela_anterior": "spare_purchase_requests",
+    "modelo_python": "PurchaseRequest",
+    "nome_portugues": "SolicitacaoCompra",
+    "campo_codigo": "justification",
+    "coluna_portugues": "justificativa",
+    "referencia": ""
+  },
+  {
+    "tabela": "solicitacoes_compra",
+    "tabela_anterior": "spare_purchase_requests",
+    "modelo_python": "PurchaseRequest",
+    "nome_portugues": "SolicitacaoCompra",
+    "campo_codigo": "priority",
+    "coluna_portugues": "prioridade",
+    "referencia": ""
+  },
+  {
+    "tabela": "solicitacoes_compra",
+    "tabela_anterior": "spare_purchase_requests",
+    "modelo_python": "PurchaseRequest",
+    "nome_portugues": "SolicitacaoCompra",
+    "campo_codigo": "manager_comment",
+    "coluna_portugues": "parecer_gestor",
+    "referencia": ""
+  },
+  {
+    "tabela": "solicitacoes_compra",
+    "tabela_anterior": "spare_purchase_requests",
+    "modelo_python": "PurchaseRequest",
+    "nome_portugues": "SolicitacaoCompra",
+    "campo_codigo": "submitted_at",
+    "coluna_portugues": "enviado_em",
+    "referencia": ""
+  },
+  {
+    "tabela": "solicitacoes_compra",
+    "tabela_anterior": "spare_purchase_requests",
+    "modelo_python": "PurchaseRequest",
+    "nome_portugues": "SolicitacaoCompra",
+    "campo_codigo": "decided_at",
+    "coluna_portugues": "decidido_em",
+    "referencia": ""
+  },
+  {
+    "tabela": "solicitacoes_compra",
+    "tabela_anterior": "spare_purchase_requests",
+    "modelo_python": "PurchaseRequest",
+    "nome_portugues": "SolicitacaoCompra",
+    "campo_codigo": "created_at",
+    "coluna_portugues": "criado_em",
+    "referencia": ""
+  },
+  {
+    "tabela": "solicitacoes_compra",
+    "tabela_anterior": "spare_purchase_requests",
+    "modelo_python": "PurchaseRequest",
+    "nome_portugues": "SolicitacaoCompra",
+    "campo_codigo": "updated_at",
+    "coluna_portugues": "atualizado_em",
+    "referencia": ""
+  },
+  {
+    "tabela": "solicitacoes_pecas_manutencao",
+    "tabela_anterior": "maintenance_part_requisitions",
+    "modelo_python": "PartRequisition",
+    "nome_portugues": "SolicitacaoPeca",
+    "campo_codigo": "id",
+    "coluna_portugues": "id",
+    "referencia": ""
+  },
+  {
+    "tabela": "solicitacoes_pecas_manutencao",
+    "tabela_anterior": "maintenance_part_requisitions",
+    "modelo_python": "PartRequisition",
+    "nome_portugues": "SolicitacaoPeca",
+    "campo_codigo": "work_order_id",
+    "coluna_portugues": "ordem_servico_id",
+    "referencia": "ordens_servico.id"
+  },
+  {
+    "tabela": "solicitacoes_pecas_manutencao",
+    "tabela_anterior": "maintenance_part_requisitions",
+    "modelo_python": "PartRequisition",
+    "nome_portugues": "SolicitacaoPeca",
+    "campo_codigo": "equipment_id",
+    "coluna_portugues": "equipamento_id",
+    "referencia": "equipamentos.id"
+  },
+  {
+    "tabela": "solicitacoes_pecas_manutencao",
+    "tabela_anterior": "maintenance_part_requisitions",
+    "modelo_python": "PartRequisition",
+    "nome_portugues": "SolicitacaoPeca",
+    "campo_codigo": "equipment_serial",
+    "coluna_portugues": "serie_equipamento",
+    "referencia": ""
+  },
+  {
+    "tabela": "solicitacoes_pecas_manutencao",
+    "tabela_anterior": "maintenance_part_requisitions",
+    "modelo_python": "PartRequisition",
+    "nome_portugues": "SolicitacaoPeca",
+    "campo_codigo": "spare_part_id",
+    "coluna_portugues": "peca_id",
+    "referencia": "pecas_reposicao.id"
+  },
+  {
+    "tabela": "solicitacoes_pecas_manutencao",
+    "tabela_anterior": "maintenance_part_requisitions",
+    "modelo_python": "PartRequisition",
+    "nome_portugues": "SolicitacaoPeca",
+    "campo_codigo": "quantity",
+    "coluna_portugues": "quantidade",
+    "referencia": ""
+  },
+  {
+    "tabela": "solicitacoes_pecas_manutencao",
+    "tabela_anterior": "maintenance_part_requisitions",
+    "modelo_python": "PartRequisition",
+    "nome_portugues": "SolicitacaoPeca",
+    "campo_codigo": "requester_id",
+    "coluna_portugues": "solicitante_id",
+    "referencia": "usuarios.id"
+  },
+  {
+    "tabela": "solicitacoes_pecas_manutencao",
+    "tabela_anterior": "maintenance_part_requisitions",
+    "modelo_python": "PartRequisition",
+    "nome_portugues": "SolicitacaoPeca",
+    "campo_codigo": "note",
+    "coluna_portugues": "observacao",
+    "referencia": ""
+  },
+  {
+    "tabela": "solicitacoes_pecas_manutencao",
+    "tabela_anterior": "maintenance_part_requisitions",
+    "modelo_python": "PartRequisition",
+    "nome_portugues": "SolicitacaoPeca",
+    "campo_codigo": "created_at",
+    "coluna_portugues": "criado_em",
+    "referencia": ""
+  },
+  {
+    "tabela": "tipos_equipamento",
+    "tabela_anterior": "equipment_types",
+    "modelo_python": "EquipmentType",
+    "nome_portugues": "TipoEquipamento",
+    "campo_codigo": "id",
+    "coluna_portugues": "id",
+    "referencia": ""
+  },
+  {
+    "tabela": "tipos_equipamento",
+    "tabela_anterior": "equipment_types",
+    "modelo_python": "EquipmentType",
+    "nome_portugues": "TipoEquipamento",
+    "campo_codigo": "name",
+    "coluna_portugues": "nome",
+    "referencia": ""
+  },
+  {
+    "tabela": "tipos_problema",
+    "tabela_anterior": "problem_types",
+    "modelo_python": "ProblemType",
+    "nome_portugues": "TipoProblema",
+    "campo_codigo": "id",
+    "coluna_portugues": "id",
+    "referencia": ""
+  },
+  {
+    "tabela": "tipos_problema",
+    "tabela_anterior": "problem_types",
+    "modelo_python": "ProblemType",
+    "nome_portugues": "TipoProblema",
+    "campo_codigo": "name",
+    "coluna_portugues": "nome",
+    "referencia": ""
+  },
+  {
+    "tabela": "tipos_problema",
+    "tabela_anterior": "problem_types",
+    "modelo_python": "ProblemType",
+    "nome_portugues": "TipoProblema",
+    "campo_codigo": "equipment_type_id",
+    "coluna_portugues": "tipo_equipamento_id",
+    "referencia": "tipos_equipamento.id"
+  },
+  {
+    "tabela": "tipos_problema",
+    "tabela_anterior": "problem_types",
+    "modelo_python": "ProblemType",
+    "nome_portugues": "TipoProblema",
+    "campo_codigo": "priority",
+    "coluna_portugues": "prioridade",
+    "referencia": ""
+  },
+  {
+    "tabela": "tipos_problema",
+    "tabela_anterior": "problem_types",
+    "modelo_python": "ProblemType",
+    "nome_portugues": "TipoProblema",
+    "campo_codigo": "active",
+    "coluna_portugues": "ativo",
+    "referencia": ""
+  },
+  {
+    "tabela": "usuarios",
+    "tabela_anterior": "users",
+    "modelo_python": "User",
+    "nome_portugues": "Usuario",
+    "campo_codigo": "id",
+    "coluna_portugues": "id",
+    "referencia": ""
+  },
+  {
+    "tabela": "usuarios",
+    "tabela_anterior": "users",
+    "modelo_python": "User",
+    "nome_portugues": "Usuario",
+    "campo_codigo": "last_login",
+    "coluna_portugues": "ultimo_acesso",
+    "referencia": ""
+  },
+  {
+    "tabela": "usuarios",
+    "tabela_anterior": "users",
+    "modelo_python": "User",
+    "nome_portugues": "Usuario",
+    "campo_codigo": "name",
+    "coluna_portugues": "nome",
+    "referencia": ""
+  },
+  {
+    "tabela": "usuarios",
+    "tabela_anterior": "users",
+    "modelo_python": "User",
+    "nome_portugues": "Usuario",
+    "campo_codigo": "registration",
+    "coluna_portugues": "matricula",
+    "referencia": ""
+  },
+  {
+    "tabela": "usuarios",
+    "tabela_anterior": "users",
+    "modelo_python": "User",
+    "nome_portugues": "Usuario",
+    "campo_codigo": "password",
+    "coluna_portugues": "senha_hash",
+    "referencia": ""
+  },
+  {
+    "tabela": "usuarios",
+    "tabela_anterior": "users",
+    "modelo_python": "User",
+    "nome_portugues": "Usuario",
+    "campo_codigo": "role",
+    "coluna_portugues": "perfil",
+    "referencia": ""
+  },
+  {
+    "tabela": "usuarios",
+    "tabela_anterior": "users",
+    "modelo_python": "User",
+    "nome_portugues": "Usuario",
+    "campo_codigo": "line_id",
+    "coluna_portugues": "linha_id",
+    "referencia": "linhas.id"
+  },
+  {
+    "tabela": "usuarios",
+    "tabela_anterior": "users",
+    "modelo_python": "User",
+    "nome_portugues": "Usuario",
+    "campo_codigo": "active",
+    "coluna_portugues": "ativo",
+    "referencia": ""
+  },
+  {
+    "tabela": "usuarios",
+    "tabela_anterior": "users",
+    "modelo_python": "User",
+    "nome_portugues": "Usuario",
+    "campo_codigo": "created_at",
+    "coluna_portugues": "criado_em",
+    "referencia": ""
+  }
+]

@@ -1,0 +1,168 @@
+/* Estilo local de cadastro: aparência, estados visuais e adaptação da tela; não acessa a API nem o banco. */
+.cadastro-page {
+    padding: 30px;
+    max-width: 1500px;
+    margin: 0 auto;
+}
+
+.cadastro-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 30px;
+    gap: 20px;
+}
+
+.eyebrow {
+    font-size: 11px;
+    font-weight: 700;
+    color: #c8102e;
+    letter-spacing: 1.5px;
+    margin-bottom: 10px;
+}
+
+h1 {
+    margin: 0;
+    font-size: 32px;
+    font-weight: 800;
+    color: #111827;
+}
+
+.cadastro-header p {
+    color: #64748b;
+    font-size: 14px;
+    margin: 10px 0 0;
+}
+
+.header-icon {
+    width: 64px;
+    height: 64px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #fff1f2;
+    border-radius: 18px;
+    color: #c8102e;
+}
+
+.header-icon mat-icon {
+    width: 32px;
+    height: 32px;
+    font-size: 32px;
+}
+
+.cadastro-grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 18px;
+}
+
+.cadastro-card {
+    display: flex;
+    align-items: flex-start;
+    gap: 16px;
+    min-height: 150px;
+    padding: 22px;
+    background: #fff;
+    border: 1px solid #e5e7eb;
+    border-radius: 16px;
+    text-decoration: none;
+    color: inherit;
+    box-shadow: 0 3px 12px rgba(0, 0, 0, 0.035);
+    transition: 0.2s ease;
+}
+
+a.cadastro-card:hover {
+    transform: translateY(-3px);
+    border-color: #c8102e;
+    box-shadow: 0 10px 24px rgba(0, 0, 0, 0.08);
+}
+
+.icon-box {
+    width: 55px;
+    height: 55px;
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 13px;
+    color: #fff;
+}
+
+.icon-box mat-icon {
+    font-size: 27px;
+    height: 27px;
+    width: 27px;
+}
+
+.card-content {
+    min-width: 0;
+}
+
+.card-content h3 {
+    margin: 2px 0 7px;
+    color: #111827;
+    font-size: 17px;
+    font-weight: 700;
+}
+
+.card-content p {
+    margin: 0 0 15px;
+    color: #64748b;
+    font-size: 12px;
+    line-height: 1.6;
+}
+
+.open-label {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    color: #c8102e;
+    font-size: 12px;
+    font-weight: 700;
+}
+
+.open-label mat-icon {
+    width: 16px;
+    height: 16px;
+    font-size: 16px;
+}
+
+.coming-soon {
+    opacity: 0.65;
+    background: #f8fafc;
+}
+
+.pending-label {
+    font-size: 11px;
+    font-weight: 600;
+    color: #64748b;
+    background: #e2e8f0;
+    border-radius: 20px;
+    padding: 6px 10px;
+}
+
+/* Responsividade: aplica estas regras quando a largura da tela atende à condição abaixo. */
+@media (max-width: 1200px) {
+    .cadastro-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+}
+
+@media (max-width: 720px) {
+    .cadastro-page {
+        padding: 16px;
+    }
+
+    .cadastro-grid {
+        grid-template-columns: 1fr;
+    }
+
+    h1 {
+        font-size: 25px;
+    }
+
+    .header-icon {
+        display: none;
+    }
+}

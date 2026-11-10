@@ -1,0 +1,75 @@
+%% Gerado do catálogo físico. PK = chave primária; FK = referência a outra tabela.
+erDiagram
+    usuarios {
+        int8 id PK
+        timestamptz ultimo_acesso
+        varchar nome
+        varchar matricula
+        text senha_hash
+        varchar perfil
+        bool ativo
+        timestamptz criado_em
+        int8 linha_id FK
+    }
+    equipamentos {
+        int8 id PK
+        varchar numero_modelo
+        varchar modelo
+        varchar numero_serie
+        varchar fabricante
+        date data_fabricacao
+        varchar data_fabricacao_texto
+        numeric comprimento_mm
+        numeric largura_mm
+        numeric altura_mm
+        numeric peso_kg
+        numeric tensao_v
+        numeric frequencia_hz
+        numeric corrente_a
+        numeric potencia_w
+        numeric pressao_pneumatica_bar
+        varchar numero_patrimonio
+        text descricao
+        text descricao_processo
+        int4 posicao
+        bool ativo
+        timestamptz criado_em
+        int2 tipo_equipamento_id
+        int8 linha_id
+        int8 setor_id
+        varchar nome
+    }
+    movimentacoes_equipamento {
+        int8 id PK
+        int4 posicao_origem
+        int4 posicao_destino
+        varchar acao
+        timestamptz criado_em
+        int8 equipamento_id FK
+        int8 executado_por_id
+        int8 linha_origem_id
+        int8 linha_destino_id
+    }
+    linhas {
+        int8 id PK
+        varchar codigo
+        varchar nome
+        text descricao
+        bool ativo
+        timestamptz criado_em
+        int8 setor_id
+    }
+    anexos_equipamento {
+        int8 id PK
+        varchar categoria
+        varchar nome_arquivo
+        varchar tipo_mime
+        bytea conteudo
+        int4 tamanho_bytes
+        timestamptz criado_em
+        int8 equipamento_id FK
+        int8 enviado_por_id
+    }
+    linhas |o--o{ usuarios : "linha_id"
+    equipamentos ||--o{ anexos_equipamento : "equipamento_id"
+    equipamentos ||--o{ movimentacoes_equipamento : "equipamento_id"

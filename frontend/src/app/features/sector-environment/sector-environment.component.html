@@ -1,0 +1,112 @@
+<!-- Apresenta dados do setor carregados pelo componente e liga os cards às páginas de equipamentos/linhas. -->
+<div class="page">
+    <div class="eyebrow"
+        ><a routerLink="/setores" style="color: inherit; text-decoration: none"
+            >SETORES</a
+        >
+        / AMBIENTE DO SETOR
+    </div>
+    <h1>{{
+        sector?.name || (error ? 'Setor indisponível' : 'Carregando setor...')
+    }}</h1>
+    <p class="muted">{{
+        sector?.description ||
+            'Gerencie o repositório de equipamentos e as linhas SMT deste setor.'
+    }}</p>
+    <p *ngIf="error" class="error">{{ error }}</p>
+    <div class="actions" style="margin: 20px 0; gap: 12px; flex-wrap: wrap">
+        <div class="metric"
+            >Equipamentos cadastrados<strong>{{
+                equipment.length
+            }}</strong></div
+        >
+        <div class="metric"
+            >Disponíveis no repositório<strong>{{
+                quantityAvailable()
+            }}</strong></div
+        >
+        <div class="metric"
+            >Linhas SMT<strong>{{ linesSector().length }}</strong></div
+        >
+    </div>
+    <div
+        style="
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+            gap: 16px;
+        "
+    >
+        <div class="card">
+            <mat-icon
+                style="
+                    color: #d10a20;
+                    font-size: 34px;
+                    width: 34px;
+                    height: 34px;
+                "
+                >inventory_2</mat-icon
+            >
+            <h2>Repositório de equipamentos</h2>
+            <p class="muted"
+                >Cadastre máquinas com seus dados permanentes, consulte as
+                disponíveis e preserve os históricos.</p
+            >
+            <a
+                mat-flat-button
+                class="primary"
+                [routerLink]="['/setores', idSector, 'equipamentos']"
+                >Abrir repositório</a
+            >
+        </div>
+        <div class="card">
+            <mat-icon
+                style="
+                    color: #d10a20;
+                    font-size: 34px;
+                    width: 34px;
+                    height: 34px;
+                "
+                >view_week</mat-icon
+            >
+            <h2>Linhas SMT</h2>
+            <p class="muted"
+                >Crie linhas pelo nome, selecione máquinas do repositório e
+                defina a sequência. Execute relayouts quando necessário.</p
+            >
+            <a
+                mat-flat-button
+                class="primary"
+                [routerLink]="['/setores', idSector, 'linhas']"
+                >Criar e montar linhas</a
+            >
+        </div>
+    </div>
+    <div class="card" style="margin-top: 20px">
+        <h2>Linhas deste setor</h2>
+        <div class="table-wrap">
+            <table>
+                <tr>
+                    <th>Nome</th>
+                    <th>Equipamentos</th>
+                    <th>Comprimento total</th>
+                    <th>Ação</th>
+                </tr>
+                <tr *ngFor="let l of linesSector()">
+                    <td>{{ l.name }}</td>
+                    <td>{{ l.equipment_count || 0 }}</td>
+                    <td>{{ dimensionsLines(l) | number: '1.2-2' }} m</td>
+                    <td
+                        ><a
+                            mat-stroked-button
+                            [routerLink]="['/setores', idSector, 'linhas']"
+                            >Abrir montagem</a
+                        >
+                    </td>
+                </tr>
+            </table>
+        </div>
+        <p *ngIf="!linesSector().length" class="muted"
+            >Nenhuma linha criada neste setor.</p
+        >
+    </div>
+</div>

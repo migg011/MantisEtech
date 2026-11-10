@@ -1,0 +1,346 @@
+<!-- Layout de máquinas da linha: o clique chama open(machine), que abre ReportDialog para registrar a ocorrência na API. -->
+<section class="line-page">
+    <nav class="breadcrumbs" aria-label="Localização">
+        <a
+            *ngIf="
+                authentication.user()?.role !== 'OPERADOR';
+                else operatorHome
+            "
+            routerLink="/setores"
+            ><mat-icon>arrow_back</mat-icon>Linhas SMT</a
+        >
+        <ng-template #operatorHome><span>Linhas SMT</span></ng-template>
+        <mat-icon>chevron_right</mat-icon
+        ><span>{{ line?.name || 'Painel da linha' }}</span>
+    </nav>
+
+    <header class="line-heading">
+        <div class="line-title">
+            <div class="title-row"
+                ><h1>{{ line?.name || 'Linha SMT' }}</h1
+                ><span class="production-tag">Produção</span></div
+            >
+            <p
+                >Acompanhe os equipamentos e registre ocorrências de
+                manutenção.</p
+            >
+        </div>
+    </header>
+
+    <div class="line-toolbar">
+        <label
+            class="line-select"
+            *ngIf="authentication.user()?.role !== 'OPERADOR'"
+        >
+            <span>Selecionar linha</span>
+            <select
+                [(ngModel)]="selected"
+                (ngModelChange)="load()"
+                [disabled]="!lines.length"
+            >
+                <option [ngValue]="null" disabled>Selecione uma linha</option>
+                <option *ngFor="let item of lines" [ngValue]="item.id"
+                    >{{ item.name
+                    }}{{
+                        item.sector_name ? ' · ' + item.sector_name : ''
+                    }}</option
+                >
+            </select>
+        </label>
+        <span
+            class="line-state"
+            *ngIf="line && !loading && !error"
+            [class.has-orders]="ordersOpen > 0"
+            ><i></i
+            >{{
+                ordersOpen ? 'Com ocorrências de manutenção' : 'Sem OS abertas'
+            }}</span
+        >
+    </div>
+
+    <div *ngIf="error" class="line-message error" role="alert"
+        ><mat-icon>error_outline</mat-icon><span>{{ error }}</span></div
+    >
+    <div *ngIf="loading" class="line-message" role="status"
+        ><mat-icon class="loading-icon">sync</mat-icon>Carregando a
+        linha...</div
+    >
+
+    <section
+        class="equipment-panel"
+        *ngIf="!loading && !error && equipment.length"
+        aria-label="Equipamentos da linha"
+    >
+        <div class="panel-heading"
+            ><div
+                ><h2>Layout da linha</h2
+                ><p
+                    >Entrada → Saída · Clique na máquina para consultar suas
+                    OS.</p
+                ></div
+            ><span>{{ equipment.length }} equipamentos</span></div
+        >
+        <!-- A composição vem da montagem no repositório, não de uma fotografia fixa da linha. -->
+        <div
+            class="line-panorama"
+            tabindex="0"
+            aria-label="Linha de produção; role lateralmente para ver todos os equipamentos"
+        >
+            <div
+                class="equipment-track"
+                [style.min-width.px]="widthMinimumLine"
+                [style.--total]="ratioTotal"
+                [style.--height-maximum]="heightMaximumLine"
+            >
+                <button
+                    *ngFor="let machine of equipment; trackBy: identifyMachine"
+                    type="button"
+                    class="machine-card"
+                    [style.--ratio]="ratioVisual(machine)"
+                    [style.--height]="heightVisual(machine)"
+                    [class.conveyor]="
+                        machine.type_name.toUpperCase().includes('CONVEYOR')
+                    "
+                    [class.selected]="equipmentSelected?.id === machine.id"
+                    [attr.aria-pressed]="equipmentSelected?.id === machine.id"
+                    [class.attention]="status(machine) === 'attention'"
+                    [class.maintenance]="status(machine) === 'maintenance'"
+                    [attr.aria-label]="
+                        'Consultar OS de ' +
+                        (machine.name || machine.model || machine.type_name) +
+                        ', posição ' +
+                        machine.position
+                    "
+                    [title]="
+                        machine.type_name +
+                        ' · ' +
+                        machine.model +
+                        ' · ' +
+                        labelStatus(machine)
+                    "
+                    (click)="selectEquipment(machine)"
+                >
+                    <span class="machine-position">{{
+                        machine.position || '—'
+                    }}</span>
+                    <div class="machine-image">
+                        <img
+                            *ngIf="
+                                imageEquipment(machine) as photo;
+                                else noPhoto
+                            "
+                            [src]="photo"
+                            [alt]="
+                                machine.type_name +
+                                ' — ' +
+                                (machine.model || '')
+                            "
+                            (load)="registerPhotoDimensions(machine, $event)"
+                            (error)="registerFailureImage(machine)"
+                        />
+                        <ng-template #noPhoto
+                            ><span class="photo-placeholder"
+                                ><mat-icon>precision_manufacturing</mat-icon
+                                ><small>{{
+                                    photosUnavailable.has(machine.id)
+                                        ? 'Foto indisponível'
+                                        : machine.has_photo
+                                          ? 'Carregando foto...'
+                                          : 'Sem foto'
+                                }}</small></span
+                            ></ng-template
+                        >
+                    </div>
+                    <span
+                        class="machine-status"
+                        [attr.aria-label]="labelStatus(machine)"
+                    ></span>
+                    <strong class="machine-label">{{
+                        machine.name || machine.type_name
+                    }}</strong>
+                </button>
+            </div>
+        </div>
+        <div class="status-legend"
+            ><span><i class="clear"></i>Sem OS aberta</span
+            ><span><i class="attention"></i>OS aberta</span
+            ><span><i class="maintenance"></i>Em atendimento</span></div
+        >
+    </section>
+
+    <div class="line-empty" *ngIf="!loading && !error && !equipment.length">
+        <mat-icon>precision_manufacturing</mat-icon
+        ><h2>{{
+            line
+                ? 'Esta linha ainda não tem equipamentos'
+                : 'Nenhuma linha disponível'
+        }}</h2>
+        <p>{{
+            line
+                ? 'Os equipamentos aparecem aqui após serem alocados na montagem da linha.'
+                : 'Cadastre uma linha ou verifique a linha atribuída ao seu usuário.'
+        }}</p>
+        <a
+            *ngIf="
+                line?.sector_id && authentication.user()?.role !== 'OPERADOR'
+            "
+            [routerLink]="['/setores', line.sector_id, 'linhas']"
+            >Montar linha<mat-icon>arrow_forward</mat-icon></a
+        >
+    </div>
+
+    <ng-template #detailsEquipment>
+        <section
+            class="detail-panel line-attendance"
+            *ngIf="equipmentSelected && !loading"
+            aria-live="polite"
+        >
+            <div class="selected-heading"
+                ><div
+                    ><span class="selected-caption"
+                        >EQUIPAMENTO SELECIONADO · POSIÇÃO
+                        {{ equipmentSelected.position }}</span
+                    ><h2
+                        >{{
+                            equipmentSelected.name ||
+                                equipmentSelected.type_name
+                        }}
+                        · {{ equipmentSelected.model }}</h2
+                    ><p
+                        >{{
+                            equipmentSelected.asset_number ||
+                                equipmentSelected.serial
+                        }}
+                        · {{ labelStatus(equipmentSelected) }}</p
+                    ></div
+                ><button
+                    type="button"
+                    class="close-selection"
+                    (click)="closeDetails()"
+                    aria-label="Fechar detalhes"
+                    ><mat-icon>close</mat-icon></button
+                ></div
+            >
+            <button
+                mat-flat-button
+                class="primary"
+                (click)="open(equipmentSelected)"
+                ><mat-icon>add</mat-icon>Abrir nova OS</button
+            >
+            <h3>Ordens de serviço deste equipamento</h3>
+            <p class="muted"
+                >Parada contada a partir da abertura da OS. Atualização
+                automática a cada 15 segundos. Histórico das últimas 20 OS
+                concluídas.</p
+            >
+            <p *ngIf="errorOrders" role="alert" class="error">{{
+                errorOrders
+            }}</p>
+            <div class="table-wrap"
+                ><table
+                    ><thead
+                        ><tr
+                            ><th>OS / Máquina</th><th>Operador</th
+                            ><th>Linha parou</th><th>Técnico / Início</th
+                            ><th>Status</th><th>Fechamento</th
+                            ><th>Tempo de parada</th></tr
+                        ></thead
+                    ><tbody>
+                        <tr *ngFor="let order of ordersEquipment"
+                            ><td
+                                ><strong
+                                    >#{{ order.id }} ·
+                                    {{ order.model || order.type_name }}</strong
+                                ><br />{{ order.problem }}</td
+                            ><td>{{ order.opened_by_name }}</td
+                            ><td>{{
+                                order.created_at | date: 'dd/MM/yyyy HH:mm:ss'
+                            }}</td
+                            ><td
+                                >{{
+                                    order.assigned_to_name ||
+                                        'Aguardando técnico'
+                                }}<br />{{
+                                    order.started_at
+                                        | date: 'dd/MM/yyyy HH:mm:ss'
+                                }}</td
+                            ><td>{{
+                                order.status === 'CONCLUIDA'
+                                    ? 'Concluída'
+                                    : order.status === 'EM_ANDAMENTO'
+                                      ? 'Em atendimento'
+                                      : 'Aberta'
+                            }}</td
+                            ><td>{{
+                                (order.finished_at
+                                    | date: 'dd/MM/yyyy HH:mm:ss') || '—'
+                            }}</td
+                            ><td
+                                ><strong
+                                    >{{
+                                        minutes(order) | number: '1.0-2'
+                                    }}
+                                    min</strong
+                                ></td
+                            ></tr
+                        >
+                        <tr *ngIf="!ordersEquipment.length && !errorOrders"
+                            ><td colspan="7"
+                                >Nenhuma OS disponível para este
+                                equipamento.</td
+                            ></tr
+                        >
+                    </tbody></table
+                ></div
+            >
+        </section>
+    </ng-template>
+
+    <div class="line-details" *ngIf="line && !loading && !error">
+        <article class="detail-panel">
+            <h2><mat-icon>info_outline</mat-icon>Informações da linha</h2>
+            <dl
+                ><div
+                    ><dt>Nome</dt><dd>{{ line.name }}</dd></div
+                ><div
+                    ><dt>Descrição</dt
+                    ><dd>{{ line.description || 'Não informada' }}</dd></div
+                ><div
+                    ><dt>Setor</dt
+                    ><dd>{{ line.sector_name || 'Não informado' }}</dd></div
+                ><div
+                    ><dt>Layout</dt
+                    ><dd
+                        >{{ equipment.length }} equipamentos ·
+                        {{ lengthMeters | number: '1.2-2' }} m</dd
+                    ></div
+                ></dl
+            >
+        </article>
+        <article class="detail-panel">
+            <h2><mat-icon>assignment</mat-icon>Acompanhamento</h2>
+            <dl
+                ><div
+                    ><dt>Ordens abertas</dt
+                    ><dd
+                        ><span
+                            class="order-count"
+                            [class.has-orders]="ordersOpen > 0"
+                            >{{ ordersOpen }}</span
+                        ><span class="detail-note"
+                            >em {{ machinesAffected }} equipamento(s)</span
+                        ></dd
+                    ></div
+                ><div
+                    ><dt>Usuário</dt
+                    ><dd>{{ authentication.user()?.name }}</dd></div
+                ><div
+                    ><dt>Perfil</dt><dd>{{ roleName }}</dd></div
+                ><div
+                    ><dt>Atualização</dt
+                    ><dd>{{ updatedIn | date: 'dd/MM/yyyy · HH:mm' }}</dd></div
+                ></dl
+            >
+        </article>
+    </div>
+</section>

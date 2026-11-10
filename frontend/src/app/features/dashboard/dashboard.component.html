@@ -1,0 +1,348 @@
+<div class="page maintenance-dashboard">
+    <header class="dashboard-heading"
+        ><div><h1>Dashboard</h1><p>Visão geral da operação</p></div
+        ><div class="dashboard-filters"
+            ><label
+                >Linha<select
+                    aria-label="Filtrar por linha"
+                    [(ngModel)]="lineId"
+                    (ngModelChange)="load()"
+                    ><option value="">Todas as linhas e repositórios</option
+                    ><option *ngFor="let l of lines" [value]="l.id">{{
+                        l.name
+                    }}</option></select
+                ></label
+            ><label
+                >Período<select
+                    aria-label="Período dos gráficos"
+                    [(ngModel)]="days"
+                    (ngModelChange)="load()"
+                    ><option [ngValue]="7">Últimos 7 dias</option
+                    ><option [ngValue]="30">Últimos 30 dias</option
+                    ><option [ngValue]="90">Últimos 90 dias</option></select
+                ></label
+            ><button
+                class="refresh-button"
+                type="button"
+                (click)="load()"
+                [disabled]="loading"
+                aria-label="Atualizar indicadores"
+                ><mat-icon>refresh</mat-icon></button
+            ></div
+        ></header
+    >
+    <p class="dashboard-error" role="alert" *ngIf="linesError">{{
+        linesError
+    }}</p>
+    <p class="dashboard-error" role="alert" *ngIf="errorMessage"
+        >{{ errorMessage }}
+        <button type="button" (click)="load()">Tentar novamente</button></p
+    >
+    <div class="dashboard-loading" *ngIf="loading" role="status"
+        ><span class="loading-dot"></span> Atualizando indicadores...</div
+    >
+    <ng-container *ngIf="data as d">
+        <section class="kpi-grid" aria-label="Indicadores principais">
+            <article class="kpi-card"
+                ><span class="kpi-icon blue"
+                    ><mat-icon>precision_manufacturing</mat-icon></span
+                ><div
+                    ><span class="kpi-label">Total de equipamentos</span
+                    ><strong>{{ d.summary.equipment_total }}</strong
+                    ><small>Cadastros ativos no escopo</small></div
+                ></article
+            >
+            <article class="kpi-card"
+                ><span class="kpi-icon green"
+                    ><mat-icon>task_alt</mat-icon></span
+                ><div
+                    ><span class="kpi-label">Equipamentos ativos</span
+                    ><strong>{{ d.summary.equipment_active }}</strong
+                    ><small>Sem OS corretiva aberta</small></div
+                ></article
+            >
+            <article class="kpi-card"
+                ><span class="kpi-icon red"
+                    ><mat-icon>notification_important</mat-icon></span
+                ><div
+                    ><span class="kpi-label">Equipamentos em falha</span
+                    ><strong>{{ d.summary.equipment_fault }}</strong
+                    ><small>Com OS corretiva aberta</small></div
+                ></article
+            >
+            <a class="kpi-card" routerLink="/ordens"
+                ><span class="kpi-icon orange"
+                    ><mat-icon>assignment</mat-icon></span
+                ><div
+                    ><span class="kpi-label">OS abertas</span
+                    ><strong>{{ d.summary.open_orders }}</strong
+                    ><small>Corretivas e preventivas</small></div
+                ></a
+            >
+        </section>
+        <div class="dashboard-middle">
+            <section class="dashboard-panel availability-panel"
+                ><div class="panel-heading"
+                    ><h2
+                        >Disponibilidade
+                        {{ lineId ? 'da linha SMT' : 'dos equipamentos' }}</h2
+                    ><span class="subtle-label">Agora</span></div
+                ><div class="availability-content"
+                    ><div class="availability-block"
+                        ><div
+                            class="availability-ring"
+                            [style.background]="availabilityRing"
+                            role="img"
+                            [attr.aria-label]="
+                                d.summary.availability_pct === null
+                                    ? 'Disponibilidade sem dados'
+                                    : 'Disponibilidade atual: ' +
+                                      d.summary.availability_pct +
+                                      ' por cento'
+                            "
+                            ><div
+                                ><strong>{{
+                                    d.summary.availability_pct === null
+                                        ? '—'
+                                        : (d.summary.availability_pct
+                                              | number: '1.0-1') + '%'
+                                }}</strong></div
+                            ></div
+                        ><span>Disponibilidade atual</span></div
+                    ><div class="reliability-metrics"
+                        ><article
+                            ><span>MTBF</span><strong>—</strong
+                            ><small>Requer horas de operação</small></article
+                        ><article
+                            ><span>MTTR</span
+                            ><strong>{{
+                                d.summary.mttr_hours === null
+                                    ? '—'
+                                    : (d.summary.mttr_hours | number: '1.1-1') +
+                                      ' h'
+                            }}</strong
+                            ><small>{{
+                                d.summary.mttr_sample
+                                    ? d.summary.mttr_sample +
+                                      ' atendimento(s) válido(s)'
+                                    : 'Sem reparos com horários válidos'
+                            }}</small></article
+                        ><article
+                            ><span>Backlog de OS</span
+                            ><strong>{{ d.summary.open_orders }}</strong
+                            ><small>Ordens ainda não concluídas</small></article
+                        ></div
+                    ></div
+                ><p class="panel-note"
+                    >Proporção de equipamentos sem corretiva aberta. Não
+                    representa disponibilidade histórica de produção.</p
+                ></section
+            >
+            <section class="dashboard-panel"
+                ><div class="panel-heading"
+                    ><h2>Ordens de serviço</h2
+                    ><span class="subtle-label">No período</span></div
+                ><div class="orders-distribution"
+                    ><div
+                        class="orders-ring"
+                        [style.background]="typeRing"
+                        role="img"
+                        [attr.aria-label]="
+                            periodTotal + ' ordens emitidas no período'
+                        "
+                        ><div
+                            ><strong>{{ periodTotal }}</strong
+                            ><small>OS emitidas</small></div
+                        ></div
+                    ><div class="type-legend"
+                        ><div
+                            ><span
+                                ><i class="legend-dot blue-dot"></i
+                                >Preventiva</span
+                            ><strong
+                                >{{ d.distribution.preventive }}
+                                <small
+                                    >({{
+                                        percentage(d.distribution.preventive)
+                                    }}%)</small
+                                ></strong
+                            ></div
+                        ><div
+                            ><span
+                                ><i class="legend-dot red-dot"></i
+                                >Corretiva</span
+                            ><strong
+                                >{{ d.distribution.corrective }}
+                                <small
+                                    >({{
+                                        percentage(d.distribution.corrective)
+                                    }}%)</small
+                                ></strong
+                            ></div
+                        ><div class="unavailable-type"
+                            ><span
+                                ><i class="legend-dot gray-dot"></i
+                                >Preditiva</span
+                            ><small>Sem registro específico</small></div
+                        ></div
+                    ></div
+                ><p class="panel-note" *ngIf="!periodTotal"
+                    >Nenhuma OS emitida no período selecionado.</p
+                ></section
+            >
+        </div>
+        <div class="dashboard-bottom">
+            <section class="dashboard-panel evolution-panel"
+                ><div class="panel-heading"
+                    ><h2>Evolução de OS</h2
+                    ><div class="chart-legend"
+                        ><span><i class="legend-dot red-dot"></i>Abertas</span
+                        ><span
+                            ><i class="legend-dot blue-dot"></i>Encerradas</span
+                        ></div
+                    ></div
+                ><svg
+                    viewBox="0 0 640 210"
+                    role="img"
+                    aria-label="Evolução diária das ordens abertas e encerradas"
+                >
+                    <g *ngFor="let m of ticks">
+                        <line
+                            x1="36"
+                            x2="604"
+                            [attr.y1]="m.y"
+                            [attr.y2]="m.y"
+                            class="chart-grid"
+                        />
+                        <text x="24" [attr.y]="m.y + 4" text-anchor="end">
+                            {{ m.value }}
+                        </text>
+                    </g>
+                    <polyline [attr.points]="openedPath" class="series-open" />
+                    <polyline
+                        [attr.points]="closedPath"
+                        class="series-closed"
+                    />
+                    <circle
+                        *ngFor="let p of openedPoints"
+                        [attr.cx]="p.x"
+                        [attr.cy]="p.y"
+                        r="3"
+                        class="point-open"
+                    />
+                    <circle
+                        *ngFor="let p of closedPoints"
+                        [attr.cx]="p.x"
+                        [attr.cy]="p.y"
+                        r="3"
+                        class="point-closed"
+                    />
+                    <text
+                        *ngFor="let r of labels"
+                        [attr.x]="r.x"
+                        y="199"
+                        text-anchor="middle"
+                    >
+                        {{ r.text }}
+                    </text></svg
+                ><p class="panel-note"
+                    >Abertura e encerramento por dia, incluindo corretivas e
+                    preventivas.</p
+                ></section
+            >
+            <section class="dashboard-panel latest-panel"
+                ><div class="panel-heading"
+                    ><h2>Últimas OS</h2
+                    ><a routerLink="/ordens"
+                        >Ver ordens <span aria-hidden="true">↗</span></a
+                    ></div
+                ><div class="orders-table-wrap"
+                    ><table
+                        ><thead
+                            ><tr
+                                ><th>Nº OS</th><th>Equipamento</th><th>Tipo</th
+                                ><th>Status</th><th>Data</th></tr
+                            ></thead
+                        ><tbody
+                            ><tr *ngFor="let o of d.latest_orders"
+                                ><td
+                                    ><a
+                                        [routerLink]="
+                                            o.kind === 'PREVENTIVA'
+                                                ? '/cadastro/preventivas'
+                                                : '/ordens'
+                                        "
+                                        [attr.aria-label]="
+                                            'Consultar ' + o.number
+                                        "
+                                        >{{ o.number }}</a
+                                    ></td
+                                ><td
+                                    class="equipment-name"
+                                    [title]="o.equipment"
+                                    >{{ o.equipment }}</td
+                                ><td
+                                    ><span
+                                        class="type-chip"
+                                        [class.corrective]="
+                                            o.kind === 'CORRETIVA'
+                                        "
+                                        >{{
+                                            o.kind === 'PREVENTIVA'
+                                                ? 'Preventiva'
+                                                : 'Corretiva'
+                                        }}</span
+                                    ></td
+                                ><td
+                                    ><span
+                                        class="status-chip"
+                                        [class.in-progress]="
+                                            o.status === 'EM_ANDAMENTO'
+                                        "
+                                        [class.complete]="
+                                            o.status === 'CONCLUIDA'
+                                        "
+                                        [class.cancelled]="
+                                            o.status === 'CANCELADA'
+                                        "
+                                        >{{ statusLabel(o.status) }}</span
+                                    ></td
+                                ><td class="order-date">{{
+                                    o.created_at | date: 'dd/MM/yyyy'
+                                }}</td></tr
+                            ><tr *ngIf="!d.latest_orders.length"
+                                ><td colspan="5" class="empty-orders"
+                                    >Nenhuma OS emitida no período.</td
+                                ></tr
+                            ></tbody
+                        ></table
+                    ></div
+                ></section
+            >
+        </div>
+        <footer class="dashboard-footer"
+            ><span
+                >Atualizado em {{ d.generated_at | date: 'dd/MM/yyyy HH:mm' }} ·
+                Gráficos: {{ d.start_date | date: 'dd/MM/yyyy' : 'UTC' }} a
+                {{ d.end_date | date: 'dd/MM/yyyy' : 'UTC' }}</span
+            ><details
+                ><summary>Como interpretar os indicadores</summary
+                ><p
+                    >Os equipamentos considerados têm cadastro ativo. “Ativos”
+                    representa os que não possuem corretiva aberta; “em falha”,
+                    os que possuem ao menos uma. A disponibilidade é uma
+                    fotografia desse estado. OS abertas e backlog incluem todas
+                    as pendências do escopo, mesmo anteriores ao período dos
+                    gráficos.</p
+                ><p
+                    >MTTR: média entre início do atendimento e conclusão das
+                    corretivas encerradas no período com horários válidos. MTBF
+                    requer horas efetivas de operação e ainda não é calculado.
+                    Ordens preditivas não possuem cadastro específico. As
+                    últimas OS seguem o período selecionado; links abrem a lista
+                    correspondente.</p
+                ></details
+            ></footer
+        >
+    </ng-container>
+</div>

@@ -1,0 +1,533 @@
+<?xml version='1.0' encoding='utf-8'?>
+<mxfile host="app.diagrams.net" type="device">
+  <diagram id="module-0" name="Esquema completo">
+    <mxGraphModel grid="1" gridSize="10" page="1" pageWidth="2200" pageHeight="3000" pageScale="1" tooltips="1" connect="1" arrows="1">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="auth_group" value="auth_group&#10;&#10;PK         id : integer&#10;UNIQUE     name : varchar(150)" vertex="1" parent="1" style="rounded=0;whiteSpace=wrap;html=0;align=left;verticalAlign=top;spacing=12;fontFamily=Courier New;fontSize=12;strokeColor=#B8C5D8;fillColor=#FFFFFF;">
+          <mxGeometry as="geometry" x="40" y="100" width="420" height="114" />
+        </mxCell>
+        <mxCell id="auth_group_permissions" value="auth_group_permissions&#10;&#10;PK         id : bigint&#10;FK, UNIQUE* group_id : integer&#10;FK, UNIQUE* permission_id : integer" vertex="1" parent="1" style="rounded=0;whiteSpace=wrap;html=0;align=left;verticalAlign=top;spacing=12;fontFamily=Courier New;fontSize=12;strokeColor=#B8C5D8;fillColor=#FFFFFF;">
+          <mxGeometry as="geometry" x="550" y="100" width="420" height="136" />
+        </mxCell>
+        <mxCell id="auth_permission" value="auth_permission&#10;&#10;PK         id : integer&#10;FK, UNIQUE* content_type_id : integer&#10;UNIQUE*    codename : varchar(100)" vertex="1" parent="1" style="rounded=0;whiteSpace=wrap;html=0;align=left;verticalAlign=top;spacing=12;fontFamily=Courier New;fontSize=12;strokeColor=#B8C5D8;fillColor=#FFFFFF;">
+          <mxGeometry as="geometry" x="1060" y="100" width="420" height="136" />
+        </mxCell>
+        <mxCell id="django_content_type" value="django_content_type&#10;&#10;PK         id : integer&#10;UNIQUE*    app_label : varchar(100)&#10;UNIQUE*    model : varchar(100)" vertex="1" parent="1" style="rounded=0;whiteSpace=wrap;html=0;align=left;verticalAlign=top;spacing=12;fontFamily=Courier New;fontSize=12;strokeColor=#B8C5D8;fillColor=#FFFFFF;">
+          <mxGeometry as="geometry" x="1570" y="100" width="420" height="136" />
+        </mxCell>
+        <mxCell id="django_migrations" value="django_migrations&#10;&#10;PK         id : bigint" vertex="1" parent="1" style="rounded=0;whiteSpace=wrap;html=0;align=left;verticalAlign=top;spacing=12;fontFamily=Courier New;fontSize=12;strokeColor=#B8C5D8;fillColor=#FFFFFF;">
+          <mxGeometry as="geometry" x="40" y="299" width="420" height="92" />
+        </mxCell>
+        <mxCell id="equipment" value="equipment&#10;&#10;PK         id : bigint&#10;UNIQUE     serial : varchar(160)&#10;UNIQUE     asset_number : varchar(100)&#10;UNIQUE*    position : integer&#10;FK         equipment_type_id : smallint&#10;FK, UNIQUE* line_id : bigint&#10;FK         sector_id : bigint" vertex="1" parent="1" style="rounded=0;whiteSpace=wrap;html=0;align=left;verticalAlign=top;spacing=12;fontFamily=Courier New;fontSize=12;strokeColor=#B8C5D8;fillColor=#FFFFFF;">
+          <mxGeometry as="geometry" x="550" y="321" width="420" height="224" />
+        </mxCell>
+        <mxCell id="equipment_attachments" value="equipment_attachments&#10;&#10;PK         id : bigint&#10;UNIQUE*    kind : varchar(10)&#10;UNIQUE*, FK equipment_id : bigint&#10;FK         uploaded_by : bigint" vertex="1" parent="1" style="rounded=0;whiteSpace=wrap;html=0;align=left;verticalAlign=top;spacing=12;fontFamily=Courier New;fontSize=12;strokeColor=#B8C5D8;fillColor=#FFFFFF;">
+          <mxGeometry as="geometry" x="1060" y="321" width="420" height="158" />
+        </mxCell>
+        <mxCell id="equipment_movements" value="equipment_movements&#10;&#10;PK         id : bigint&#10;FK         equipment_id : bigint&#10;FK         performed_by : bigint&#10;FK         from_line_id : bigint&#10;FK         to_line_id : bigint" vertex="1" parent="1" style="rounded=0;whiteSpace=wrap;html=0;align=left;verticalAlign=top;spacing=12;fontFamily=Courier New;fontSize=12;strokeColor=#B8C5D8;fillColor=#FFFFFF;">
+          <mxGeometry as="geometry" x="1570" y="321" width="420" height="180" />
+        </mxCell>
+        <mxCell id="equipment_preventives" value="equipment_preventives&#10;&#10;PK         id : bigint&#10;UNIQUE*    frequency : varchar(20)&#10;FK, UNIQUE* equipment_id : bigint" vertex="1" parent="1" style="rounded=0;whiteSpace=wrap;html=0;align=left;verticalAlign=top;spacing=12;fontFamily=Courier New;fontSize=12;strokeColor=#B8C5D8;fillColor=#FFFFFF;">
+          <mxGeometry as="geometry" x="40" y="476" width="420" height="136" />
+        </mxCell>
+        <mxCell id="equipment_types" value="equipment_types&#10;&#10;PK         id : smallint&#10;UNIQUE     name : varchar(100)" vertex="1" parent="1" style="rounded=0;whiteSpace=wrap;html=0;align=left;verticalAlign=top;spacing=12;fontFamily=Courier New;fontSize=12;strokeColor=#B8C5D8;fillColor=#FFFFFF;">
+          <mxGeometry as="geometry" x="550" y="630" width="420" height="114" />
+        </mxCell>
+        <mxCell id="line_pendencies" value="line_pendencies&#10;&#10;PK         id : bigint&#10;FK         created_by_id : bigint&#10;FK         equipment_id : bigint&#10;FK         line_id : bigint&#10;FK         resolved_by_id : bigint&#10;FK         work_order_id : bigint" vertex="1" parent="1" style="rounded=0;whiteSpace=wrap;html=0;align=left;verticalAlign=top;spacing=12;fontFamily=Courier New;fontSize=12;strokeColor=#B8C5D8;fillColor=#FFFFFF;">
+          <mxGeometry as="geometry" x="1060" y="564" width="420" height="202" />
+        </mxCell>
+        <mxCell id="lines" value="lines&#10;&#10;PK         id : bigint&#10;UNIQUE     code : varchar(40)&#10;FK         sector_id : bigint" vertex="1" parent="1" style="rounded=0;whiteSpace=wrap;html=0;align=left;verticalAlign=top;spacing=12;fontFamily=Courier New;fontSize=12;strokeColor=#B8C5D8;fillColor=#FFFFFF;">
+          <mxGeometry as="geometry" x="1570" y="586" width="420" height="136" />
+        </mxCell>
+        <mxCell id="maintenance_part_requisitions" value="maintenance_part_requisitions&#10;&#10;PK         id : bigint&#10;FK         equipment_id : bigint&#10;FK         requester_id : bigint&#10;FK         spare_part_id : bigint&#10;FK         work_order_id : bigint" vertex="1" parent="1" style="rounded=0;whiteSpace=wrap;html=0;align=left;verticalAlign=top;spacing=12;fontFamily=Courier New;fontSize=12;strokeColor=#B8C5D8;fillColor=#FFFFFF;">
+          <mxGeometry as="geometry" x="40" y="697" width="420" height="180" />
+        </mxCell>
+        <mxCell id="preventive_checklists" value="preventive_checklists&#10;&#10;PK         id : bigint&#10;UNIQUE*    frequency : varchar(20)&#10;FK, UNIQUE* equipment_type_id : smallint" vertex="1" parent="1" style="rounded=0;whiteSpace=wrap;html=0;align=left;verticalAlign=top;spacing=12;fontFamily=Courier New;fontSize=12;strokeColor=#B8C5D8;fillColor=#FFFFFF;">
+          <mxGeometry as="geometry" x="550" y="829" width="420" height="136" />
+        </mxCell>
+        <mxCell id="preventive_executions" value="preventive_executions&#10;&#10;PK         id : bigint&#10;FK         schedule_id : bigint&#10;FK         technician_id : bigint&#10;FK, UNIQUE order_id : bigint" vertex="1" parent="1" style="rounded=0;whiteSpace=wrap;html=0;align=left;verticalAlign=top;spacing=12;fontFamily=Courier New;fontSize=12;strokeColor=#B8C5D8;fillColor=#FFFFFF;">
+          <mxGeometry as="geometry" x="1060" y="851" width="420" height="158" />
+        </mxCell>
+        <mxCell id="preventive_orders" value="preventive_orders&#10;&#10;PK         id : bigint&#10;FK         assigned_to_id : bigint&#10;FK         created_by_id : bigint&#10;FK         finished_by_id : bigint&#10;FK         schedule_id : bigint" vertex="1" parent="1" style="rounded=0;whiteSpace=wrap;html=0;align=left;verticalAlign=top;spacing=12;fontFamily=Courier New;fontSize=12;strokeColor=#B8C5D8;fillColor=#FFFFFF;">
+          <mxGeometry as="geometry" x="1570" y="807" width="420" height="180" />
+        </mxCell>
+        <mxCell id="problem_types" value="problem_types&#10;&#10;PK         id : bigint&#10;FK         equipment_type_id : smallint" vertex="1" parent="1" style="rounded=0;whiteSpace=wrap;html=0;align=left;verticalAlign=top;spacing=12;fontFamily=Courier New;fontSize=12;strokeColor=#B8C5D8;fillColor=#FFFFFF;">
+          <mxGeometry as="geometry" x="40" y="962" width="420" height="114" />
+        </mxCell>
+        <mxCell id="sectors" value="sectors&#10;&#10;PK         id : bigint&#10;UNIQUE     code : varchar(40)" vertex="1" parent="1" style="rounded=0;whiteSpace=wrap;html=0;align=left;verticalAlign=top;spacing=12;fontFamily=Courier New;fontSize=12;strokeColor=#B8C5D8;fillColor=#FFFFFF;">
+          <mxGeometry as="geometry" x="550" y="1050" width="420" height="114" />
+        </mxCell>
+        <mxCell id="spare_part_compatibility" value="spare_part_compatibility&#10;&#10;FK, PK     equipment_id : bigint&#10;FK, PK     spare_part_id : bigint" vertex="1" parent="1" style="rounded=0;whiteSpace=wrap;html=0;align=left;verticalAlign=top;spacing=12;fontFamily=Courier New;fontSize=12;strokeColor=#B8C5D8;fillColor=#FFFFFF;">
+          <mxGeometry as="geometry" x="1060" y="1094" width="420" height="114" />
+        </mxCell>
+        <mxCell id="spare_part_technical" value="spare_part_technical&#10;&#10;PK, FK     spare_part_id : bigint&#10;FK         fiscal_validated_by : bigint" vertex="1" parent="1" style="rounded=0;whiteSpace=wrap;html=0;align=left;verticalAlign=top;spacing=12;fontFamily=Courier New;fontSize=12;strokeColor=#B8C5D8;fillColor=#FFFFFF;">
+          <mxGeometry as="geometry" x="1570" y="1072" width="420" height="114" />
+        </mxCell>
+        <mxCell id="spare_parts" value="spare_parts&#10;&#10;PK         id : bigint&#10;UNIQUE     code : varchar(40)" vertex="1" parent="1" style="rounded=0;whiteSpace=wrap;html=0;align=left;verticalAlign=top;spacing=12;fontFamily=Courier New;fontSize=12;strokeColor=#B8C5D8;fillColor=#FFFFFF;">
+          <mxGeometry as="geometry" x="40" y="1161" width="420" height="114" />
+        </mxCell>
+        <mxCell id="spare_purchase_events" value="spare_purchase_events&#10;&#10;PK         id : bigint&#10;FK         actor_id : bigint&#10;FK         request_id : bigint" vertex="1" parent="1" style="rounded=0;whiteSpace=wrap;html=0;align=left;verticalAlign=top;spacing=12;fontFamily=Courier New;fontSize=12;strokeColor=#B8C5D8;fillColor=#FFFFFF;">
+          <mxGeometry as="geometry" x="550" y="1249" width="420" height="136" />
+        </mxCell>
+        <mxCell id="spare_purchase_request_items" value="spare_purchase_request_items&#10;&#10;PK         id : bigint&#10;FK         request_id : bigint&#10;FK         spare_part_id : bigint" vertex="1" parent="1" style="rounded=0;whiteSpace=wrap;html=0;align=left;verticalAlign=top;spacing=12;fontFamily=Courier New;fontSize=12;strokeColor=#B8C5D8;fillColor=#FFFFFF;">
+          <mxGeometry as="geometry" x="1060" y="1293" width="420" height="136" />
+        </mxCell>
+        <mxCell id="spare_purchase_requests" value="spare_purchase_requests&#10;&#10;PK         id : bigint&#10;FK         equipment_id : bigint&#10;FK         manager_id : bigint&#10;FK         requester_id : bigint&#10;FK         work_order_id : bigint" vertex="1" parent="1" style="rounded=0;whiteSpace=wrap;html=0;align=left;verticalAlign=top;spacing=12;fontFamily=Courier New;fontSize=12;strokeColor=#B8C5D8;fillColor=#FFFFFF;">
+          <mxGeometry as="geometry" x="1570" y="1271" width="420" height="180" />
+        </mxCell>
+        <mxCell id="users" value="users&#10;&#10;PK         id : bigint&#10;UNIQUE     registration : varchar(50)&#10;FK         line_id : bigint" vertex="1" parent="1" style="rounded=0;whiteSpace=wrap;html=0;align=left;verticalAlign=top;spacing=12;fontFamily=Courier New;fontSize=12;strokeColor=#B8C5D8;fillColor=#FFFFFF;">
+          <mxGeometry as="geometry" x="40" y="1360" width="420" height="136" />
+        </mxCell>
+        <mxCell id="work_orders" value="work_orders&#10;&#10;PK         id : bigint&#10;FK         assigned_to : bigint&#10;FK         equipment_id : bigint&#10;FK         opened_by : bigint&#10;FK         problem_type_id : bigint" vertex="1" parent="1" style="rounded=0;whiteSpace=wrap;html=0;align=left;verticalAlign=top;spacing=12;fontFamily=Courier New;fontSize=12;strokeColor=#B8C5D8;fillColor=#FFFFFF;">
+          <mxGeometry as="geometry" x="550" y="1470" width="420" height="180" />
+        </mxCell>
+        <mxCell id="fk-auth_group_permissio_permission_id_84c5c92e_fk_auth_perm" value="permission_id" edge="1" parent="1" source="auth_group_permissions" target="auth_permission" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=0;endArrow=open;strokeColor=#8195B0;fontSize=10;labelBackgroundColor=#FFFFFF;">
+          <mxGeometry as="geometry" relative="1" />
+        </mxCell>
+        <mxCell id="fk-auth_group_permissions_group_id_b120cbf9_fk_auth_group_id" value="group_id" edge="1" parent="1" source="auth_group_permissions" target="auth_group" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=0;endArrow=open;strokeColor=#8195B0;fontSize=10;labelBackgroundColor=#FFFFFF;">
+          <mxGeometry as="geometry" relative="1" />
+        </mxCell>
+        <mxCell id="fk-auth_permission_content_type_id_2f476e4b_fk_django_co" value="content_type_id" edge="1" parent="1" source="auth_permission" target="django_content_type" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=0;endArrow=open;strokeColor=#8195B0;fontSize=10;labelBackgroundColor=#FFFFFF;">
+          <mxGeometry as="geometry" relative="1" />
+        </mxCell>
+        <mxCell id="fk-equipment_equipment_type_id_9da1655a_fk_equipment_types_id" value="equipment_type_id" edge="1" parent="1" source="equipment" target="equipment_types" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=0;endArrow=open;strokeColor=#8195B0;fontSize=10;labelBackgroundColor=#FFFFFF;">
+          <mxGeometry as="geometry" relative="1" />
+        </mxCell>
+        <mxCell id="fk-equipment_line_id_d3c0da21_fk_lines_id" value="line_id" edge="1" parent="1" source="equipment" target="lines" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=0;endArrow=open;strokeColor=#8195B0;fontSize=10;labelBackgroundColor=#FFFFFF;">
+          <mxGeometry as="geometry" relative="1" />
+        </mxCell>
+        <mxCell id="fk-equipment_sector_id_8bf2e29c_fk_sectors_id" value="sector_id" edge="1" parent="1" source="equipment" target="sectors" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=0;endArrow=open;strokeColor=#8195B0;fontSize=10;labelBackgroundColor=#FFFFFF;">
+          <mxGeometry as="geometry" relative="1" />
+        </mxCell>
+        <mxCell id="fk-equipment_attachments_equipment_id_f490368b_fk_equipment_id" value="equipment_id" edge="1" parent="1" source="equipment_attachments" target="equipment" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=0;endArrow=open;strokeColor=#8195B0;fontSize=10;labelBackgroundColor=#FFFFFF;">
+          <mxGeometry as="geometry" relative="1" />
+        </mxCell>
+        <mxCell id="fk-equipment_attachments_uploaded_by_e94c18a2_fk_users_id" value="uploaded_by" edge="1" parent="1" source="equipment_attachments" target="users" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=0;endArrow=open;strokeColor=#8195B0;fontSize=10;labelBackgroundColor=#FFFFFF;">
+          <mxGeometry as="geometry" relative="1" />
+        </mxCell>
+        <mxCell id="fk-equipment_movements_equipment_id_1eeebee8_fk_equipment_id" value="equipment_id" edge="1" parent="1" source="equipment_movements" target="equipment" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=0;endArrow=open;strokeColor=#8195B0;fontSize=10;labelBackgroundColor=#FFFFFF;">
+          <mxGeometry as="geometry" relative="1" />
+        </mxCell>
+        <mxCell id="fk-equipment_movements_from_line_id_8a69cdd1_fk_lines_id" value="from_line_id" edge="1" parent="1" source="equipment_movements" target="lines" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=0;endArrow=open;strokeColor=#8195B0;fontSize=10;labelBackgroundColor=#FFFFFF;">
+          <mxGeometry as="geometry" relative="1" />
+        </mxCell>
+        <mxCell id="fk-equipment_movements_performed_by_303d9396_fk_users_id" value="performed_by" edge="1" parent="1" source="equipment_movements" target="users" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=0;endArrow=open;strokeColor=#8195B0;fontSize=10;labelBackgroundColor=#FFFFFF;">
+          <mxGeometry as="geometry" relative="1" />
+        </mxCell>
+        <mxCell id="fk-equipment_movements_to_line_id_754441af_fk_lines_id" value="to_line_id" edge="1" parent="1" source="equipment_movements" target="lines" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=0;endArrow=open;strokeColor=#8195B0;fontSize=10;labelBackgroundColor=#FFFFFF;">
+          <mxGeometry as="geometry" relative="1" />
+        </mxCell>
+        <mxCell id="fk-equipment_preventives_equipment_id_683c5810_fk_equipment_id" value="equipment_id" edge="1" parent="1" source="equipment_preventives" target="equipment" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=0;endArrow=open;strokeColor=#8195B0;fontSize=10;labelBackgroundColor=#FFFFFF;">
+          <mxGeometry as="geometry" relative="1" />
+        </mxCell>
+        <mxCell id="fk-line_pendencies_created_by_id_fcc8510a_fk_users_id" value="created_by_id" edge="1" parent="1" source="line_pendencies" target="users" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=0;endArrow=open;strokeColor=#8195B0;fontSize=10;labelBackgroundColor=#FFFFFF;">
+          <mxGeometry as="geometry" relative="1" />
+        </mxCell>
+        <mxCell id="fk-line_pendencies_equipment_id_5696c655_fk_equipment_id" value="equipment_id" edge="1" parent="1" source="line_pendencies" target="equipment" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=0;endArrow=open;strokeColor=#8195B0;fontSize=10;labelBackgroundColor=#FFFFFF;">
+          <mxGeometry as="geometry" relative="1" />
+        </mxCell>
+        <mxCell id="fk-line_pendencies_line_id_2e6f5bf0_fk_lines_id" value="line_id" edge="1" parent="1" source="line_pendencies" target="lines" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=0;endArrow=open;strokeColor=#8195B0;fontSize=10;labelBackgroundColor=#FFFFFF;">
+          <mxGeometry as="geometry" relative="1" />
+        </mxCell>
+        <mxCell id="fk-line_pendencies_resolved_by_id_611c8985_fk_users_id" value="resolved_by_id" edge="1" parent="1" source="line_pendencies" target="users" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=0;endArrow=open;strokeColor=#8195B0;fontSize=10;labelBackgroundColor=#FFFFFF;">
+          <mxGeometry as="geometry" relative="1" />
+        </mxCell>
+        <mxCell id="fk-line_pendencies_work_order_id_be617bc2_fk_work_orders_id" value="work_order_id" edge="1" parent="1" source="line_pendencies" target="work_orders" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=0;endArrow=open;strokeColor=#8195B0;fontSize=10;labelBackgroundColor=#FFFFFF;">
+          <mxGeometry as="geometry" relative="1" />
+        </mxCell>
+        <mxCell id="fk-lines_sector_id_5e586a1f_fk_sectors_id" value="sector_id" edge="1" parent="1" source="lines" target="sectors" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=0;endArrow=open;strokeColor=#8195B0;fontSize=10;labelBackgroundColor=#FFFFFF;">
+          <mxGeometry as="geometry" relative="1" />
+        </mxCell>
+        <mxCell id="fk-maintenance_part_req_equipment_id_0d833d48_fk_equipment" value="equipment_id" edge="1" parent="1" source="maintenance_part_requisitions" target="equipment" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=0;endArrow=open;strokeColor=#8195B0;fontSize=10;labelBackgroundColor=#FFFFFF;">
+          <mxGeometry as="geometry" relative="1" />
+        </mxCell>
+        <mxCell id="fk-maintenance_part_req_spare_part_id_b1ed5695_fk_spare_par" value="spare_part_id" edge="1" parent="1" source="maintenance_part_requisitions" target="spare_parts" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=0;endArrow=open;strokeColor=#8195B0;fontSize=10;labelBackgroundColor=#FFFFFF;">
+          <mxGeometry as="geometry" relative="1" />
+        </mxCell>
+        <mxCell id="fk-maintenance_part_req_work_order_id_fdb2337a_fk_work_orde" value="work_order_id" edge="1" parent="1" source="maintenance_part_requisitions" target="work_orders" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=0;endArrow=open;strokeColor=#8195B0;fontSize=10;labelBackgroundColor=#FFFFFF;">
+          <mxGeometry as="geometry" relative="1" />
+        </mxCell>
+        <mxCell id="fk-maintenance_part_requisitions_requester_id_bc67dce6_fk_users_id" value="requester_id" edge="1" parent="1" source="maintenance_part_requisitions" target="users" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=0;endArrow=open;strokeColor=#8195B0;fontSize=10;labelBackgroundColor=#FFFFFF;">
+          <mxGeometry as="geometry" relative="1" />
+        </mxCell>
+        <mxCell id="fk-preventive_checklist_equipment_type_id_47bbcd6e_fk_equipment" value="equipment_type_id" edge="1" parent="1" source="preventive_checklists" target="equipment_types" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=0;endArrow=open;strokeColor=#8195B0;fontSize=10;labelBackgroundColor=#FFFFFF;">
+          <mxGeometry as="geometry" relative="1" />
+        </mxCell>
+        <mxCell id="fk-preventive_execution_schedule_id_59fbb7be_fk_equipment" value="schedule_id" edge="1" parent="1" source="preventive_executions" target="equipment_preventives" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=0;endArrow=open;strokeColor=#8195B0;fontSize=10;labelBackgroundColor=#FFFFFF;">
+          <mxGeometry as="geometry" relative="1" />
+        </mxCell>
+        <mxCell id="fk-preventive_executions_order_id_85e42976_fk_preventive_orders_id" value="order_id" edge="1" parent="1" source="preventive_executions" target="preventive_orders" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=0;endArrow=open;strokeColor=#8195B0;fontSize=10;labelBackgroundColor=#FFFFFF;">
+          <mxGeometry as="geometry" relative="1" />
+        </mxCell>
+        <mxCell id="fk-preventive_executions_technician_id_84bee232_fk_users_id" value="technician_id" edge="1" parent="1" source="preventive_executions" target="users" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=0;endArrow=open;strokeColor=#8195B0;fontSize=10;labelBackgroundColor=#FFFFFF;">
+          <mxGeometry as="geometry" relative="1" />
+        </mxCell>
+        <mxCell id="fk-preventive_orders_assigned_to_id_49125343_fk_users_id" value="assigned_to_id" edge="1" parent="1" source="preventive_orders" target="users" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=0;endArrow=open;strokeColor=#8195B0;fontSize=10;labelBackgroundColor=#FFFFFF;">
+          <mxGeometry as="geometry" relative="1" />
+        </mxCell>
+        <mxCell id="fk-preventive_orders_created_by_id_ddd0f19b_fk_users_id" value="created_by_id" edge="1" parent="1" source="preventive_orders" target="users" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=0;endArrow=open;strokeColor=#8195B0;fontSize=10;labelBackgroundColor=#FFFFFF;">
+          <mxGeometry as="geometry" relative="1" />
+        </mxCell>
+        <mxCell id="fk-preventive_orders_finished_by_id_540075ee_fk_users_id" value="finished_by_id" edge="1" parent="1" source="preventive_orders" target="users" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=0;endArrow=open;strokeColor=#8195B0;fontSize=10;labelBackgroundColor=#FFFFFF;">
+          <mxGeometry as="geometry" relative="1" />
+        </mxCell>
+        <mxCell id="fk-preventive_orders_schedule_id_7044e27c_fk_equipment" value="schedule_id" edge="1" parent="1" source="preventive_orders" target="equipment_preventives" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=0;endArrow=open;strokeColor=#8195B0;fontSize=10;labelBackgroundColor=#FFFFFF;">
+          <mxGeometry as="geometry" relative="1" />
+        </mxCell>
+        <mxCell id="fk-problem_types_equipment_type_id_a130a296_fk_equipment_types_id" value="equipment_type_id" edge="1" parent="1" source="problem_types" target="equipment_types" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=0;endArrow=open;strokeColor=#8195B0;fontSize=10;labelBackgroundColor=#FFFFFF;">
+          <mxGeometry as="geometry" relative="1" />
+        </mxCell>
+        <mxCell id="fk-spare_part_compatibi_spare_part_id_1a0483b6_fk_spare_par" value="spare_part_id" edge="1" parent="1" source="spare_part_compatibility" target="spare_parts" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=0;endArrow=open;strokeColor=#8195B0;fontSize=10;labelBackgroundColor=#FFFFFF;">
+          <mxGeometry as="geometry" relative="1" />
+        </mxCell>
+        <mxCell id="fk-spare_part_compatibility_equipment_id_ba188d2e_fk_equipment_id" value="equipment_id" edge="1" parent="1" source="spare_part_compatibility" target="equipment" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=0;endArrow=open;strokeColor=#8195B0;fontSize=10;labelBackgroundColor=#FFFFFF;">
+          <mxGeometry as="geometry" relative="1" />
+        </mxCell>
+        <mxCell id="fk-spare_part_technical_fiscal_validated_by_02e3bc1d_fk_users_id" value="fiscal_validated_by" edge="1" parent="1" source="spare_part_technical" target="users" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=0;endArrow=open;strokeColor=#8195B0;fontSize=10;labelBackgroundColor=#FFFFFF;">
+          <mxGeometry as="geometry" relative="1" />
+        </mxCell>
+        <mxCell id="fk-spare_part_technical_spare_part_id_7c031136_fk_spare_parts_id" value="spare_part_id" edge="1" parent="1" source="spare_part_technical" target="spare_parts" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=0;endArrow=open;strokeColor=#8195B0;fontSize=10;labelBackgroundColor=#FFFFFF;">
+          <mxGeometry as="geometry" relative="1" />
+        </mxCell>
+        <mxCell id="fk-spare_purchase_event_request_id_dd6b04a2_fk_spare_pur" value="request_id" edge="1" parent="1" source="spare_purchase_events" target="spare_purchase_requests" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=0;endArrow=open;strokeColor=#8195B0;fontSize=10;labelBackgroundColor=#FFFFFF;">
+          <mxGeometry as="geometry" relative="1" />
+        </mxCell>
+        <mxCell id="fk-spare_purchase_events_actor_id_3e612bfb_fk_users_id" value="actor_id" edge="1" parent="1" source="spare_purchase_events" target="users" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=0;endArrow=open;strokeColor=#8195B0;fontSize=10;labelBackgroundColor=#FFFFFF;">
+          <mxGeometry as="geometry" relative="1" />
+        </mxCell>
+        <mxCell id="fk-spare_purchase_reque_request_id_d472b5a8_fk_spare_pur" value="request_id" edge="1" parent="1" source="spare_purchase_request_items" target="spare_purchase_requests" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=0;endArrow=open;strokeColor=#8195B0;fontSize=10;labelBackgroundColor=#FFFFFF;">
+          <mxGeometry as="geometry" relative="1" />
+        </mxCell>
+        <mxCell id="fk-spare_purchase_reque_spare_part_id_966d92bd_fk_spare_par" value="spare_part_id" edge="1" parent="1" source="spare_purchase_request_items" target="spare_parts" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=0;endArrow=open;strokeColor=#8195B0;fontSize=10;labelBackgroundColor=#FFFFFF;">
+          <mxGeometry as="geometry" relative="1" />
+        </mxCell>
+        <mxCell id="fk-spare_purchase_reque_work_order_id_27461ce9_fk_work_orde" value="work_order_id" edge="1" parent="1" source="spare_purchase_requests" target="work_orders" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=0;endArrow=open;strokeColor=#8195B0;fontSize=10;labelBackgroundColor=#FFFFFF;">
+          <mxGeometry as="geometry" relative="1" />
+        </mxCell>
+        <mxCell id="fk-spare_purchase_requests_equipment_id_7c0cf8bb_fk_equipment_id" value="equipment_id" edge="1" parent="1" source="spare_purchase_requests" target="equipment" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=0;endArrow=open;strokeColor=#8195B0;fontSize=10;labelBackgroundColor=#FFFFFF;">
+          <mxGeometry as="geometry" relative="1" />
+        </mxCell>
+        <mxCell id="fk-spare_purchase_requests_manager_id_66c9fd95_fk_users_id" value="manager_id" edge="1" parent="1" source="spare_purchase_requests" target="users" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=0;endArrow=open;strokeColor=#8195B0;fontSize=10;labelBackgroundColor=#FFFFFF;">
+          <mxGeometry as="geometry" relative="1" />
+        </mxCell>
+        <mxCell id="fk-spare_purchase_requests_requester_id_1c2507f3_fk_users_id" value="requester_id" edge="1" parent="1" source="spare_purchase_requests" target="users" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=0;endArrow=open;strokeColor=#8195B0;fontSize=10;labelBackgroundColor=#FFFFFF;">
+          <mxGeometry as="geometry" relative="1" />
+        </mxCell>
+        <mxCell id="fk-users_line_id_69f7dd73_fk_lines_id" value="line_id" edge="1" parent="1" source="users" target="lines" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=0;endArrow=open;strokeColor=#8195B0;fontSize=10;labelBackgroundColor=#FFFFFF;">
+          <mxGeometry as="geometry" relative="1" />
+        </mxCell>
+        <mxCell id="fk-work_orders_assigned_to_4b6e75b8_fk_users_id" value="assigned_to" edge="1" parent="1" source="work_orders" target="users" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=0;endArrow=open;strokeColor=#8195B0;fontSize=10;labelBackgroundColor=#FFFFFF;">
+          <mxGeometry as="geometry" relative="1" />
+        </mxCell>
+        <mxCell id="fk-work_orders_equipment_id_ddd84ea8_fk_equipment_id" value="equipment_id" edge="1" parent="1" source="work_orders" target="equipment" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=0;endArrow=open;strokeColor=#8195B0;fontSize=10;labelBackgroundColor=#FFFFFF;">
+          <mxGeometry as="geometry" relative="1" />
+        </mxCell>
+        <mxCell id="fk-work_orders_opened_by_72a0f94d_fk_users_id" value="opened_by" edge="1" parent="1" source="work_orders" target="users" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=0;endArrow=open;strokeColor=#8195B0;fontSize=10;labelBackgroundColor=#FFFFFF;">
+          <mxGeometry as="geometry" relative="1" />
+        </mxCell>
+        <mxCell id="fk-work_orders_problem_type_id_21c9e4c8_fk_problem_types_id" value="problem_type_id" edge="1" parent="1" source="work_orders" target="problem_types" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=0;endArrow=open;strokeColor=#8195B0;fontSize=10;labelBackgroundColor=#FFFFFF;">
+          <mxGeometry as="geometry" relative="1" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+  <diagram id="module-1" name="Estrutura industrial">
+    <mxGraphModel grid="1" gridSize="10" page="1" pageWidth="2200" pageHeight="3000" pageScale="1" tooltips="1" connect="1" arrows="1">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="sectors" value="sectors&#10;&#10;PK         id : bigint&#10;UNIQUE     code : varchar(40)&#10;           name : varchar(120)&#10;           description : text&#10;           active : boolean&#10;           created_at : timestamptz" vertex="1" parent="1" style="rounded=0;whiteSpace=wrap;html=0;align=left;verticalAlign=top;spacing=12;fontFamily=Courier New;fontSize=12;strokeColor=#B8C5D8;fillColor=#FFFFFF;">
+          <mxGeometry as="geometry" x="40" y="100" width="420" height="202" />
+        </mxCell>
+        <mxCell id="lines" value="lines&#10;&#10;PK         id : bigint&#10;UNIQUE     code : varchar(40)&#10;           name : varchar(120)&#10;           description : text&#10;           active : boolean&#10;           created_at : timestamptz&#10;FK         sector_id : bigint" vertex="1" parent="1" style="rounded=0;whiteSpace=wrap;html=0;align=left;verticalAlign=top;spacing=12;fontFamily=Courier New;fontSize=12;strokeColor=#B8C5D8;fillColor=#FFFFFF;">
+          <mxGeometry as="geometry" x="550" y="100" width="420" height="224" />
+        </mxCell>
+        <mxCell id="equipment_types" value="equipment_types&#10;&#10;PK         id : smallint&#10;UNIQUE     name : varchar(100)" vertex="1" parent="1" style="rounded=0;whiteSpace=wrap;html=0;align=left;verticalAlign=top;spacing=12;fontFamily=Courier New;fontSize=12;strokeColor=#B8C5D8;fillColor=#FFFFFF;">
+          <mxGeometry as="geometry" x="1060" y="100" width="420" height="114" />
+        </mxCell>
+        <mxCell id="equipment" value="equipment&#10;&#10;PK         id : bigint&#10;           model_number : varchar(100)&#10;           model : varchar(160)&#10;UNIQUE     serial : varchar(160)&#10;           manufacturer : varchar(160)&#10;           manufacturing_date : date&#10;           manufacturing_date_text : varchar(10)&#10;           length_mm : numeric(12,2)&#10;           width_mm : numeric(12,2)&#10;           height_mm : numeric(12,2)&#10;           weight_kg : numeric(12,2)&#10;           voltage_v : numeric(12,2)&#10;           frequency_hz : numeric(12,2)&#10;           current_a : numeric(12,2)&#10;           power_w : numeric(12,2)&#10;           pneumatic_pressure_bar : numeric(12,2)&#10;UNIQUE     asset_number : varchar(100)&#10;           description : text&#10;           process_description : text&#10;UNIQUE*    position : integer&#10;           active : boolean&#10;           created_at : timestamptz&#10;FK         equipment_type_id : smallint&#10;FK, UNIQUE* line_id : bigint&#10;FK         sector_id : bigint&#10;           name : varchar(160)" vertex="1" parent="1" style="rounded=0;whiteSpace=wrap;html=0;align=left;verticalAlign=top;spacing=12;fontFamily=Courier New;fontSize=12;strokeColor=#B8C5D8;fillColor=#FFFFFF;">
+          <mxGeometry as="geometry" x="1570" y="100" width="420" height="642" />
+        </mxCell>
+        <mxCell id="equipment_movements" value="equipment_movements&#10;&#10;PK         id : bigint&#10;           from_position : integer&#10;           to_position : integer&#10;           action : varchar(20)&#10;           created_at : timestamptz&#10;FK         equipment_id : bigint&#10;FK         performed_by : bigint&#10;FK         from_line_id : bigint&#10;FK         to_line_id : bigint" vertex="1" parent="1" style="rounded=0;whiteSpace=wrap;html=0;align=left;verticalAlign=top;spacing=12;fontFamily=Courier New;fontSize=12;strokeColor=#B8C5D8;fillColor=#FFFFFF;">
+          <mxGeometry as="geometry" x="40" y="387" width="420" height="268" />
+        </mxCell>
+        <mxCell id="equipment_attachments" value="equipment_attachments&#10;&#10;PK         id : bigint&#10;UNIQUE*    kind : varchar(10)&#10;           filename : varchar(180)&#10;           mime_type : varchar(60)&#10;           content : bytea&#10;           size_bytes : integer&#10;           created_at : timestamptz&#10;UNIQUE*, FK equipment_id : bigint&#10;FK         uploaded_by : bigint" vertex="1" parent="1" style="rounded=0;whiteSpace=wrap;html=0;align=left;verticalAlign=top;spacing=12;fontFamily=Courier New;fontSize=12;strokeColor=#B8C5D8;fillColor=#FFFFFF;">
+          <mxGeometry as="geometry" x="550" y="409" width="420" height="268" />
+        </mxCell>
+        <mxCell id="users" value="users (referência externa)&#10;&#10;PK         id : bigint&#10;           last_login : timestamptz&#10;           name : varchar(160)&#10;UNIQUE     registration : varchar(50)&#10;           password_hash : text&#10;           role : varchar(20)&#10;           active : boolean&#10;           created_at : timestamptz&#10;FK         line_id : bigint" vertex="1" parent="1" style="rounded=0;whiteSpace=wrap;html=0;align=left;verticalAlign=top;spacing=12;fontFamily=Courier New;fontSize=12;strokeColor=#B8C5D8;fillColor=#EDF1F6;">
+          <mxGeometry as="geometry" x="1060" y="299" width="420" height="268" />
+        </mxCell>
+        <mxCell id="fk-lines_sector_id_5e586a1f_fk_sectors_id" value="sector_id" edge="1" parent="1" source="lines" target="sectors" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=0;endArrow=open;strokeColor=#8195B0;fontSize=10;labelBackgroundColor=#FFFFFF;">
+          <mxGeometry as="geometry" relative="1" />
+        </mxCell>
+        <mxCell id="fk-equipment_equipment_type_id_9da1655a_fk_equipment_types_id" value="equipment_type_id" edge="1" parent="1" source="equipment" target="equipment_types" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=0;endArrow=open;strokeColor=#8195B0;fontSize=10;labelBackgroundColor=#FFFFFF;">
+          <mxGeometry as="geometry" relative="1" />
+        </mxCell>
+        <mxCell id="fk-equipment_line_id_d3c0da21_fk_lines_id" value="line_id" edge="1" parent="1" source="equipment" target="lines" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=0;endArrow=open;strokeColor=#8195B0;fontSize=10;labelBackgroundColor=#FFFFFF;">
+          <mxGeometry as="geometry" relative="1" />
+        </mxCell>
+        <mxCell id="fk-equipment_sector_id_8bf2e29c_fk_sectors_id" value="sector_id" edge="1" parent="1" source="equipment" target="sectors" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=0;endArrow=open;strokeColor=#8195B0;fontSize=10;labelBackgroundColor=#FFFFFF;">
+          <mxGeometry as="geometry" relative="1" />
+        </mxCell>
+        <mxCell id="fk-equipment_movements_equipment_id_1eeebee8_fk_equipment_id" value="equipment_id" edge="1" parent="1" source="equipment_movements" target="equipment" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=0;endArrow=open;strokeColor=#8195B0;fontSize=10;labelBackgroundColor=#FFFFFF;">
+          <mxGeometry as="geometry" relative="1" />
+        </mxCell>
+        <mxCell id="fk-equipment_movements_from_line_id_8a69cdd1_fk_lines_id" value="from_line_id" edge="1" parent="1" source="equipment_movements" target="lines" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=0;endArrow=open;strokeColor=#8195B0;fontSize=10;labelBackgroundColor=#FFFFFF;">
+          <mxGeometry as="geometry" relative="1" />
+        </mxCell>
+        <mxCell id="fk-equipment_movements_performed_by_303d9396_fk_users_id" value="performed_by" edge="1" parent="1" source="equipment_movements" target="users" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=0;endArrow=open;strokeColor=#8195B0;fontSize=10;labelBackgroundColor=#FFFFFF;">
+          <mxGeometry as="geometry" relative="1" />
+        </mxCell>
+        <mxCell id="fk-equipment_movements_to_line_id_754441af_fk_lines_id" value="to_line_id" edge="1" parent="1" source="equipment_movements" target="lines" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=0;endArrow=open;strokeColor=#8195B0;fontSize=10;labelBackgroundColor=#FFFFFF;">
+          <mxGeometry as="geometry" relative="1" />
+        </mxCell>
+        <mxCell id="fk-equipment_attachments_equipment_id_f490368b_fk_equipment_id" value="equipment_id" edge="1" parent="1" source="equipment_attachments" target="equipment" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=0;endArrow=open;strokeColor=#8195B0;fontSize=10;labelBackgroundColor=#FFFFFF;">
+          <mxGeometry as="geometry" relative="1" />
+        </mxCell>
+        <mxCell id="fk-equipment_attachments_uploaded_by_e94c18a2_fk_users_id" value="uploaded_by" edge="1" parent="1" source="equipment_attachments" target="users" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=0;endArrow=open;strokeColor=#8195B0;fontSize=10;labelBackgroundColor=#FFFFFF;">
+          <mxGeometry as="geometry" relative="1" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+  <diagram id="module-2" name="Acesso e usuários">
+    <mxGraphModel grid="1" gridSize="10" page="1" pageWidth="2200" pageHeight="3000" pageScale="1" tooltips="1" connect="1" arrows="1">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="users" value="users&#10;&#10;PK         id : bigint&#10;           last_login : timestamptz&#10;           name : varchar(160)&#10;UNIQUE     registration : varchar(50)&#10;           password_hash : text&#10;           role : varchar(20)&#10;           active : boolean&#10;           created_at : timestamptz&#10;FK         line_id : bigint" vertex="1" parent="1" style="rounded=0;whiteSpace=wrap;html=0;align=left;verticalAlign=top;spacing=12;fontFamily=Courier New;fontSize=12;strokeColor=#B8C5D8;fillColor=#FFFFFF;">
+          <mxGeometry as="geometry" x="40" y="100" width="420" height="268" />
+        </mxCell>
+        <mxCell id="lines" value="lines (referência externa)&#10;&#10;PK         id : bigint&#10;UNIQUE     code : varchar(40)&#10;           name : varchar(120)&#10;           description : text&#10;           active : boolean&#10;           created_at : timestamptz&#10;FK         sector_id : bigint" vertex="1" parent="1" style="rounded=0;whiteSpace=wrap;html=0;align=left;verticalAlign=top;spacing=12;fontFamily=Courier New;fontSize=12;strokeColor=#B8C5D8;fillColor=#EDF1F6;">
+          <mxGeometry as="geometry" x="550" y="100" width="420" height="224" />
+        </mxCell>
+        <mxCell id="fk-users_line_id_69f7dd73_fk_lines_id" value="line_id" edge="1" parent="1" source="users" target="lines" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=0;endArrow=open;strokeColor=#8195B0;fontSize=10;labelBackgroundColor=#FFFFFF;">
+          <mxGeometry as="geometry" relative="1" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+  <diagram id="module-3" name="Manutenção corretiva">
+    <mxGraphModel grid="1" gridSize="10" page="1" pageWidth="2200" pageHeight="3000" pageScale="1" tooltips="1" connect="1" arrows="1">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="problem_types" value="problem_types&#10;&#10;PK         id : bigint&#10;           name : varchar(180)&#10;           priority : varchar(20)&#10;           active : boolean&#10;FK         equipment_type_id : smallint" vertex="1" parent="1" style="rounded=0;whiteSpace=wrap;html=0;align=left;verticalAlign=top;spacing=12;fontFamily=Courier New;fontSize=12;strokeColor=#B8C5D8;fillColor=#FFFFFF;">
+          <mxGeometry as="geometry" x="40" y="100" width="420" height="180" />
+        </mxCell>
+        <mxCell id="work_orders" value="work_orders&#10;&#10;PK         id : bigint&#10;           priority : varchar(20)&#10;           status : varchar(20)&#10;           problem : text&#10;           root_cause : text&#10;           corrective_action : text&#10;           preventive_action : text&#10;           started_at : timestamptz&#10;           finished_at : timestamptz&#10;           created_at : timestamptz&#10;FK         assigned_to : bigint&#10;FK         equipment_id : bigint&#10;FK         opened_by : bigint&#10;FK         problem_type_id : bigint&#10;           downtime_seconds : integer" vertex="1" parent="1" style="rounded=0;whiteSpace=wrap;html=0;align=left;verticalAlign=top;spacing=12;fontFamily=Courier New;fontSize=12;strokeColor=#B8C5D8;fillColor=#FFFFFF;">
+          <mxGeometry as="geometry" x="550" y="100" width="420" height="400" />
+        </mxCell>
+        <mxCell id="line_pendencies" value="line_pendencies&#10;&#10;PK         id : bigint&#10;           equipment_serial : varchar(160)&#10;           description : text&#10;           priority : varchar(20)&#10;           status : varchar(20)&#10;           created_at : timestamptz&#10;           resolved_at : timestamptz&#10;           resolution : text&#10;FK         created_by_id : bigint&#10;FK         equipment_id : bigint&#10;FK         line_id : bigint&#10;FK         resolved_by_id : bigint&#10;FK         work_order_id : bigint" vertex="1" parent="1" style="rounded=0;whiteSpace=wrap;html=0;align=left;verticalAlign=top;spacing=12;fontFamily=Courier New;fontSize=12;strokeColor=#B8C5D8;fillColor=#FFFFFF;">
+          <mxGeometry as="geometry" x="1060" y="100" width="420" height="356" />
+        </mxCell>
+        <mxCell id="maintenance_part_requisitions" value="maintenance_part_requisitions&#10;&#10;PK         id : bigint&#10;           equipment_serial : varchar(160)&#10;           quantity : numeric(14,3)&#10;           note : text&#10;           created_at : timestamptz&#10;FK         equipment_id : bigint&#10;FK         requester_id : bigint&#10;FK         spare_part_id : bigint&#10;FK         work_order_id : bigint" vertex="1" parent="1" style="rounded=0;whiteSpace=wrap;html=0;align=left;verticalAlign=top;spacing=12;fontFamily=Courier New;fontSize=12;strokeColor=#B8C5D8;fillColor=#FFFFFF;">
+          <mxGeometry as="geometry" x="1570" y="100" width="420" height="268" />
+        </mxCell>
+        <mxCell id="equipment" value="equipment (referência externa)&#10;&#10;PK         id : bigint&#10;           model_number : varchar(100)&#10;           model : varchar(160)&#10;UNIQUE     serial : varchar(160)&#10;           manufacturer : varchar(160)&#10;           manufacturing_date : date&#10;           manufacturing_date_text : varchar(10)&#10;           length_mm : numeric(12,2)&#10;           width_mm : numeric(12,2)&#10;           height_mm : numeric(12,2)&#10;           weight_kg : numeric(12,2)&#10;           voltage_v : numeric(12,2)&#10;           frequency_hz : numeric(12,2)&#10;           current_a : numeric(12,2)&#10;           power_w : numeric(12,2)&#10;           pneumatic_pressure_bar : numeric(12,2)&#10;UNIQUE     asset_number : varchar(100)&#10;           description : text&#10;           process_description : text&#10;UNIQUE*    position : integer&#10;           active : boolean&#10;           created_at : timestamptz&#10;FK         equipment_type_id : smallint&#10;FK, UNIQUE* line_id : bigint&#10;FK         sector_id : bigint&#10;           name : varchar(160)" vertex="1" parent="1" style="rounded=0;whiteSpace=wrap;html=0;align=left;verticalAlign=top;spacing=12;fontFamily=Courier New;fontSize=12;strokeColor=#B8C5D8;fillColor=#EDF1F6;">
+          <mxGeometry as="geometry" x="40" y="365" width="420" height="642" />
+        </mxCell>
+        <mxCell id="equipment_types" value="equipment_types (referência externa)&#10;&#10;PK         id : smallint&#10;UNIQUE     name : varchar(100)" vertex="1" parent="1" style="rounded=0;whiteSpace=wrap;html=0;align=left;verticalAlign=top;spacing=12;fontFamily=Courier New;fontSize=12;strokeColor=#B8C5D8;fillColor=#EDF1F6;">
+          <mxGeometry as="geometry" x="550" y="585" width="420" height="114" />
+        </mxCell>
+        <mxCell id="lines" value="lines (referência externa)&#10;&#10;PK         id : bigint&#10;UNIQUE     code : varchar(40)&#10;           name : varchar(120)&#10;           description : text&#10;           active : boolean&#10;           created_at : timestamptz&#10;FK         sector_id : bigint" vertex="1" parent="1" style="rounded=0;whiteSpace=wrap;html=0;align=left;verticalAlign=top;spacing=12;fontFamily=Courier New;fontSize=12;strokeColor=#B8C5D8;fillColor=#EDF1F6;">
+          <mxGeometry as="geometry" x="1060" y="541" width="420" height="224" />
+        </mxCell>
+        <mxCell id="spare_parts" value="spare_parts (referência externa)&#10;&#10;PK         id : bigint&#10;UNIQUE     code : varchar(40)&#10;           description : varchar(250)&#10;           part_number : varchar(120)&#10;           manufacturer : varchar(160)&#10;           category : varchar(100)&#10;           unit : varchar(20)&#10;           minimum_stock : numeric(14,3)&#10;           maximum_stock : numeric(14,3)&#10;           reorder_point : numeric(14,3)&#10;           storage_location : varchar(160)&#10;           preferred_supplier : varchar(160)&#10;           average_cost : numeric(14,2)&#10;           last_cost : numeric(14,2)&#10;           photo_filename : varchar(255)&#10;           photo_mime : varchar(100)&#10;           photo_data : bytea&#10;           datasheet_filename : varchar(255)&#10;           datasheet_data : bytea&#10;           active : boolean&#10;           created_at : timestamptz&#10;           updated_at : timestamptz" vertex="1" parent="1" style="rounded=0;whiteSpace=wrap;html=0;align=left;verticalAlign=top;spacing=12;fontFamily=Courier New;fontSize=12;strokeColor=#B8C5D8;fillColor=#EDF1F6;">
+          <mxGeometry as="geometry" x="1570" y="453" width="420" height="554" />
+        </mxCell>
+        <mxCell id="users" value="users (referência externa)&#10;&#10;PK         id : bigint&#10;           last_login : timestamptz&#10;           name : varchar(160)&#10;UNIQUE     registration : varchar(50)&#10;           password_hash : text&#10;           role : varchar(20)&#10;           active : boolean&#10;           created_at : timestamptz&#10;FK         line_id : bigint" vertex="1" parent="1" style="rounded=0;whiteSpace=wrap;html=0;align=left;verticalAlign=top;spacing=12;fontFamily=Courier New;fontSize=12;strokeColor=#B8C5D8;fillColor=#EDF1F6;">
+          <mxGeometry as="geometry" x="40" y="1092" width="420" height="268" />
+        </mxCell>
+        <mxCell id="fk-problem_types_equipment_type_id_a130a296_fk_equipment_types_id" value="equipment_type_id" edge="1" parent="1" source="problem_types" target="equipment_types" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=0;endArrow=open;strokeColor=#8195B0;fontSize=10;labelBackgroundColor=#FFFFFF;">
+          <mxGeometry as="geometry" relative="1" />
+        </mxCell>
+        <mxCell id="fk-work_orders_assigned_to_4b6e75b8_fk_users_id" value="assigned_to" edge="1" parent="1" source="work_orders" target="users" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=0;endArrow=open;strokeColor=#8195B0;fontSize=10;labelBackgroundColor=#FFFFFF;">
+          <mxGeometry as="geometry" relative="1" />
+        </mxCell>
+        <mxCell id="fk-work_orders_equipment_id_ddd84ea8_fk_equipment_id" value="equipment_id" edge="1" parent="1" source="work_orders" target="equipment" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=0;endArrow=open;strokeColor=#8195B0;fontSize=10;labelBackgroundColor=#FFFFFF;">
+          <mxGeometry as="geometry" relative="1" />
+        </mxCell>
+        <mxCell id="fk-work_orders_opened_by_72a0f94d_fk_users_id" value="opened_by" edge="1" parent="1" source="work_orders" target="users" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=0;endArrow=open;strokeColor=#8195B0;fontSize=10;labelBackgroundColor=#FFFFFF;">
+          <mxGeometry as="geometry" relative="1" />
+        </mxCell>
+        <mxCell id="fk-work_orders_problem_type_id_21c9e4c8_fk_problem_types_id" value="problem_type_id" edge="1" parent="1" source="work_orders" target="problem_types" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=0;endArrow=open;strokeColor=#8195B0;fontSize=10;labelBackgroundColor=#FFFFFF;">
+          <mxGeometry as="geometry" relative="1" />
+        </mxCell>
+        <mxCell id="fk-line_pendencies_created_by_id_fcc8510a_fk_users_id" value="created_by_id" edge="1" parent="1" source="line_pendencies" target="users" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=0;endArrow=open;strokeColor=#8195B0;fontSize=10;labelBackgroundColor=#FFFFFF;">
+          <mxGeometry as="geometry" relative="1" />
+        </mxCell>
+        <mxCell id="fk-line_pendencies_equipment_id_5696c655_fk_equipment_id" value="equipment_id" edge="1" parent="1" source="line_pendencies" target="equipment" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=0;endArrow=open;strokeColor=#8195B0;fontSize=10;labelBackgroundColor=#FFFFFF;">
+          <mxGeometry as="geometry" relative="1" />
+        </mxCell>
+        <mxCell id="fk-line_pendencies_line_id_2e6f5bf0_fk_lines_id" value="line_id" edge="1" parent="1" source="line_pendencies" target="lines" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=0;endArrow=open;strokeColor=#8195B0;fontSize=10;labelBackgroundColor=#FFFFFF;">
+          <mxGeometry as="geometry" relative="1" />
+        </mxCell>
+        <mxCell id="fk-line_pendencies_resolved_by_id_611c8985_fk_users_id" value="resolved_by_id" edge="1" parent="1" source="line_pendencies" target="users" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=0;endArrow=open;strokeColor=#8195B0;fontSize=10;labelBackgroundColor=#FFFFFF;">
+          <mxGeometry as="geometry" relative="1" />
+        </mxCell>
+        <mxCell id="fk-line_pendencies_work_order_id_be617bc2_fk_work_orders_id" value="work_order_id" edge="1" parent="1" source="line_pendencies" target="work_orders" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=0;endArrow=open;strokeColor=#8195B0;fontSize=10;labelBackgroundColor=#FFFFFF;">
+          <mxGeometry as="geometry" relative="1" />
+        </mxCell>
+        <mxCell id="fk-maintenance_part_req_equipment_id_0d833d48_fk_equipment" value="equipment_id" edge="1" parent="1" source="maintenance_part_requisitions" target="equipment" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=0;endArrow=open;strokeColor=#8195B0;fontSize=10;labelBackgroundColor=#FFFFFF;">
+          <mxGeometry as="geometry" relative="1" />
+        </mxCell>
+        <mxCell id="fk-maintenance_part_req_spare_part_id_b1ed5695_fk_spare_par" value="spare_part_id" edge="1" parent="1" source="maintenance_part_requisitions" target="spare_parts" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=0;endArrow=open;strokeColor=#8195B0;fontSize=10;labelBackgroundColor=#FFFFFF;">
+          <mxGeometry as="geometry" relative="1" />
+        </mxCell>
+        <mxCell id="fk-maintenance_part_req_work_order_id_fdb2337a_fk_work_orde" value="work_order_id" edge="1" parent="1" source="maintenance_part_requisitions" target="work_orders" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=0;endArrow=open;strokeColor=#8195B0;fontSize=10;labelBackgroundColor=#FFFFFF;">
+          <mxGeometry as="geometry" relative="1" />
+        </mxCell>
+        <mxCell id="fk-maintenance_part_requisitions_requester_id_bc67dce6_fk_users_id" value="requester_id" edge="1" parent="1" source="maintenance_part_requisitions" target="users" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=0;endArrow=open;strokeColor=#8195B0;fontSize=10;labelBackgroundColor=#FFFFFF;">
+          <mxGeometry as="geometry" relative="1" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+  <diagram id="module-4" name="Manutenção preventiva">
+    <mxGraphModel grid="1" gridSize="10" page="1" pageWidth="2200" pageHeight="3000" pageScale="1" tooltips="1" connect="1" arrows="1">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="preventive_checklists" value="preventive_checklists&#10;&#10;PK         id : bigint&#10;UNIQUE*    frequency : varchar(20)&#10;           items : jsonb&#10;FK, UNIQUE* equipment_type_id : smallint" vertex="1" parent="1" style="rounded=0;whiteSpace=wrap;html=0;align=left;verticalAlign=top;spacing=12;fontFamily=Courier New;fontSize=12;strokeColor=#B8C5D8;fillColor=#FFFFFF;">
+          <mxGeometry as="geometry" x="40" y="100" width="420" height="158" />
+        </mxCell>
+        <mxCell id="equipment_preventives" value="equipment_preventives&#10;&#10;PK         id : bigint&#10;UNIQUE*    frequency : varchar(20)&#10;           next_due : date&#10;           last_performed : date&#10;           active : boolean&#10;FK, UNIQUE* equipment_id : bigint&#10;           checklist_items : jsonb" vertex="1" parent="1" style="rounded=0;whiteSpace=wrap;html=0;align=left;verticalAlign=top;spacing=12;fontFamily=Courier New;fontSize=12;strokeColor=#B8C5D8;fillColor=#FFFFFF;">
+          <mxGeometry as="geometry" x="550" y="100" width="420" height="224" />
+        </mxCell>
+        <mxCell id="preventive_orders" value="preventive_orders&#10;&#10;PK         id : bigint&#10;           status : varchar(20)&#10;           expected_due : date&#10;           planned_date : date&#10;           planned_time : time&#10;           recurrence_basis : varchar(20)&#10;           frequency : varchar(20)&#10;           equipment_snapshot : jsonb&#10;           items : jsonb&#10;           results : jsonb&#10;           safety_instructions : text&#10;           parts : jsonb&#10;           notes : text&#10;           performed_date : date&#10;           performed_time : time&#10;           assigned_name : varchar(160)&#10;           created_at : timestamptz&#10;           executor_name : varchar(160)&#10;           finished_at : timestamptz&#10;           cancellation_reason : text&#10;           revision : integer&#10;FK         assigned_to_id : bigint&#10;FK         created_by_id : bigint&#10;FK         finished_by_id : bigint&#10;FK         schedule_id : bigint" vertex="1" parent="1" style="rounded=0;whiteSpace=wrap;html=0;align=left;verticalAlign=top;spacing=12;fontFamily=Courier New;fontSize=12;strokeColor=#B8C5D8;fillColor=#FFFFFF;">
+          <mxGeometry as="geometry" x="1060" y="100" width="420" height="620" />
+        </mxCell>
+        <mxCell id="preventive_executions" value="preventive_executions&#10;&#10;PK         id : bigint&#10;           performed_date : date&#10;           previous_due : date&#10;           next_due : date&#10;           notes : text&#10;           created_at : timestamptz&#10;FK         schedule_id : bigint&#10;FK         technician_id : bigint&#10;FK, UNIQUE order_id : bigint" vertex="1" parent="1" style="rounded=0;whiteSpace=wrap;html=0;align=left;verticalAlign=top;spacing=12;fontFamily=Courier New;fontSize=12;strokeColor=#B8C5D8;fillColor=#FFFFFF;">
+          <mxGeometry as="geometry" x="1570" y="100" width="420" height="268" />
+        </mxCell>
+        <mxCell id="equipment" value="equipment (referência externa)&#10;&#10;PK         id : bigint&#10;           model_number : varchar(100)&#10;           model : varchar(160)&#10;UNIQUE     serial : varchar(160)&#10;           manufacturer : varchar(160)&#10;           manufacturing_date : date&#10;           manufacturing_date_text : varchar(10)&#10;           length_mm : numeric(12,2)&#10;           width_mm : numeric(12,2)&#10;           height_mm : numeric(12,2)&#10;           weight_kg : numeric(12,2)&#10;           voltage_v : numeric(12,2)&#10;           frequency_hz : numeric(12,2)&#10;           current_a : numeric(12,2)&#10;           power_w : numeric(12,2)&#10;           pneumatic_pressure_bar : numeric(12,2)&#10;UNIQUE     asset_number : varchar(100)&#10;           description : text&#10;           process_description : text&#10;UNIQUE*    position : integer&#10;           active : boolean&#10;           created_at : timestamptz&#10;FK         equipment_type_id : smallint&#10;FK, UNIQUE* line_id : bigint&#10;FK         sector_id : bigint&#10;           name : varchar(160)" vertex="1" parent="1" style="rounded=0;whiteSpace=wrap;html=0;align=left;verticalAlign=top;spacing=12;fontFamily=Courier New;fontSize=12;strokeColor=#B8C5D8;fillColor=#EDF1F6;">
+          <mxGeometry as="geometry" x="40" y="343" width="420" height="642" />
+        </mxCell>
+        <mxCell id="equipment_types" value="equipment_types (referência externa)&#10;&#10;PK         id : smallint&#10;UNIQUE     name : varchar(100)" vertex="1" parent="1" style="rounded=0;whiteSpace=wrap;html=0;align=left;verticalAlign=top;spacing=12;fontFamily=Courier New;fontSize=12;strokeColor=#B8C5D8;fillColor=#EDF1F6;">
+          <mxGeometry as="geometry" x="550" y="409" width="420" height="114" />
+        </mxCell>
+        <mxCell id="users" value="users (referência externa)&#10;&#10;PK         id : bigint&#10;           last_login : timestamptz&#10;           name : varchar(160)&#10;UNIQUE     registration : varchar(50)&#10;           password_hash : text&#10;           role : varchar(20)&#10;           active : boolean&#10;           created_at : timestamptz&#10;FK         line_id : bigint" vertex="1" parent="1" style="rounded=0;whiteSpace=wrap;html=0;align=left;verticalAlign=top;spacing=12;fontFamily=Courier New;fontSize=12;strokeColor=#B8C5D8;fillColor=#EDF1F6;">
+          <mxGeometry as="geometry" x="1060" y="805" width="420" height="268" />
+        </mxCell>
+        <mxCell id="fk-preventive_checklist_equipment_type_id_47bbcd6e_fk_equipment" value="equipment_type_id" edge="1" parent="1" source="preventive_checklists" target="equipment_types" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=0;endArrow=open;strokeColor=#8195B0;fontSize=10;labelBackgroundColor=#FFFFFF;">
+          <mxGeometry as="geometry" relative="1" />
+        </mxCell>
+        <mxCell id="fk-equipment_preventives_equipment_id_683c5810_fk_equipment_id" value="equipment_id" edge="1" parent="1" source="equipment_preventives" target="equipment" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=0;endArrow=open;strokeColor=#8195B0;fontSize=10;labelBackgroundColor=#FFFFFF;">
+          <mxGeometry as="geometry" relative="1" />
+        </mxCell>
+        <mxCell id="fk-preventive_orders_assigned_to_id_49125343_fk_users_id" value="assigned_to_id" edge="1" parent="1" source="preventive_orders" target="users" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=0;endArrow=open;strokeColor=#8195B0;fontSize=10;labelBackgroundColor=#FFFFFF;">
+          <mxGeometry as="geometry" relative="1" />
+        </mxCell>
+        <mxCell id="fk-preventive_orders_created_by_id_ddd0f19b_fk_users_id" value="created_by_id" edge="1" parent="1" source="preventive_orders" target="users" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=0;endArrow=open;strokeColor=#8195B0;fontSize=10;labelBackgroundColor=#FFFFFF;">
+          <mxGeometry as="geometry" relative="1" />
+        </mxCell>
+        <mxCell id="fk-preventive_orders_finished_by_id_540075ee_fk_users_id" value="finished_by_id" edge="1" parent="1" source="preventive_orders" target="users" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=0;endArrow=open;strokeColor=#8195B0;fontSize=10;labelBackgroundColor=#FFFFFF;">
+          <mxGeometry as="geometry" relative="1" />
+        </mxCell>
+        <mxCell id="fk-preventive_orders_schedule_id_7044e27c_fk_equipment" value="schedule_id" edge="1" parent="1" source="preventive_orders" target="equipment_preventives" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=0;endArrow=open;strokeColor=#8195B0;fontSize=10;labelBackgroundColor=#FFFFFF;">
+          <mxGeometry as="geometry" relative="1" />
+        </mxCell>
+        <mxCell id="fk-preventive_execution_schedule_id_59fbb7be_fk_equipment" value="schedule_id" edge="1" parent="1" source="preventive_executions" target="equipment_preventives" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=0;endArrow=open;strokeColor=#8195B0;fontSize=10;labelBackgroundColor=#FFFFFF;">
+          <mxGeometry as="geometry" relative="1" />
+        </mxCell>
+        <mxCell id="fk-preventive_executions_order_id_85e42976_fk_preventive_orders_id" value="order_id" edge="1" parent="1" source="preventive_executions" target="preventive_orders" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=0;endArrow=open;strokeColor=#8195B0;fontSize=10;labelBackgroundColor=#FFFFFF;">
+          <mxGeometry as="geometry" relative="1" />
+        </mxCell>
+        <mxCell id="fk-preventive_executions_technician_id_84bee232_fk_users_id" value="technician_id" edge="1" parent="1" source="preventive_executions" target="users" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=0;endArrow=open;strokeColor=#8195B0;fontSize=10;labelBackgroundColor=#FFFFFF;">
+          <mxGeometry as="geometry" relative="1" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+  <diagram id="module-5" name="Peças e documentação técnica">
+    <mxGraphModel grid="1" gridSize="10" page="1" pageWidth="2200" pageHeight="3000" pageScale="1" tooltips="1" connect="1" arrows="1">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="spare_parts" value="spare_parts&#10;&#10;PK         id : bigint&#10;UNIQUE     code : varchar(40)&#10;           description : varchar(250)&#10;           part_number : varchar(120)&#10;           manufacturer : varchar(160)&#10;           category : varchar(100)&#10;           unit : varchar(20)&#10;           minimum_stock : numeric(14,3)&#10;           maximum_stock : numeric(14,3)&#10;           reorder_point : numeric(14,3)&#10;           storage_location : varchar(160)&#10;           preferred_supplier : varchar(160)&#10;           average_cost : numeric(14,2)&#10;           last_cost : numeric(14,2)&#10;           photo_filename : varchar(255)&#10;           photo_mime : varchar(100)&#10;           photo_data : bytea&#10;           datasheet_filename : varchar(255)&#10;           datasheet_data : bytea&#10;           active : boolean&#10;           created_at : timestamptz&#10;           updated_at : timestamptz" vertex="1" parent="1" style="rounded=0;whiteSpace=wrap;html=0;align=left;verticalAlign=top;spacing=12;fontFamily=Courier New;fontSize=12;strokeColor=#B8C5D8;fillColor=#FFFFFF;">
+          <mxGeometry as="geometry" x="40" y="100" width="420" height="554" />
+        </mxCell>
+        <mxCell id="spare_part_compatibility" value="spare_part_compatibility&#10;&#10;FK, PK     equipment_id : bigint&#10;FK, PK     spare_part_id : bigint" vertex="1" parent="1" style="rounded=0;whiteSpace=wrap;html=0;align=left;verticalAlign=top;spacing=12;fontFamily=Courier New;fontSize=12;strokeColor=#B8C5D8;fillColor=#FFFFFF;">
+          <mxGeometry as="geometry" x="550" y="100" width="420" height="114" />
+        </mxCell>
+        <mxCell id="spare_part_technical" value="spare_part_technical&#10;&#10;PK, FK     spare_part_id : bigint&#10;           fiscal_status : varchar(20)&#10;           fiscal_validated_at : timestamptz&#10;           updated_at : timestamptz&#10;           description_en : text&#10;           ncm : varchar(10)&#10;           pli_description : text&#10;           description_pt : text&#10;           classification : text&#10;           independent_function : text&#10;           connection_details : text&#10;           useful_life : text&#10;           asset_classification : text&#10;           main_function : text&#10;           secondary_function : text&#10;           raw_material : text&#10;           intended_use : text&#10;           application_machine : text&#10;           mechanical_electrical : text&#10;           current_type : text&#10;           power : text&#10;           voltage : text&#10;           amperage : text&#10;           picture_reference : text&#10;FK         fiscal_validated_by : bigint" vertex="1" parent="1" style="rounded=0;whiteSpace=wrap;html=0;align=left;verticalAlign=top;spacing=12;fontFamily=Courier New;fontSize=12;strokeColor=#B8C5D8;fillColor=#FFFFFF;">
+          <mxGeometry as="geometry" x="1060" y="100" width="420" height="620" />
+        </mxCell>
+        <mxCell id="equipment" value="equipment (referência externa)&#10;&#10;PK         id : bigint&#10;           model_number : varchar(100)&#10;           model : varchar(160)&#10;UNIQUE     serial : varchar(160)&#10;           manufacturer : varchar(160)&#10;           manufacturing_date : date&#10;           manufacturing_date_text : varchar(10)&#10;           length_mm : numeric(12,2)&#10;           width_mm : numeric(12,2)&#10;           height_mm : numeric(12,2)&#10;           weight_kg : numeric(12,2)&#10;           voltage_v : numeric(12,2)&#10;           frequency_hz : numeric(12,2)&#10;           current_a : numeric(12,2)&#10;           power_w : numeric(12,2)&#10;           pneumatic_pressure_bar : numeric(12,2)&#10;UNIQUE     asset_number : varchar(100)&#10;           description : text&#10;           process_description : text&#10;UNIQUE*    position : integer&#10;           active : boolean&#10;           created_at : timestamptz&#10;FK         equipment_type_id : smallint&#10;FK, UNIQUE* line_id : bigint&#10;FK         sector_id : bigint&#10;           name : varchar(160)" vertex="1" parent="1" style="rounded=0;whiteSpace=wrap;html=0;align=left;verticalAlign=top;spacing=12;fontFamily=Courier New;fontSize=12;strokeColor=#B8C5D8;fillColor=#EDF1F6;">
+          <mxGeometry as="geometry" x="1570" y="100" width="420" height="642" />
+        </mxCell>
+        <mxCell id="users" value="users (referência externa)&#10;&#10;PK         id : bigint&#10;           last_login : timestamptz&#10;           name : varchar(160)&#10;UNIQUE     registration : varchar(50)&#10;           password_hash : text&#10;           role : varchar(20)&#10;           active : boolean&#10;           created_at : timestamptz&#10;FK         line_id : bigint" vertex="1" parent="1" style="rounded=0;whiteSpace=wrap;html=0;align=left;verticalAlign=top;spacing=12;fontFamily=Courier New;fontSize=12;strokeColor=#B8C5D8;fillColor=#EDF1F6;">
+          <mxGeometry as="geometry" x="40" y="739" width="420" height="268" />
+        </mxCell>
+        <mxCell id="fk-spare_part_compatibi_spare_part_id_1a0483b6_fk_spare_par" value="spare_part_id" edge="1" parent="1" source="spare_part_compatibility" target="spare_parts" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=0;endArrow=open;strokeColor=#8195B0;fontSize=10;labelBackgroundColor=#FFFFFF;">
+          <mxGeometry as="geometry" relative="1" />
+        </mxCell>
+        <mxCell id="fk-spare_part_compatibility_equipment_id_ba188d2e_fk_equipment_id" value="equipment_id" edge="1" parent="1" source="spare_part_compatibility" target="equipment" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=0;endArrow=open;strokeColor=#8195B0;fontSize=10;labelBackgroundColor=#FFFFFF;">
+          <mxGeometry as="geometry" relative="1" />
+        </mxCell>
+        <mxCell id="fk-spare_part_technical_fiscal_validated_by_02e3bc1d_fk_users_id" value="fiscal_validated_by" edge="1" parent="1" source="spare_part_technical" target="users" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=0;endArrow=open;strokeColor=#8195B0;fontSize=10;labelBackgroundColor=#FFFFFF;">
+          <mxGeometry as="geometry" relative="1" />
+        </mxCell>
+        <mxCell id="fk-spare_part_technical_spare_part_id_7c031136_fk_spare_parts_id" value="spare_part_id" edge="1" parent="1" source="spare_part_technical" target="spare_parts" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=0;endArrow=open;strokeColor=#8195B0;fontSize=10;labelBackgroundColor=#FFFFFF;">
+          <mxGeometry as="geometry" relative="1" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+  <diagram id="module-6" name="Compras e aprovação">
+    <mxGraphModel grid="1" gridSize="10" page="1" pageWidth="2200" pageHeight="3000" pageScale="1" tooltips="1" connect="1" arrows="1">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="spare_purchase_requests" value="spare_purchase_requests&#10;&#10;PK         id : bigint&#10;           purchase_type : varchar(16)&#10;           status : varchar(24)&#10;           justification : text&#10;           priority : varchar(12)&#10;           manager_comment : text&#10;           submitted_at : timestamptz&#10;           decided_at : timestamptz&#10;           created_at : timestamptz&#10;           updated_at : timestamptz&#10;FK         equipment_id : bigint&#10;FK         manager_id : bigint&#10;FK         requester_id : bigint&#10;FK         work_order_id : bigint&#10;           equipment_serial : varchar(160)" vertex="1" parent="1" style="rounded=0;whiteSpace=wrap;html=0;align=left;verticalAlign=top;spacing=12;fontFamily=Courier New;fontSize=12;strokeColor=#B8C5D8;fillColor=#FFFFFF;">
+          <mxGeometry as="geometry" x="40" y="100" width="420" height="400" />
+        </mxCell>
+        <mxCell id="spare_purchase_request_items" value="spare_purchase_request_items&#10;&#10;PK         id : bigint&#10;           quantity : numeric(14,3)&#10;           item_note : text&#10;           technical_snapshot : jsonb&#10;FK         request_id : bigint&#10;FK         spare_part_id : bigint" vertex="1" parent="1" style="rounded=0;whiteSpace=wrap;html=0;align=left;verticalAlign=top;spacing=12;fontFamily=Courier New;fontSize=12;strokeColor=#B8C5D8;fillColor=#FFFFFF;">
+          <mxGeometry as="geometry" x="550" y="100" width="420" height="202" />
+        </mxCell>
+        <mxCell id="spare_purchase_events" value="spare_purchase_events&#10;&#10;PK         id : bigint&#10;           action : varchar(32)&#10;           details : text&#10;           created_at : timestamptz&#10;FK         actor_id : bigint&#10;FK         request_id : bigint" vertex="1" parent="1" style="rounded=0;whiteSpace=wrap;html=0;align=left;verticalAlign=top;spacing=12;fontFamily=Courier New;fontSize=12;strokeColor=#B8C5D8;fillColor=#FFFFFF;">
+          <mxGeometry as="geometry" x="1060" y="100" width="420" height="202" />
+        </mxCell>
+        <mxCell id="equipment" value="equipment (referência externa)&#10;&#10;PK         id : bigint&#10;           model_number : varchar(100)&#10;           model : varchar(160)&#10;UNIQUE     serial : varchar(160)&#10;           manufacturer : varchar(160)&#10;           manufacturing_date : date&#10;           manufacturing_date_text : varchar(10)&#10;           length_mm : numeric(12,2)&#10;           width_mm : numeric(12,2)&#10;           height_mm : numeric(12,2)&#10;           weight_kg : numeric(12,2)&#10;           voltage_v : numeric(12,2)&#10;           frequency_hz : numeric(12,2)&#10;           current_a : numeric(12,2)&#10;           power_w : numeric(12,2)&#10;           pneumatic_pressure_bar : numeric(12,2)&#10;UNIQUE     asset_number : varchar(100)&#10;           description : text&#10;           process_description : text&#10;UNIQUE*    position : integer&#10;           active : boolean&#10;           created_at : timestamptz&#10;FK         equipment_type_id : smallint&#10;FK, UNIQUE* line_id : bigint&#10;FK         sector_id : bigint&#10;           name : varchar(160)" vertex="1" parent="1" style="rounded=0;whiteSpace=wrap;html=0;align=left;verticalAlign=top;spacing=12;fontFamily=Courier New;fontSize=12;strokeColor=#B8C5D8;fillColor=#EDF1F6;">
+          <mxGeometry as="geometry" x="1570" y="100" width="420" height="642" />
+        </mxCell>
+        <mxCell id="spare_parts" value="spare_parts (referência externa)&#10;&#10;PK         id : bigint&#10;UNIQUE     code : varchar(40)&#10;           description : varchar(250)&#10;           part_number : varchar(120)&#10;           manufacturer : varchar(160)&#10;           category : varchar(100)&#10;           unit : varchar(20)&#10;           minimum_stock : numeric(14,3)&#10;           maximum_stock : numeric(14,3)&#10;           reorder_point : numeric(14,3)&#10;           storage_location : varchar(160)&#10;           preferred_supplier : varchar(160)&#10;           average_cost : numeric(14,2)&#10;           last_cost : numeric(14,2)&#10;           photo_filename : varchar(255)&#10;           photo_mime : varchar(100)&#10;           photo_data : bytea&#10;           datasheet_filename : varchar(255)&#10;           datasheet_data : bytea&#10;           active : boolean&#10;           created_at : timestamptz&#10;           updated_at : timestamptz" vertex="1" parent="1" style="rounded=0;whiteSpace=wrap;html=0;align=left;verticalAlign=top;spacing=12;fontFamily=Courier New;fontSize=12;strokeColor=#B8C5D8;fillColor=#EDF1F6;">
+          <mxGeometry as="geometry" x="40" y="585" width="420" height="554" />
+        </mxCell>
+        <mxCell id="users" value="users (referência externa)&#10;&#10;PK         id : bigint&#10;           last_login : timestamptz&#10;           name : varchar(160)&#10;UNIQUE     registration : varchar(50)&#10;           password_hash : text&#10;           role : varchar(20)&#10;           active : boolean&#10;           created_at : timestamptz&#10;FK         line_id : bigint" vertex="1" parent="1" style="rounded=0;whiteSpace=wrap;html=0;align=left;verticalAlign=top;spacing=12;fontFamily=Courier New;fontSize=12;strokeColor=#B8C5D8;fillColor=#EDF1F6;">
+          <mxGeometry as="geometry" x="550" y="387" width="420" height="268" />
+        </mxCell>
+        <mxCell id="work_orders" value="work_orders (referência externa)&#10;&#10;PK         id : bigint&#10;           priority : varchar(20)&#10;           status : varchar(20)&#10;           problem : text&#10;           root_cause : text&#10;           corrective_action : text&#10;           preventive_action : text&#10;           started_at : timestamptz&#10;           finished_at : timestamptz&#10;           created_at : timestamptz&#10;FK         assigned_to : bigint&#10;FK         equipment_id : bigint&#10;FK         opened_by : bigint&#10;FK         problem_type_id : bigint&#10;           downtime_seconds : integer" vertex="1" parent="1" style="rounded=0;whiteSpace=wrap;html=0;align=left;verticalAlign=top;spacing=12;fontFamily=Courier New;fontSize=12;strokeColor=#B8C5D8;fillColor=#EDF1F6;">
+          <mxGeometry as="geometry" x="1060" y="387" width="420" height="400" />
+        </mxCell>
+        <mxCell id="fk-spare_purchase_reque_work_order_id_27461ce9_fk_work_orde" value="work_order_id" edge="1" parent="1" source="spare_purchase_requests" target="work_orders" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=0;endArrow=open;strokeColor=#8195B0;fontSize=10;labelBackgroundColor=#FFFFFF;">
+          <mxGeometry as="geometry" relative="1" />
+        </mxCell>
+        <mxCell id="fk-spare_purchase_requests_equipment_id_7c0cf8bb_fk_equipment_id" value="equipment_id" edge="1" parent="1" source="spare_purchase_requests" target="equipment" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=0;endArrow=open;strokeColor=#8195B0;fontSize=10;labelBackgroundColor=#FFFFFF;">
+          <mxGeometry as="geometry" relative="1" />
+        </mxCell>
+        <mxCell id="fk-spare_purchase_requests_manager_id_66c9fd95_fk_users_id" value="manager_id" edge="1" parent="1" source="spare_purchase_requests" target="users" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=0;endArrow=open;strokeColor=#8195B0;fontSize=10;labelBackgroundColor=#FFFFFF;">
+          <mxGeometry as="geometry" relative="1" />
+        </mxCell>
+        <mxCell id="fk-spare_purchase_requests_requester_id_1c2507f3_fk_users_id" value="requester_id" edge="1" parent="1" source="spare_purchase_requests" target="users" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=0;endArrow=open;strokeColor=#8195B0;fontSize=10;labelBackgroundColor=#FFFFFF;">
+          <mxGeometry as="geometry" relative="1" />
+        </mxCell>
+        <mxCell id="fk-spare_purchase_reque_request_id_d472b5a8_fk_spare_pur" value="request_id" edge="1" parent="1" source="spare_purchase_request_items" target="spare_purchase_requests" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=0;endArrow=open;strokeColor=#8195B0;fontSize=10;labelBackgroundColor=#FFFFFF;">
+          <mxGeometry as="geometry" relative="1" />
+        </mxCell>
+        <mxCell id="fk-spare_purchase_reque_spare_part_id_966d92bd_fk_spare_par" value="spare_part_id" edge="1" parent="1" source="spare_purchase_request_items" target="spare_parts" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=0;endArrow=open;strokeColor=#8195B0;fontSize=10;labelBackgroundColor=#FFFFFF;">
+          <mxGeometry as="geometry" relative="1" />
+        </mxCell>
+        <mxCell id="fk-spare_purchase_event_request_id_dd6b04a2_fk_spare_pur" value="request_id" edge="1" parent="1" source="spare_purchase_events" target="spare_purchase_requests" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=0;endArrow=open;strokeColor=#8195B0;fontSize=10;labelBackgroundColor=#FFFFFF;">
+          <mxGeometry as="geometry" relative="1" />
+        </mxCell>
+        <mxCell id="fk-spare_purchase_events_actor_id_3e612bfb_fk_users_id" value="actor_id" edge="1" parent="1" source="spare_purchase_events" target="users" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=0;endArrow=open;strokeColor=#8195B0;fontSize=10;labelBackgroundColor=#FFFFFF;">
+          <mxGeometry as="geometry" relative="1" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

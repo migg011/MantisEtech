@@ -1,0 +1,18 @@
+services:
+  postgres:
+    image: postgres:17-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: mantis
+      POSTGRES_USER: mantis
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?Defina POSTGRES_PASSWORD no arquivo .env na raiz}
+    ports:
+      - '127.0.0.1:5433:5432'
+    volumes:
+      - mantis_pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ['CMD-SHELL','pg_isready -U mantis -d mantis']
+      interval: 5s
+      retries: 10
+volumes:
+  mantis_pgdata:

@@ -1,0 +1,55 @@
+%% Gerado do catálogo físico. PK = chave primária; FK = referência a outra tabela.
+erDiagram
+    setores {
+        int8 id PK
+        varchar codigo
+        varchar nome
+        text descricao
+        bool ativo
+        timestamptz criado_em
+    }
+    linhas {
+        int8 id PK
+        varchar codigo
+        varchar nome
+        text descricao
+        bool ativo
+        timestamptz criado_em
+        int8 setor_id FK
+    }
+    tipos_equipamento {
+        int2 id PK
+        varchar nome
+    }
+    equipamentos {
+        int8 id PK
+        varchar numero_modelo
+        varchar modelo
+        varchar numero_serie
+        varchar fabricante
+        date data_fabricacao
+        varchar data_fabricacao_texto
+        numeric comprimento_mm
+        numeric largura_mm
+        numeric altura_mm
+        numeric peso_kg
+        numeric tensao_v
+        numeric frequencia_hz
+        numeric corrente_a
+        numeric potencia_w
+        numeric pressao_pneumatica_bar
+        varchar numero_patrimonio
+        text descricao
+        text descricao_processo
+        int4 posicao
+        bool ativo
+        timestamptz criado_em
+        int2 tipo_equipamento_id FK
+        int8 linha_id FK
+        int8 setor_id FK
+        varchar nome
+    }
+    setores |o--o{ linhas : "setor_id"
+    linhas |o--o{ equipamentos : "linha_id"
+    tipos_equipamento ||--o{ equipamentos : "tipo_equipamento_id"
+    setores |o--o{ equipamentos : "setor_id"

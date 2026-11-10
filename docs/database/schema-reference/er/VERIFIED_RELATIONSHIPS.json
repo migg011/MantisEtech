@@ -1,0 +1,443 @@
+[
+  {
+    "id": "R01",
+    "filha": "agendas_preventiva",
+    "pai": "equipamentos",
+    "coluna": "equipamento_id",
+    "opcional": false,
+    "unica": false,
+    "infraestrutura": false
+  },
+  {
+    "id": "R02",
+    "filha": "anexos_equipamento",
+    "pai": "usuarios",
+    "coluna": "enviado_por_id",
+    "opcional": false,
+    "unica": false,
+    "infraestrutura": false
+  },
+  {
+    "id": "R03",
+    "filha": "anexos_equipamento",
+    "pai": "equipamentos",
+    "coluna": "equipamento_id",
+    "opcional": false,
+    "unica": false,
+    "infraestrutura": false
+  },
+  {
+    "id": "R04",
+    "filha": "auth_group_permissions",
+    "pai": "auth_permission",
+    "coluna": "permission_id",
+    "opcional": false,
+    "unica": false,
+    "infraestrutura": true
+  },
+  {
+    "id": "R05",
+    "filha": "auth_group_permissions",
+    "pai": "auth_group",
+    "coluna": "group_id",
+    "opcional": false,
+    "unica": false,
+    "infraestrutura": true
+  },
+  {
+    "id": "R06",
+    "filha": "auth_permission",
+    "pai": "django_content_type",
+    "coluna": "content_type_id",
+    "opcional": false,
+    "unica": false,
+    "infraestrutura": true
+  },
+  {
+    "id": "R07",
+    "filha": "compatibilidade_pecas_equipamentos",
+    "pai": "equipamentos",
+    "coluna": "equipamento_id",
+    "opcional": false,
+    "unica": false,
+    "infraestrutura": false
+  },
+  {
+    "id": "R08",
+    "filha": "compatibilidade_pecas_equipamentos",
+    "pai": "pecas_reposicao",
+    "coluna": "peca_id",
+    "opcional": false,
+    "unica": false,
+    "infraestrutura": false
+  },
+  {
+    "id": "R09",
+    "filha": "equipamentos",
+    "pai": "linhas",
+    "coluna": "linha_id",
+    "opcional": true,
+    "unica": false,
+    "infraestrutura": false
+  },
+  {
+    "id": "R10",
+    "filha": "equipamentos",
+    "pai": "setores",
+    "coluna": "setor_id",
+    "opcional": true,
+    "unica": false,
+    "infraestrutura": false
+  },
+  {
+    "id": "R11",
+    "filha": "equipamentos",
+    "pai": "tipos_equipamento",
+    "coluna": "tipo_equipamento_id",
+    "opcional": false,
+    "unica": false,
+    "infraestrutura": false
+  },
+  {
+    "id": "R12",
+    "filha": "eventos_solicitacao_compra",
+    "pai": "solicitacoes_compra",
+    "coluna": "solicitacao_id",
+    "opcional": false,
+    "unica": false,
+    "infraestrutura": false
+  },
+  {
+    "id": "R13",
+    "filha": "eventos_solicitacao_compra",
+    "pai": "usuarios",
+    "coluna": "autor_id",
+    "opcional": false,
+    "unica": false,
+    "infraestrutura": false
+  },
+  {
+    "id": "R14",
+    "filha": "execucoes_preventiva",
+    "pai": "agendas_preventiva",
+    "coluna": "agenda_id",
+    "opcional": false,
+    "unica": false,
+    "infraestrutura": false
+  },
+  {
+    "id": "R15",
+    "filha": "execucoes_preventiva",
+    "pai": "ordens_preventiva",
+    "coluna": "ordem_preventiva_id",
+    "opcional": true,
+    "unica": true,
+    "infraestrutura": false
+  },
+  {
+    "id": "R16",
+    "filha": "execucoes_preventiva",
+    "pai": "usuarios",
+    "coluna": "tecnico_id",
+    "opcional": false,
+    "unica": false,
+    "infraestrutura": false
+  },
+  {
+    "id": "R17",
+    "filha": "fichas_tecnicas_pecas",
+    "pai": "pecas_reposicao",
+    "coluna": "peca_id",
+    "opcional": false,
+    "unica": true,
+    "infraestrutura": false
+  },
+  {
+    "id": "R18",
+    "filha": "fichas_tecnicas_pecas",
+    "pai": "usuarios",
+    "coluna": "validado_por_id",
+    "opcional": true,
+    "unica": false,
+    "infraestrutura": false
+  },
+  {
+    "id": "R19",
+    "filha": "itens_solicitacao_compra",
+    "pai": "solicitacoes_compra",
+    "coluna": "solicitacao_id",
+    "opcional": false,
+    "unica": false,
+    "infraestrutura": false
+  },
+  {
+    "id": "R20",
+    "filha": "itens_solicitacao_compra",
+    "pai": "pecas_reposicao",
+    "coluna": "peca_id",
+    "opcional": false,
+    "unica": false,
+    "infraestrutura": false
+  },
+  {
+    "id": "R21",
+    "filha": "linhas",
+    "pai": "setores",
+    "coluna": "setor_id",
+    "opcional": true,
+    "unica": false,
+    "infraestrutura": false
+  },
+  {
+    "id": "R22",
+    "filha": "movimentacoes_equipamento",
+    "pai": "equipamentos",
+    "coluna": "equipamento_id",
+    "opcional": false,
+    "unica": false,
+    "infraestrutura": false
+  },
+  {
+    "id": "R23",
+    "filha": "movimentacoes_equipamento",
+    "pai": "usuarios",
+    "coluna": "executado_por_id",
+    "opcional": false,
+    "unica": false,
+    "infraestrutura": false
+  },
+  {
+    "id": "R24",
+    "filha": "movimentacoes_equipamento",
+    "pai": "linhas",
+    "coluna": "linha_destino_id",
+    "opcional": true,
+    "unica": false,
+    "infraestrutura": false
+  },
+  {
+    "id": "R25",
+    "filha": "movimentacoes_equipamento",
+    "pai": "linhas",
+    "coluna": "linha_origem_id",
+    "opcional": true,
+    "unica": false,
+    "infraestrutura": false
+  },
+  {
+    "id": "R26",
+    "filha": "ordens_preventiva",
+    "pai": "agendas_preventiva",
+    "coluna": "agenda_id",
+    "opcional": false,
+    "unica": false,
+    "infraestrutura": false
+  },
+  {
+    "id": "R27",
+    "filha": "ordens_preventiva",
+    "pai": "usuarios",
+    "coluna": "concluido_por_id",
+    "opcional": true,
+    "unica": false,
+    "infraestrutura": false
+  },
+  {
+    "id": "R28",
+    "filha": "ordens_preventiva",
+    "pai": "usuarios",
+    "coluna": "criado_por_id",
+    "opcional": false,
+    "unica": false,
+    "infraestrutura": false
+  },
+  {
+    "id": "R29",
+    "filha": "ordens_preventiva",
+    "pai": "usuarios",
+    "coluna": "responsavel_id",
+    "opcional": true,
+    "unica": false,
+    "infraestrutura": false
+  },
+  {
+    "id": "R30",
+    "filha": "ordens_servico",
+    "pai": "usuarios",
+    "coluna": "aberto_por_id",
+    "opcional": false,
+    "unica": false,
+    "infraestrutura": false
+  },
+  {
+    "id": "R31",
+    "filha": "ordens_servico",
+    "pai": "equipamentos",
+    "coluna": "equipamento_id",
+    "opcional": false,
+    "unica": false,
+    "infraestrutura": false
+  },
+  {
+    "id": "R32",
+    "filha": "ordens_servico",
+    "pai": "usuarios",
+    "coluna": "responsavel_id",
+    "opcional": true,
+    "unica": false,
+    "infraestrutura": false
+  },
+  {
+    "id": "R33",
+    "filha": "ordens_servico",
+    "pai": "tipos_problema",
+    "coluna": "tipo_problema_id",
+    "opcional": true,
+    "unica": false,
+    "infraestrutura": false
+  },
+  {
+    "id": "R34",
+    "filha": "pendencias_linha",
+    "pai": "usuarios",
+    "coluna": "criado_por_id",
+    "opcional": false,
+    "unica": false,
+    "infraestrutura": false
+  },
+  {
+    "id": "R35",
+    "filha": "pendencias_linha",
+    "pai": "equipamentos",
+    "coluna": "equipamento_id",
+    "opcional": false,
+    "unica": false,
+    "infraestrutura": false
+  },
+  {
+    "id": "R36",
+    "filha": "pendencias_linha",
+    "pai": "linhas",
+    "coluna": "linha_id",
+    "opcional": false,
+    "unica": false,
+    "infraestrutura": false
+  },
+  {
+    "id": "R37",
+    "filha": "pendencias_linha",
+    "pai": "ordens_servico",
+    "coluna": "ordem_servico_id",
+    "opcional": false,
+    "unica": false,
+    "infraestrutura": false
+  },
+  {
+    "id": "R38",
+    "filha": "pendencias_linha",
+    "pai": "usuarios",
+    "coluna": "resolvido_por_id",
+    "opcional": true,
+    "unica": false,
+    "infraestrutura": false
+  },
+  {
+    "id": "R39",
+    "filha": "roteiros_preventiva",
+    "pai": "tipos_equipamento",
+    "coluna": "tipo_equipamento_id",
+    "opcional": false,
+    "unica": false,
+    "infraestrutura": false
+  },
+  {
+    "id": "R40",
+    "filha": "solicitacoes_compra",
+    "pai": "ordens_servico",
+    "coluna": "ordem_servico_id",
+    "opcional": true,
+    "unica": false,
+    "infraestrutura": false
+  },
+  {
+    "id": "R41",
+    "filha": "solicitacoes_compra",
+    "pai": "equipamentos",
+    "coluna": "equipamento_id",
+    "opcional": true,
+    "unica": false,
+    "infraestrutura": false
+  },
+  {
+    "id": "R42",
+    "filha": "solicitacoes_compra",
+    "pai": "usuarios",
+    "coluna": "gestor_id",
+    "opcional": false,
+    "unica": false,
+    "infraestrutura": false
+  },
+  {
+    "id": "R43",
+    "filha": "solicitacoes_compra",
+    "pai": "usuarios",
+    "coluna": "solicitante_id",
+    "opcional": false,
+    "unica": false,
+    "infraestrutura": false
+  },
+  {
+    "id": "R44",
+    "filha": "solicitacoes_pecas_manutencao",
+    "pai": "equipamentos",
+    "coluna": "equipamento_id",
+    "opcional": false,
+    "unica": false,
+    "infraestrutura": false
+  },
+  {
+    "id": "R45",
+    "filha": "solicitacoes_pecas_manutencao",
+    "pai": "ordens_servico",
+    "coluna": "ordem_servico_id",
+    "opcional": false,
+    "unica": false,
+    "infraestrutura": false
+  },
+  {
+    "id": "R46",
+    "filha": "solicitacoes_pecas_manutencao",
+    "pai": "pecas_reposicao",
+    "coluna": "peca_id",
+    "opcional": false,
+    "unica": false,
+    "infraestrutura": false
+  },
+  {
+    "id": "R47",
+    "filha": "solicitacoes_pecas_manutencao",
+    "pai": "usuarios",
+    "coluna": "solicitante_id",
+    "opcional": false,
+    "unica": false,
+    "infraestrutura": false
+  },
+  {
+    "id": "R48",
+    "filha": "tipos_problema",
+    "pai": "tipos_equipamento",
+    "coluna": "tipo_equipamento_id",
+    "opcional": true,
+    "unica": false,
+    "infraestrutura": false
+  },
+  {
+    "id": "R49",
+    "filha": "usuarios",
+    "pai": "linhas",
+    "coluna": "linha_id",
+    "opcional": true,
+    "unica": false,
+    "infraestrutura": false
+  }
+]

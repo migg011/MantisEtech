@@ -1,0 +1,239 @@
+<!-- Compra: ficha técnica, rascunho, envio e aprovação são separados da solicitação direta de peça no atendimento da OS. -->
+<section class="purchase-screen">
+    <div class="heading"
+        ><div
+            ><small>MANTIS 2.0 / SPARE PARTS</small
+            ><h1>Solicitações de compra</h1
+            ><p
+                >Cadastro técnico, compras nacionais e importações, aprovação do
+                gestor e exportação documental.</p
+            ></div
+        ><a href="/cadastro/spare-parts">← Cadastro de peças</a></div
+    >
+    <p *ngIf="error && !showSheetTechnical && !showPurchase" class="error">{{
+        error
+    }}</p
+    ><p *ngIf="message" class="success">{{ message }}</p>
+    <div class="actions purchase-toolbar">
+        <button
+            (click)="
+                showSheetTechnical = true;
+                error = '';
+                sheetTechnical = {};
+                partInEditing = 0
+            "
+            >Editar ficha técnica</button
+        >
+        <button (click)="newPurchase()">Nova solicitação</button>
+    </div>
+    <app-form-modal
+        *ngIf="showSheetTechnical"
+        title="Ficha técnica da peça"
+        subtitle="Preencha as informações técnicas e a classificação fiscal da peça."
+        icon="description"
+        [wide]="true"
+        [busy]="busy"
+        (closed)="showSheetTechnical = false"
+    >
+        <p *ngIf="error" class="error" role="alert">{{ error }}</p>
+        <label
+            >Pesquisar peça<input
+                [(ngModel)]="searchParts"
+                placeholder="Part Number, descrição ou fabricante" /></label
+        ><label
+            >Peça cadastrada<select
+                [(ngModel)]="partInEditing"
+                (ngModelChange)="openSheetTechnical()"
+                ><option [ngValue]="0">Selecione...</option
+                ><option *ngFor="let p of partsFiltered" [ngValue]="p.id"
+                    >{{ p.part_number ? p.part_number + ' — ' : ''
+                    }}{{ p.description
+                    }}{{ p.manufacturer ? ' · ' + p.manufacturer : '' }}</option
+                ></select
+            ></label
+        >
+        <app-part-sheet *ngIf="partInEditing" [partId]="partInEditing" /><div
+            *ngIf="partInEditing"
+            class="technical-fields"
+            ><label *ngFor="let f of fields"
+                >{{ f[1]
+                }}<textarea
+                    rows="2"
+                    [(ngModel)]="sheetTechnical[f[0]]"
+                ></textarea>
+            </label>
+        </div>
+        <div modalActions class="modal-actions">
+            <button (click)="showSheetTechnical = false" [disabled]="busy"
+                >Cancelar</button
+            >
+            <button
+                *ngIf="administrator()"
+                [disabled]="busy || !partInEditing"
+                (click)="validate()"
+                >Validar classificação fiscal</button
+            >
+            <button
+                class="primary"
+                [disabled]="busy || !partInEditing"
+                (click)="saveSheetTechnical()"
+                >{{ busy ? 'Salvando...' : 'Salvar ficha técnica' }}</button
+            >
+        </div></app-form-modal
+    >
+    <app-form-modal
+        *ngIf="showPurchase"
+        title="Nova solicitação de compra"
+        subtitle="Informe a peça, o gestor responsável e a justificativa da compra."
+        icon="shopping_cart"
+        [wide]="true"
+        [busy]="busy"
+        (closed)="showPurchase = false"
+    >
+        <p *ngIf="error" class="error" role="alert">{{ error }}</p>
+        <label
+            >Tipo<select [(ngModel)]="draft.purchaseType"
+                ><option value="NACIONAL">Compra nacional</option
+                ><option value="IMPORTACAO">Importação</option></select
+            ></label
+        >
+        <label
+            >Gestor responsável<select [(ngModel)]="draft.managerId"
+                ><option [ngValue]="0">Selecione...</option
+                ><option *ngFor="let m of managers" [ngValue]="m.id">{{
+                    m.name
+                }}</option></select
+            ></label
+        >
+        <label
+            >Pesquisar peça<input
+                [(ngModel)]="searchParts"
+                placeholder="Part Number, descrição ou fabricante" /></label
+        ><label
+            >Peça<select [(ngModel)]="draft.sparePartId"
+                ><option [ngValue]="0">Selecione...</option
+                ><option *ngFor="let p of partsFiltered" [ngValue]="p.id"
+                    >{{ p.part_number ? p.part_number + ' — ' : ''
+                    }}{{ p.description
+                    }}{{ p.manufacturer ? ' · ' + p.manufacturer : '' }}</option
+                ></select
+            ></label
+        >
+        <app-part-sheet
+            *ngIf="draft.sparePartId"
+            [partId]="draft.sparePartId"
+        /><div class="two"
+            ><label
+                >Quantidade<input
+                    type="number"
+                    min="0.001"
+                    step="1"
+                    [(ngModel)]="draft.quantity" /></label
+            ><label
+                >Prioridade<select [(ngModel)]="draft.priority"
+                    ><option>BAIXA</option
+                    ><option>MEDIA</option
+                    ><option>ALTA</option
+                    ><option>CRITICA</option></select
+                ></label
+            ></div
+        >
+        <div class="two"
+            ><label
+                >ID da OS (opcional, obrigatório para operador)<input
+                    type="number"
+                    min="1"
+                    [(ngModel)]="draft.workOrderId" /></label
+            ><label
+                >ID equipamento (opcional)<input
+                    type="number"
+                    min="1"
+                    [(ngModel)]="draft.equipmentId" /></label
+        ></div>
+        <label
+            >Justificativa da compra<textarea
+                rows="3"
+                [(ngModel)]="draft.justification"
+                placeholder="Motivo, urgência e necessidade de reposição..."
+            ></textarea>
+        </label>
+        <p class="muted"
+            >O envio ao gestor ocorre após a conferência da ficha técnica.</p
+        >
+        <div modalActions class="modal-actions"
+            ><button (click)="showPurchase = false" [disabled]="busy"
+                >Cancelar</button
+            ><button class="primary" (click)="register()" [disabled]="busy">{{
+                busy ? 'Salvando...' : 'Criar rascunho'
+            }}</button></div
+        >
+    </app-form-modal>
+    <article class="panel"
+        ><h2>3. Acompanhar e aprovar</h2
+        ><div class="tablewrap"
+            ><table
+                ><thead
+                    ><tr
+                        ><th>Solicitação</th><th>Tipo</th><th>Solicitante</th
+                        ><th>Gestor</th><th>Máquina / Serial</th><th>Status</th
+                        ><th></th></tr></thead
+                ><tbody
+                    ><tr *ngFor="let r of requests"
+                        ><td>SC-{{ r.id }}</td
+                        ><td>{{ r.purchase_type }}</td
+                        ><td>{{ r.requester_name }}</td
+                        ><td>{{ r.manager_name }}</td
+                        ><td
+                            >{{ r.equipment_model || '—' }}<br /><small>{{
+                                r.equipment_serial || 'Serial não registrado'
+                            }}</small></td
+                        ><td>{{ r.status }}</td
+                        ><td
+                            ><button class="muted" (click)="open(r.id)"
+                                >Detalhes</button
+                            ></td
+                        ></tr
+                    ></tbody
+                ></table
+            ></div
+        >
+        <div *ngIf="details" class="detail"
+            ><h3>SC-{{ details.id }} • {{ details.status }}</h3
+            ><p *ngIf="details.work_order_id"
+                ><b>OS vinculada:</b> #{{ details.work_order_id }}</p
+            ><p *ngIf="details.equipment_id"
+                ><b>Máquina:</b>
+                {{ details.equipment_model || 'EQ-' + details.equipment_id }} ·
+                <b>Serial registrado:</b>
+                {{ details.equipment_serial || 'Não registrado' }}</p
+            ><p><b>Justificativa:</b> {{ details.justification }}</p
+            ><div *ngFor="let item of details.items"
+                ><p
+                    ><strong>{{ item.part_number || item.description }}</strong>
+                    — {{ item.description }} ·
+                    {{ item.manufacturer || 'Fabricante não informado' }} ·
+                    {{ item.quantity }} unidade(s)</p
+                ><app-part-query
+                    [partId]="item.spare_part_id"
+                    label="Ver ficha da peça"
+            /></div>
+            <p *ngIf="fieldsMissing.length" class="error"
+                >Campos técnicos pendentes: {{ fieldsMissing.join('; ') }}</p
+            >
+            <div class="actions"
+                ><button *ngIf="canSend()" (click)="send()"
+                    >Enviar ao gestor</button
+                ><ng-container *ngIf="canDecide()"
+                    ><button (click)="decide('APROVADA')">Aprovar</button
+                    ><button class="muted" (click)="decide('DEVOLVIDA')"
+                        >Devolver</button
+                    ><button class="danger" (click)="decide('REJEITADA')"
+                        >Rejeitar</button
+                    ></ng-container
+                ><button class="muted" (click)="download()"
+                    >Exportar planilha CSV</button
+                ></div
+            >
+        </div>
+    </article>
+</section>

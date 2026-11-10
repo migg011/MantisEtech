@@ -1,0 +1,380 @@
+/* Estilo local de usuarios: aparência, estados visuais e adaptação da tela; não acessa a API nem o banco. */
+
+/* ==========================================
+   MANTIS 2.0 — GERENCIAMENTO DE USUÁRIOS
+   ========================================== */
+
+:host {
+    display: block;
+    width: 100%;
+}
+
+.usuarios-page {
+    width: 100%;
+    max-width: 1600px;
+    margin: 0 auto;
+    padding-bottom: 36px;
+}
+
+/* CABEÇALHO */
+
+.page-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 24px;
+    margin-bottom: 22px;
+
+    h1 {
+        margin: 4px 0 10px;
+        font-size: clamp(26px, 2.5vw, 34px);
+        font-weight: 750;
+        color: #111827;
+    }
+
+    .muted {
+        margin: 0;
+        color: #64748b;
+    }
+}
+
+.eyebrow {
+    color: #cb0020;
+    font-size: 12px;
+    font-weight: 800;
+    letter-spacing: 2px;
+}
+
+.primary {
+    background: linear-gradient(100deg, #ef0026, #ad001b) !important;
+    color: #fff !important;
+    border-radius: 12px !important;
+    min-height: 44px;
+    padding: 0 22px !important;
+    font-weight: 650;
+
+    mat-icon {
+        margin-right: 6px;
+    }
+
+    &:disabled {
+        opacity: 0.55;
+    }
+}
+
+/* CARTÕES */
+
+.card {
+    background: #fff;
+    border: 1px solid #e6eaf0;
+    border-radius: 20px;
+    padding: 28px;
+    box-shadow: 0 8px 28px rgba(15, 23, 42, 0.045);
+}
+
+.user-form-card {
+    margin-bottom: 22px;
+}
+
+.users-list-card {
+    margin-top: 12px;
+}
+
+/* TÍTULOS DAS SEÇÕES */
+
+.section-header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 16px;
+    margin-bottom: 22px;
+
+    h2 {
+        font-size: 21px;
+        font-weight: 750;
+        margin: 0 0 6px;
+        color: #111827;
+    }
+
+    .muted {
+        color: #64748b;
+        font-size: 14px;
+        margin: 0;
+    }
+}
+
+/* FORMULÁRIO */
+
+.fields {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 14px 18px;
+    align-items: start;
+
+    mat-form-field {
+        width: 100%;
+        min-width: 0;
+    }
+}
+
+.form-actions {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 12px;
+    margin-top: 8px;
+}
+
+/* PESQUISA E FILTROS */
+
+.list-toolbar {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 16px;
+    margin-bottom: 14px;
+
+    .search-field {
+        width: min(440px, 100%);
+    }
+
+    button {
+        min-height: 42px;
+    }
+}
+
+/* TABELA */
+
+.table-wrap {
+    width: 100%;
+    overflow-x: auto;
+}
+
+.users-table {
+    width: 100%;
+    min-width: 790px;
+    border-collapse: collapse;
+
+    thead {
+        background: #f8fafc;
+    }
+
+    th {
+        color: #64748b;
+        font-weight: 700;
+        font-size: 12px;
+        text-transform: uppercase;
+        letter-spacing: 0.7px;
+        text-align: left;
+        white-space: nowrap;
+        padding: 16px 12px;
+        border-bottom: 1px solid #e2e8f0;
+    }
+
+    td {
+        padding: 17px 12px;
+        font-size: 14px;
+        color: #334155;
+        border-bottom: 1px solid #eef1f5;
+        vertical-align: middle;
+    }
+
+    tbody tr:hover {
+        background: #fafbfd;
+    }
+
+    tbody tr:last-child td {
+        border-bottom: 0;
+    }
+}
+
+/* IDENTIFICAÇÃO */
+
+.user-identity {
+    display: flex;
+    align-items: center;
+    gap: 11px;
+
+    strong {
+        font-weight: 700;
+        color: #172033;
+    }
+}
+
+.user-avatar {
+    width: 38px;
+    height: 38px;
+    min-width: 38px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 12px;
+    background: #f3e8ed;
+    color: #bf1233;
+}
+
+/* PERFIS */
+
+.role-badge {
+    display: inline-flex;
+    padding: 6px 10px;
+    border-radius: 8px;
+    background: #f1f5f9;
+    color: #475569;
+    font-size: 12px;
+    font-weight: 700;
+    white-space: nowrap;
+
+    &.admin {
+        background: #fce7ed;
+        color: #be123c;
+    }
+
+    &.technician {
+        background: #dbeafe;
+        color: #1d4ed8;
+    }
+
+    &.operator {
+        background: #fef3c7;
+        color: #92400e;
+    }
+}
+
+/* STATUS */
+
+.status-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    padding: 6px 10px;
+    border-radius: 8px;
+    background: #dcfce7;
+    color: #166534;
+    font-size: 12px;
+    font-weight: 700;
+
+    &.inactive {
+        background: #fee2e2;
+        color: #991b1b;
+    }
+}
+
+.status-dot {
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background: currentColor;
+}
+
+/* BOTÕES DA TABELA */
+
+.actions-column {
+    text-align: center !important;
+}
+
+.row-actions {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 4px;
+
+    button {
+        color: #475569;
+
+        &:hover:not(:disabled) {
+            color: #c8102e;
+            background: #fff1f2;
+        }
+
+        &:disabled {
+            opacity: 0.35;
+        }
+    }
+}
+
+/* MENSAGENS */
+
+.alert {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 13px 16px;
+    margin-bottom: 18px;
+    border-radius: 12px;
+    font-size: 14px;
+    font-weight: 600;
+
+    &.success {
+        background: #ecfdf5;
+        color: #047857;
+    }
+
+    &.error {
+        background: #fef2f2;
+        color: #b91c1c;
+    }
+}
+
+/* TABELA VAZIA */
+
+.empty-state {
+    text-align: center;
+    padding: 45px 20px !important;
+    color: #94a3b8 !important;
+
+    mat-icon {
+        display: block;
+        margin: 0 auto 12px;
+        font-size: 34px;
+        width: 34px;
+        height: 34px;
+    }
+
+    p {
+        margin: 0;
+    }
+}
+
+/* RESPONSIVIDADE */
+
+/* Responsividade: aplica estas regras quando a largura da tela atende à condição abaixo. */
+@media (max-width: 1100px) {
+    .fields {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+}
+
+@media (max-width: 700px) {
+    .usuarios-page {
+        padding-bottom: 20px;
+    }
+
+    .page-header {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .fields {
+        grid-template-columns: 1fr;
+    }
+
+    .card {
+        padding: 18px;
+        border-radius: 16px;
+    }
+
+    .section-header {
+        flex-wrap: wrap;
+    }
+
+    .list-toolbar {
+        flex-direction: column;
+        align-items: stretch;
+
+        .search-field {
+            width: 100%;
+        }
+    }
+}

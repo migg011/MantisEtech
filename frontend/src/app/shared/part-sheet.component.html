@@ -1,0 +1,110 @@
+<p *ngIf="loading" role="status">Carregando ficha da peça...</p
+><p *ngIf="errorMessage" class="error" role="alert">{{ errorMessage }}</p>
+<article *ngIf="part as p" class="part-sheet">
+    <header
+        ><small>{{
+            p.part_number ? 'PART NUMBER' : 'PEÇA SEM PART NUMBER'
+        }}</small
+        ><h2>{{ p.part_number || p.description }}</h2
+        ><p>{{ p.description }}</p
+        ><span>{{ p.manufacturer || 'Fabricante não informado' }}</span></header
+    >
+    <nav aria-label="Informações da peça"
+        ><button
+            type="button"
+            [disabled]="movingStock"
+            [attr.aria-pressed]="tab === 'DADOS'"
+            (click)="tab = 'DADOS'"
+            >Dados gerais</button
+        ><button
+            type="button"
+            [disabled]="movingStock"
+            [attr.aria-pressed]="tab === 'ESTOQUE'"
+            (click)="tab = 'ESTOQUE'"
+            >Estoque</button
+        ><button
+            type="button"
+            [disabled]="movingStock"
+            [attr.aria-pressed]="tab === 'CUSTOS'"
+            (click)="tab = 'CUSTOS'"
+            >Custos e reposição</button
+        ></nav
+    >
+    <div class="part-sheet-grid" [class.full-width]="tab !== 'DADOS'">
+        <aside *ngIf="tab === 'DADOS'"
+            ><img
+                *ngIf="photoUrl; else noPhoto"
+                [src]="photoUrl"
+                [alt]="p.description"
+            /><ng-template #noPhoto
+                ><p>{{
+                    p.photo_filename ? 'Foto cadastrada' : 'Sem foto cadastrada'
+                }}</p></ng-template
+            ><small *ngIf="photoError">{{ photoError }}</small></aside
+        >
+        <section *ngIf="tab === 'DADOS'"
+            ><h3>Identificação da peça</h3
+            ><dl
+                ><div
+                    ><dt>Part Number</dt
+                    ><dd>{{ p.part_number || 'Não informado' }}</dd></div
+                ><div
+                    ><dt>Descrição</dt><dd>{{ p.description }}</dd></div
+                ><div
+                    ><dt>Fabricante</dt
+                    ><dd>{{ p.manufacturer || 'Não informado' }}</dd></div
+                ><div
+                    ><dt>Categorias</dt
+                    ><dd
+                        ><ng-container
+                            *ngFor="let c of p.categories; let lastIndex = last"
+                            >{{ c.name
+                            }}{{ lastIndex ? '' : ', ' }}</ng-container
+                        ><ng-container *ngIf="!p.categories?.length">{{
+                            p.category || 'Não informada'
+                        }}</ng-container></dd
+                    ></div
+                ><div
+                    ><dt>Unidade</dt><dd>{{ p.unit }}</dd></div
+                ><div
+                    ><dt>Localização</dt
+                    ><dd>{{ p.storage_location || 'Não informada' }}</dd></div
+                ><div
+                    ><dt>Fornecedor preferencial</dt
+                    ><dd>{{ p.preferred_supplier || 'Não informado' }}</dd></div
+                ></dl
+            ></section
+        >
+        <section *ngIf="tab === 'ESTOQUE'"
+            ><app-part-stock [partId]="p.id" (busyChange)="lockStock($event)"
+        /></section>
+        <section *ngIf="tab === 'CUSTOS'"
+            ><h3>Custos e referências de reposição</h3
+            ><dl
+                ><div
+                    ><dt>Estoque mínimo</dt><dd>{{ p.minimum_stock }}</dd></div
+                ><div
+                    ><dt>Estoque máximo</dt
+                    ><dd>{{ p.maximum_stock ?? 'Não informado' }}</dd></div
+                ><div
+                    ><dt>Ponto de reposição</dt
+                    ><dd>{{ p.reorder_point }}</dd></div
+                ><div
+                    ><dt>Custo médio</dt
+                    ><dd>{{
+                        formatCost(p.average_cost, p.average_cost_currency)
+                    }}</dd></div
+                ><div
+                    ><dt>Último custo</dt
+                    ><dd>{{
+                        formatCost(p.last_cost, p.last_cost_currency)
+                    }}</dd></div
+                ></dl
+            ><small
+                >Mínimo, máximo e ponto de reposição são referências para o
+                abastecimento. Consulte a quantidade registrada na aba
+                Estoque.</small
+            ></section
+        >
+    </div>
+</article>

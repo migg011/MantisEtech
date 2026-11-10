@@ -1,0 +1,12 @@
+.venv/
+.env
+.validation-*
+__pycache__/
+*.py[cod]
+*.sqlite3
+staticfiles/
+artifacts/
+.backups/
+
+# Ajustes de porta exclusivos deste computador
+compose.local.yaml

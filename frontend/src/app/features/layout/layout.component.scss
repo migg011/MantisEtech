@@ -1,0 +1,109 @@
+/* Estilo local de shell: aparência, estados visuais e adaptação da tela; não acessa a API nem o banco. */
+.shell {
+    display: flex;
+    min-height: 100vh;
+}
+
+aside {
+    width: 246px;
+    background: #0e1015;
+    color: #d8d9df;
+    flex-shrink: 0;
+    padding: 22px 13px;
+}
+
+aside a {
+    padding: 13px;
+    display: flex;
+    gap: 13px;
+    align-items: center;
+    color: #d7d8df;
+    text-decoration: none;
+    border-radius: 8px;
+    font-size: 13px;
+}
+
+aside a:hover,
+aside a:focus,
+aside a.active {
+    background: #b9001b;
+    color: white;
+}
+
+aside mat-icon {
+    font-size: 19px;
+}
+
+.sidebrand {
+    font-size: 25px;
+    font-weight: 800;
+    color: #fff;
+    margin: 12px 12px 38px;
+}
+
+.sidebrand span {
+    color: #e70b22;
+    font-size: 36px;
+}
+
+.sidebrand small {
+    display: block;
+    font-size: 8px;
+    letter-spacing: 1px;
+    color: #9a9da8;
+}
+
+.sidelabel {
+    font-size: 10px;
+    color: #7c808b;
+    letter-spacing: 1px;
+    margin: 27px 15px 10px;
+}
+
+main {
+    flex: 1;
+    min-width: 0;
+}
+
+header {
+    height: 71px;
+    background: #fff;
+    border-bottom: 1px solid #ececf0;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 28px;
+    font-size: 12px;
+}
+
+/* Responsividade: aplica estas regras quando a largura da tela atende à condição abaixo. */
+@media (max-width: 760px) {
+    .shell {
+        display: block;
+    }
+
+    aside {
+        width: 100%;
+        display: flex;
+        overflow-x: auto;
+        padding: 10px;
+    }
+
+    aside a {
+        white-space: nowrap;
+    }
+
+    aside .sidelabel,
+    .sidebrand {
+        display: none;
+    }
+
+    header {
+        padding: 0 13px;
+        gap: 8px;
+    }
+
+    header .actions {
+        font-size: 10px;
+    }
+}

@@ -1,0 +1,321 @@
+%% Gerado do catálogo físico. PK = chave primária; FK = referência a outra tabela.
+erDiagram
+    agendas_preventiva {
+        int8 id PK
+        varchar periodicidade
+        date proximo_vencimento
+        date ultima_execucao
+        bool ativo
+        int8 equipamento_id FK
+        jsonb itens_roteiro
+    }
+    anexos_equipamento {
+        int8 id PK
+        varchar categoria
+        varchar nome_arquivo
+        varchar tipo_mime
+        bytea conteudo
+        int4 tamanho_bytes
+        timestamptz criado_em
+        int8 equipamento_id FK
+        int8 enviado_por_id FK
+    }
+    compatibilidade_pecas_equipamentos {
+        int8 equipamento_id PK, FK
+        int8 peca_id PK, FK
+    }
+    equipamentos {
+        int8 id PK
+        varchar numero_modelo
+        varchar modelo
+        varchar numero_serie
+        varchar fabricante
+        date data_fabricacao
+        varchar data_fabricacao_texto
+        numeric comprimento_mm
+        numeric largura_mm
+        numeric altura_mm
+        numeric peso_kg
+        numeric tensao_v
+        numeric frequencia_hz
+        numeric corrente_a
+        numeric potencia_w
+        numeric pressao_pneumatica_bar
+        varchar numero_patrimonio
+        text descricao
+        text descricao_processo
+        int4 posicao
+        bool ativo
+        timestamptz criado_em
+        int2 tipo_equipamento_id FK
+        int8 linha_id FK
+        int8 setor_id FK
+        varchar nome
+    }
+    eventos_solicitacao_compra {
+        int8 id PK
+        varchar acao
+        text detalhes
+        timestamptz criado_em
+        int8 autor_id FK
+        int8 solicitacao_id FK
+    }
+    execucoes_preventiva {
+        int8 id PK
+        date data_execucao
+        date vencimento_anterior
+        date proximo_vencimento
+        text observacoes
+        timestamptz criado_em
+        int8 agenda_id FK
+        int8 tecnico_id FK
+        int8 ordem_preventiva_id FK
+    }
+    fichas_tecnicas_pecas {
+        int8 peca_id PK, FK
+        varchar situacao_fiscal
+        timestamptz validado_em
+        timestamptz atualizado_em
+        text descricao_ingles
+        varchar ncm
+        text descricao_pli
+        text descricao_portugues
+        text classificacao
+        text funcao_independente
+        text detalhes_conexoes
+        text vida_util
+        text classificacao_patrimonial
+        text funcao_principal
+        text funcao_secundaria
+        text materia_prima
+        text utilizacao
+        text maquina_aplicacao
+        text mecanico_eletrico
+        text tipo_corrente
+        text potencia
+        text tensao
+        text amperagem
+        text referencia_imagem
+        int8 validado_por_id FK
+    }
+    itens_solicitacao_compra {
+        int8 id PK
+        numeric quantidade
+        text observacao_item
+        jsonb retrato_ficha_tecnica
+        int8 solicitacao_id FK
+        int8 peca_id FK
+    }
+    linhas {
+        int8 id PK
+        varchar codigo
+        varchar nome
+        text descricao
+        bool ativo
+        timestamptz criado_em
+        int8 setor_id FK
+    }
+    movimentacoes_equipamento {
+        int8 id PK
+        int4 posicao_origem
+        int4 posicao_destino
+        varchar acao
+        timestamptz criado_em
+        int8 equipamento_id FK
+        int8 executado_por_id FK
+        int8 linha_origem_id FK
+        int8 linha_destino_id FK
+    }
+    ordens_preventiva {
+        int8 id PK
+        varchar situacao
+        date vencimento_previsto
+        date data_planejada
+        time hora_planejada
+        varchar base_recorrencia
+        varchar periodicidade
+        jsonb retrato_equipamento
+        jsonb itens
+        jsonb resultados
+        text instrucoes_seguranca
+        jsonb pecas
+        text observacoes
+        date data_execucao
+        time hora_execucao
+        varchar nome_responsavel
+        timestamptz criado_em
+        varchar nome_executor
+        timestamptz concluido_em
+        text motivo_cancelamento
+        int4 revisao
+        int8 responsavel_id FK
+        int8 criado_por_id FK
+        int8 concluido_por_id FK
+        int8 agenda_id FK
+    }
+    ordens_servico {
+        int8 id PK
+        varchar prioridade
+        varchar situacao
+        text problema
+        text causa_raiz
+        text acao_corretiva
+        text acao_preventiva
+        timestamptz iniciado_em
+        timestamptz concluido_em
+        timestamptz criado_em
+        int8 responsavel_id FK
+        int8 equipamento_id FK
+        int8 aberto_por_id FK
+        int8 tipo_problema_id FK
+        int4 tempo_parado_segundos
+    }
+    pecas_reposicao {
+        int8 id PK
+        varchar codigo
+        varchar descricao
+        varchar numero_peca
+        varchar fabricante
+        varchar categoria
+        varchar unidade
+        numeric estoque_minimo
+        numeric estoque_maximo
+        numeric ponto_reposicao
+        varchar local_armazenamento
+        varchar fornecedor_preferencial
+        numeric custo_medio
+        numeric ultimo_custo
+        varchar nome_arquivo_foto
+        varchar tipo_mime_foto
+        bytea conteudo_foto
+        varchar nome_arquivo_ficha
+        bytea conteudo_ficha
+        bool ativo
+        timestamptz criado_em
+        timestamptz atualizado_em
+    }
+    pendencias_linha {
+        int8 id PK
+        varchar serie_equipamento
+        text descricao
+        varchar prioridade
+        varchar situacao
+        timestamptz criado_em
+        timestamptz resolvido_em
+        text resolucao
+        int8 criado_por_id FK
+        int8 equipamento_id FK
+        int8 linha_id FK
+        int8 resolvido_por_id FK
+        int8 ordem_servico_id FK
+    }
+    roteiros_preventiva {
+        int8 id PK
+        varchar periodicidade
+        jsonb itens
+        int2 tipo_equipamento_id FK
+    }
+    setores {
+        int8 id PK
+        varchar codigo
+        varchar nome
+        text descricao
+        bool ativo
+        timestamptz criado_em
+    }
+    solicitacoes_compra {
+        int8 id PK
+        varchar tipo_compra
+        varchar situacao
+        text justificativa
+        varchar prioridade
+        text parecer_gestor
+        timestamptz enviado_em
+        timestamptz decidido_em
+        timestamptz criado_em
+        timestamptz atualizado_em
+        int8 equipamento_id FK
+        int8 gestor_id FK
+        int8 solicitante_id FK
+        int8 ordem_servico_id FK
+        varchar serie_equipamento
+    }
+    solicitacoes_pecas_manutencao {
+        int8 id PK
+        varchar serie_equipamento
+        numeric quantidade
+        text observacao
+        timestamptz criado_em
+        int8 equipamento_id FK
+        int8 solicitante_id FK
+        int8 peca_id FK
+        int8 ordem_servico_id FK
+    }
+    tipos_equipamento {
+        int2 id PK
+        varchar nome
+    }
+    tipos_problema {
+        int8 id PK
+        varchar nome
+        varchar prioridade
+        bool ativo
+        int2 tipo_equipamento_id FK
+    }
+    usuarios {
+        int8 id PK
+        timestamptz ultimo_acesso
+        varchar nome
+        varchar matricula
+        text senha_hash
+        varchar perfil
+        bool ativo
+        timestamptz criado_em
+        int8 linha_id FK
+    }
+    equipamentos ||--o{ agendas_preventiva : "equipamento_id"
+    usuarios ||--o{ anexos_equipamento : "enviado_por_id"
+    equipamentos ||--o{ anexos_equipamento : "equipamento_id"
+    equipamentos ||--o{ compatibilidade_pecas_equipamentos : "equipamento_id"
+    pecas_reposicao ||--o{ compatibilidade_pecas_equipamentos : "peca_id"
+    linhas |o--o{ equipamentos : "linha_id"
+    setores |o--o{ equipamentos : "setor_id"
+    tipos_equipamento ||--o{ equipamentos : "tipo_equipamento_id"
+    solicitacoes_compra ||--o{ eventos_solicitacao_compra : "solicitacao_id"
+    usuarios ||--o{ eventos_solicitacao_compra : "autor_id"
+    agendas_preventiva ||--o{ execucoes_preventiva : "agenda_id"
+    ordens_preventiva |o--o| execucoes_preventiva : "ordem_preventiva_id"
+    usuarios ||--o{ execucoes_preventiva : "tecnico_id"
+    pecas_reposicao ||--o| fichas_tecnicas_pecas : "peca_id"
+    usuarios |o--o{ fichas_tecnicas_pecas : "validado_por_id"
+    solicitacoes_compra ||--o{ itens_solicitacao_compra : "solicitacao_id"
+    pecas_reposicao ||--o{ itens_solicitacao_compra : "peca_id"
+    setores |o--o{ linhas : "setor_id"
+    equipamentos ||--o{ movimentacoes_equipamento : "equipamento_id"
+    usuarios ||--o{ movimentacoes_equipamento : "executado_por_id"
+    linhas |o--o{ movimentacoes_equipamento : "linha_destino_id"
+    linhas |o--o{ movimentacoes_equipamento : "linha_origem_id"
+    agendas_preventiva ||--o{ ordens_preventiva : "agenda_id"
+    usuarios |o--o{ ordens_preventiva : "concluido_por_id"
+    usuarios ||--o{ ordens_preventiva : "criado_por_id"
+    usuarios |o--o{ ordens_preventiva : "responsavel_id"
+    usuarios ||--o{ ordens_servico : "aberto_por_id"
+    equipamentos ||--o{ ordens_servico : "equipamento_id"
+    usuarios |o--o{ ordens_servico : "responsavel_id"
+    tipos_problema |o--o{ ordens_servico : "tipo_problema_id"
+    usuarios ||--o{ pendencias_linha : "criado_por_id"
+    equipamentos ||--o{ pendencias_linha : "equipamento_id"
+    linhas ||--o{ pendencias_linha : "linha_id"
+    ordens_servico ||--o{ pendencias_linha : "ordem_servico_id"
+    usuarios |o--o{ pendencias_linha : "resolvido_por_id"
+    tipos_equipamento ||--o{ roteiros_preventiva : "tipo_equipamento_id"
+    ordens_servico |o--o{ solicitacoes_compra : "ordem_servico_id"
+    equipamentos |o--o{ solicitacoes_compra : "equipamento_id"
+    usuarios ||--o{ solicitacoes_compra : "gestor_id"
+    usuarios ||--o{ solicitacoes_compra : "solicitante_id"
+    equipamentos ||--o{ solicitacoes_pecas_manutencao : "equipamento_id"
+    ordens_servico ||--o{ solicitacoes_pecas_manutencao : "ordem_servico_id"
+    pecas_reposicao ||--o{ solicitacoes_pecas_manutencao : "peca_id"
+    usuarios ||--o{ solicitacoes_pecas_manutencao : "solicitante_id"
+    tipos_equipamento |o--o{ tipos_problema : "tipo_equipamento_id"
+    linhas |o--o{ usuarios : "linha_id"

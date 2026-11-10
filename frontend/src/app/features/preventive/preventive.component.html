@@ -1,0 +1,1014 @@
+<!-- A navegação alterna o conteúdo sem desmontar a ficha, preservando a lista temporária de peças. -->
+<section class="page preventive-page">
+    <header class="page-heading"
+        ><div
+            ><a routerLink="/cadastro" class="back-link"
+                ><mat-icon>arrow_back</mat-icon>Central de Cadastros</a
+            ><h1>Manutenção preventiva</h1
+            ><p class="muted"
+                >Equipamentos, programação e execução em um só lugar.</p
+            ></div
+        ><span class="reference-date" *ngIf="today"
+            ><mat-icon>event</mat-icon>{{ today | date: 'dd/MM/yyyy' }}</span
+        ></header
+    >
+    <p *ngIf="error" class="error notice" role="alert">{{ error }}</p
+    ><p *ngIf="message" class="success notice" role="status">{{ message }}</p
+    ><p *ngIf="loading" role="status" class="muted">Carregando dados...</p>
+    <!-- Os indicadores também funcionam como atalhos para filtrar o cronograma. -->
+    <div class="overview" aria-label="Resumo das preventivas">
+        <button
+            type="button"
+            class="overview-item overdue"
+            (click)="showStatusSchedule('VENCIDA')"
+            ><mat-icon>event_busy</mat-icon
+            ><span
+                ><strong>{{ quantityOverdue }}</strong
+                >Vencidas</span
+            ><mat-icon>chevron_right</mat-icon></button
+        >
+        <button
+            type="button"
+            class="overview-item today"
+            (click)="showStatusSchedule('HOJE')"
+            ><mat-icon>today</mat-icon
+            ><span
+                ><strong>{{ quantityToday }}</strong
+                >Vencem hoje</span
+            ><mat-icon>chevron_right</mat-icon></button
+        >
+        <button
+            type="button"
+            class="overview-item"
+            (click)="showStatusSchedule('EM_DIA')"
+            ><mat-icon>event_available</mat-icon
+            ><span
+                ><strong>{{ quantityInDay }}</strong
+                >Em dia</span
+            ><mat-icon>chevron_right</mat-icon></button
+        >
+    </div>
+    <nav class="workspace-nav" aria-label="Navegação da manutenção preventiva">
+        <button
+            type="button"
+            [class.active]="view === 'EQUIPAMENTOS'"
+            [attr.aria-pressed]="view === 'EQUIPAMENTOS'"
+            (click)="view = 'EQUIPAMENTOS'"
+            ><mat-icon>precision_manufacturing</mat-icon>Equipamentos<span>{{
+                equipment.length
+            }}</span></button
+        >
+        <button
+            type="button"
+            [class.active]="view === 'AGENDA'"
+            [attr.aria-pressed]="view === 'AGENDA'"
+            (click)="view = 'AGENDA'"
+            ><mat-icon>calendar_month</mat-icon>Cronograma<span>{{
+                schedules.length
+            }}</span></button
+        >
+        <button
+            type="button"
+            [class.active]="view === 'ORDENS'"
+            [attr.aria-pressed]="view === 'ORDENS'"
+            (click)="view = 'ORDENS'"
+            ><mat-icon>assignment</mat-icon>Ordens de serviço<span>{{
+                orders.length
+            }}</span></button
+        >
+    </nav>
+    <div [hidden]="view !== 'EQUIPAMENTOS'">
+        <section class="card equipment-picker"
+            ><div
+                ><h2>Qual equipamento deseja consultar?</h2
+                ><p class="muted"
+                    >A ficha aparece ao selecionar. Não é necessário ter uma
+                    preventiva configurada.</p
+                ></div
+            >
+            <label
+                >Equipamento<select
+                    [(ngModel)]="idMachine"
+                    (ngModelChange)="selectSheetEquipment()"
+                    [disabled]="loading || processing"
+                    ><option [ngValue]="null"
+                        >Selecione por nome, patrimônio ou série</option
+                    ><option *ngFor="let item of equipment" [ngValue]="item.id"
+                        >{{ item.name || item.model || item.type_name }} —
+                        {{
+                            item.asset_number || item.serial || 'ID ' + item.id
+                        }}</option
+                    ></select
+                ></label
+            >
+        </section>
+        <div class="empty-state" *ngIf="!machine"
+            ><mat-icon>precision_manufacturing</mat-icon
+            ><h2>{{
+                !loading && !equipment.length
+                    ? 'Nenhum equipamento disponível'
+                    : 'Selecione um equipamento para começar'
+            }}</h2
+            ><p
+                >Consulte dados técnicos e manuais, prepare a preventiva ou
+                monte uma lista de peças.</p
+            ><a *ngIf="!loading && !equipment.length" routerLink="/setores"
+                >Acessar cadastro de equipamentos</a
+            ></div
+        >
+        <!-- A ficha usa o cadastro atual; a aba Spare Parts consulta o catálogo geral e não grava compatibilidade. -->
+        <section
+            class="card"
+            id="equipment-sheet"
+            *ngIf="machineSheet as selectedMachine"
+            [hidden]="!machine"
+        >
+            <header class="equipment-context"
+                ><div
+                    ><span class="eyebrow">EQUIPAMENTO SELECIONADO</span
+                    ><h2>{{
+                        selectedMachine.name ||
+                            selectedMachine.model ||
+                            selectedMachine.type_name
+                    }}</h2
+                    ><p class="muted"
+                        >{{
+                            selectedMachine.asset_number || 'Sem patrimônio'
+                        }}
+                        · Série
+                        {{ selectedMachine.serial || 'não informada' }} ·
+                        {{ selectedMachine.line_name || 'Sem linha' }}</p
+                    ></div
+                ><span class="badge">{{
+                    selectedMachine.type_name
+                }}</span></header
+            >
+            <nav class="sheet-tabs" aria-label="Seções da ficha do equipamento"
+                ><button
+                    type="button"
+                    *ngFor="let tab of tabsSheet"
+                    [class.active]="tabSheet === tab.id"
+                    [attr.aria-pressed]="tabSheet === tab.id"
+                    [disabled]="processing"
+                    (click)="selectTabSheet(tab.id)"
+                    >{{ tab.label }}</button
+                ></nav
+            >
+            <div class="frequency-bar" *ngIf="tabSheet === 'ROTEIRO'"
+                ><label
+                    >Periodicidade<select
+                        [(ngModel)]="periodicity"
+                        (ngModelChange)="load()"
+                        [disabled]="loading || processing"
+                        ><option
+                            *ngFor="let item of periodicities"
+                            [value]="item.value"
+                            >{{ item.label }}</option
+                        ></select
+                    ></label
+                ><div *ngIf="scheduleSelected as schedule"
+                    ><span class="muted">Próximo vencimento</span
+                    ><strong>{{
+                        schedule.next_due | date: 'dd/MM/yyyy'
+                    }}</strong
+                    ><span
+                        class="badge"
+                        [class.overdue]="schedule.status === 'VENCIDA'"
+                        [class.today]="schedule.status === 'HOJE'"
+                        >{{ labelStatus(schedule) }}</span
+                    ></div
+                ></div
+            >
+            <app-ficha-equipamento
+                [equipment]="selectedMachine"
+                [tab]="tabSheet"
+            ></app-ficha-equipamento>
+            <section
+                *ngIf="tabSheet === 'TIPOS_OS'"
+                class="machine-order-types"
+                aria-labelledby="machine-order-types-title"
+            >
+                <header
+                    ><h2 id="machine-order-types-title"
+                        >Tipos de OS deste equipamento</h2
+                    ><p class="muted"
+                        >Defina as preventivas da máquina e utilize a mesma
+                        configuração no checklist, cronograma e emissão de
+                        OS.</p
+                    ></header
+                >
+                <div class="order-type-context"
+                    ><div
+                        ><mat-icon>build</mat-icon
+                        ><span
+                            ><strong>Corretiva por ocorrência</strong
+                            ><small
+                                >Registrada quando houver um problema. Não
+                                depende de periodicidade preventiva.</small
+                            ></span
+                        ></div
+                    ><div
+                        ><mat-icon>event_repeat</mat-icon
+                        ><span
+                            ><strong>Preventiva programada</strong
+                            ><small
+                                >Periodicidades e vencimentos definidos para
+                                este equipamento.</small
+                            ></span
+                        ></div
+                    ></div
+                >
+                <p class="type-config-notice"
+                    >Sem data, o primeiro vencimento é calculado ao salvar: 15
+                    dias ou 1, 2, 3, 6 ou 12 meses. Desmarcar desativa o alerta
+                    e preserva o histórico. Periodicidades com OS aberta ficam
+                    protegidas até sua conclusão ou cancelamento.</p
+                >
+                <p *ngIf="!administratorPreventive()" class="muted"
+                    >A configuração pode ser alterada pelo administrador. Você
+                    pode consultar e preparar as preventivas já cadastradas.</p
+                >
+                <p *ngIf="errorTypesWorkOrder" class="error" role="alert">{{
+                    errorTypesWorkOrder
+                }}</p
+                ><p
+                    *ngIf="messageTypesWorkOrder"
+                    class="success"
+                    role="status"
+                    >{{ messageTypesWorkOrder }}</p
+                >
+                <div class="machine-frequency-grid">
+                    <article
+                        *ngFor="let option of periodicities"
+                        [class.configured]="
+                            selectionTypesWorkOrder[option.value]
+                        "
+                    >
+                        <label class="frequency-toggle"
+                            ><input
+                                type="checkbox"
+                                [(ngModel)]="
+                                    selectionTypesWorkOrder[option.value]
+                                "
+                                (ngModelChange)="changeTypesWorkOrder()"
+                                [disabled]="
+                                    !administratorPreventive() ||
+                                    processing ||
+                                    loadingAlerts ||
+                                    !!errorAlerts ||
+                                    typeWorkOrderLocked(option.value)
+                                "
+                            /><strong
+                                >Preventiva
+                                {{ option.label | lowercase }}</strong
+                            ></label
+                        >
+                        <ng-container
+                            *ngIf="
+                                selectionTypesWorkOrder[option.value];
+                                else frequencyOff
+                            "
+                            ><label class="due-date-field"
+                                >Próximo vencimento<input
+                                    type="date"
+                                    [(ngModel)]="
+                                        datesTypesWorkOrder[option.value]
+                                    "
+                                    (ngModelChange)="changeTypesWorkOrder()"
+                                    [disabled]="
+                                        !administratorPreventive() ||
+                                        processing ||
+                                        loadingAlerts ||
+                                        !!errorAlerts ||
+                                        typeWorkOrderLocked(option.value)
+                                    " /></label
+                            ><small
+                                *ngIf="typeWorkOrderLocked(option.value)"
+                                class="type-config-lock"
+                                >Há uma OS aberta nesta periodicidade.</small
+                            ><button
+                                type="button"
+                                mat-stroked-button
+                                (click)="prepareTypeWorkOrder(option.value)"
+                                [disabled]="
+                                    processing ||
+                                    loading ||
+                                    loadingAlerts ||
+                                    typesWorkOrderChanged ||
+                                    !scheduleTypeWorkOrder(option.value)
+                                "
+                                >{{
+                                    typeWorkOrderLocked(option.value)
+                                        ? 'Consultar OS aberta'
+                                        : 'Checklist / Emitir OS'
+                                }}</button
+                            ></ng-container
+                        >
+                        <ng-template #frequencyOff
+                            ><p class="frequency-off"
+                                >Não configurada para esta máquina.</p
+                            ></ng-template
+                        >
+                    </article>
+                </div>
+                <footer
+                    class="type-config-actions"
+                    *ngIf="administratorPreventive()"
+                    ><span *ngIf="typesWorkOrderChanged" class="muted"
+                        >Salve a configuração antes de preparar o
+                        checklist.</span
+                    ><button
+                        type="button"
+                        mat-button
+                        (click)="resetTypesWorkOrder()"
+                        [disabled]="processing || !typesWorkOrderChanged"
+                        >Descartar alterações</button
+                    ><button
+                        type="button"
+                        mat-flat-button
+                        class="primary"
+                        (click)="saveTypesWorkOrder()"
+                        [disabled]="
+                            processing ||
+                            loadingAlerts ||
+                            !!errorAlerts ||
+                            !typesWorkOrderChanged
+                        "
+                        >{{
+                            processing ? 'Salvando...' : 'Salvar configuração'
+                        }}</button
+                    ></footer
+                >
+            </section>
+            <section *ngIf="tabSheet === 'HISTORICO'"
+                ><h2>Manutenções preventivas</h2>
+                <p class="muted"
+                    >Registros deste equipamento entre as OS abertas e as
+                    últimas 100 encerradas carregadas pela tela.</p
+                >
+                <div *ngFor="let order of orders"
+                    ><div
+                        class="summary"
+                        *ngIf="order.equipment_id === selectedMachine.id"
+                        ><strong>{{ order.number }}</strong> ·
+                        {{ labelPeriodicity(order.frequency) }} ·
+                        {{ order.planned_date | date: 'dd/MM/yyyy' }} ·
+                        {{ order.status }}
+                        <button
+                            mat-stroked-button
+                            (click)="openDetailsOrder(order)"
+                            [disabled]="processing"
+                            >Consultar OS</button
+                        ></div
+                    ></div
+                >
+                <p *ngIf="!hasOrdersMachine" class="muted"
+                    >Nenhuma OS preventiva encontrada nos registros
+                    carregados.</p
+                >
+            </section>
+        </section>
+        <section
+            class="card"
+            *ngIf="machine && !scheduleSelected && tabSheet === 'ROTEIRO'"
+        >
+            <h2>Preventiva não configurada</h2
+            ><p
+                >Este equipamento não possui agenda para a periodicidade
+                {{ labelPeriodicity(periodicity) | lowercase }}. Configure a
+                periodicidade e o vencimento na aba Tipos de OS desta ficha para
+                editar o checklist e emitir a OS.</p
+            >
+            <button
+                type="button"
+                mat-stroked-button
+                (click)="selectTabSheet('TIPOS_OS')"
+                >Configurar tipos de OS desta máquina</button
+            >
+        </section>
+        <ng-container
+            *ngIf="machine"
+            [ngTemplateOutlet]="recipeEditor"
+        ></ng-container>
+        <ng-template #recipeEditor>
+            <div
+                class="card recipe-card"
+                id="preventive-generator"
+                *ngIf="idType && (!machine || scheduleSelected)"
+                [hidden]="!!machine && tabSheet !== 'ROTEIRO'"
+                ><h2>Roteiro de manutenção</h2>
+                <p class="muted"
+                    >Uma atividade por linha. Salve as alterações antes de
+                    emitir a OS.</p
+                >
+                <p *ngIf="idMachine" class="muted"
+                    >Roteiro em uso:
+                    <strong>{{
+                        sourceChecklist === 'EQUIPAMENTO'
+                            ? 'Específico deste equipamento'
+                            : 'Padrão do tipo de máquina'
+                    }}</strong
+                    >. Alterar o roteiro não modifica OS já emitidas.</p
+                >
+                <label
+                    >Verificações<textarea
+                        [(ngModel)]="text"
+                        [disabled]="loading || processing"
+                        placeholder="Digite um item de verificação por linha"
+                    ></textarea>
+                </label>
+                <p class="muted"
+                    >{{ items.length }} item(ns). Limite: 100 itens, com até 500
+                    caracteres cada.</p
+                >
+                <div class="actions">
+                    <button
+                        mat-flat-button
+                        class="primary"
+                        (click)="save()"
+                        [disabled]="
+                            loading ||
+                            processing ||
+                            !items.length ||
+                            items.length > 100
+                        "
+                    >
+                        <mat-icon>save</mat-icon>
+                        Salvar roteiro
+                    </button>
+                    <button
+                        mat-stroked-button
+                        *ngIf="idMachine && sourceChecklist === 'EQUIPAMENTO'"
+                        (click)="useChecklistDefault()"
+                        [disabled]="processing || loading"
+                        >Usar roteiro padrão do tipo</button
+                    >
+                </div>
+                <p class="muted" *ngIf="text !== textSaved"
+                    >Salve o roteiro antes de emitir a OS.</p
+                >
+                <section *ngIf="idMachine"
+                    ><h2>Emitir OS preventiva</h2>
+                    <p class="muted"
+                        >A OS recebe número próprio e guarda uma cópia do
+                        equipamento e das atividades. Emitir ou imprimir não
+                        conclui a manutenção.</p
+                    >
+                    <div class="order-fields"
+                        ><label
+                            >Data prevista *<input
+                                type="date"
+                                [(ngModel)]="datePlanned"
+                                [disabled]="processing" /></label
+                        ><label
+                            >Horário previsto<input
+                                type="time"
+                                [(ngModel)]="timePlanned"
+                                [disabled]="processing"
+                        /></label>
+                        <label
+                            >Técnico previsto *<select
+                                [(ngModel)]="idAssignee"
+                                [disabled]="processing"
+                                ><option [ngValue]="null"
+                                    >Selecione o responsável</option
+                                ><option
+                                    *ngFor="let technician of technicians"
+                                    [ngValue]="technician.id"
+                                    >{{ technician.name }}</option
+                                ></select
+                            ></label
+                        >
+                        <label
+                            >Próximo vencimento<select
+                                [(ngModel)]="baseRecurrence"
+                                [disabled]="processing"
+                                ><option value="PLANEJADA"
+                                    >Manter calendário a partir do vencimento
+                                    atual</option
+                                ><option value="EXECUCAO"
+                                    >Calcular a partir da execução</option
+                                ></select
+                            ></label
+                        > </div
+                    ><p class="muted"
+                        >Manter calendário preserva o planejamento, mesmo com
+                        execução atrasada. O próximo ciclo pode continuar
+                        vencido se houver atraso acumulado.</p
+                    >
+                    <p
+                        class="unconfigured"
+                        *ngIf="
+                            scheduleSelected &&
+                            orderOpen(scheduleSelected) as order
+                        "
+                        >Já existe a OS {{ order.number }} aberta. Preencha ou
+                        cancele essa OS antes de emitir outra.</p
+                    >
+                    <div class="actions"
+                        ><button
+                            mat-flat-button
+                            class="primary"
+                            (click)="generate()"
+                            [disabled]="!canGenerate"
+                            ><mat-icon>assignment</mat-icon>Emitir OS e baixar
+                            ficha</button
+                        ></div
+                    >
+                </section>
+            </div>
+        </ng-template>
+        <!-- A edição do padrão por tipo continua disponível, recolhida para não competir com a ficha. -->
+        <details class="card template-editor" *ngIf="!machine"
+            ><summary>Editar roteiro padrão por tipo de máquina</summary
+            ><div class="selectors"
+                ><label
+                    >Tipo de máquina<select
+                        [(ngModel)]="idType"
+                        (ngModelChange)="changeType()"
+                        [disabled]="loading || processing"
+                        ><option [ngValue]="null">Selecione</option
+                        ><option
+                            *ngFor="let type of types"
+                            [ngValue]="type.id"
+                            >{{ type.name }}</option
+                        ></select
+                    ></label
+                ><label
+                    >Periodicidade<select
+                        [(ngModel)]="periodicity"
+                        (ngModelChange)="load()"
+                        [disabled]="loading || processing"
+                        ><option
+                            *ngFor="let item of periodicities"
+                            [value]="item.value"
+                            >{{ item.label }}</option
+                        ></select
+                    ></label
+                ></div
+            ><ng-container [ngTemplateOutlet]="recipeEditor"></ng-container
+        ></details>
+    </div>
+    <div [hidden]="view !== 'AGENDA'">
+        <!-- A proposta da planilha não grava agendas reais. A emissão continua pelo fluxo validado da OS. -->
+        <app-calendario-preventivo
+            [schedules]="schedules"
+            [orders]="orders"
+            [errorData]="errorAlerts"
+            (execute)="openCompletion($event)"
+        ></app-calendario-preventivo>
+        <!-- A situação vem do Django. Os filtros trabalham sobre a lista já recebida. -->
+        <section class="card" aria-labelledby="preventive-alerts-title">
+            <h2 id="preventive-alerts-title">Cronograma de manutenção</h2>
+            <p class="muted"
+                >Agenda por equipamento e periodicidade. Atualização automática
+                a cada minuto. Data de referência:
+                {{ today ? (today | date: 'dd/MM/yyyy') : 'carregando...' }}.</p
+            >
+            <p *ngIf="errorAlerts" class="error" role="alert">{{
+                errorAlerts
+            }}</p>
+            <p class="unconfigured" *ngIf="quantityWithoutConfiguration"
+                >{{ quantityWithoutConfiguration }} equipamento(s) sem
+                preventivas configuradas. Marque as periodicidades no cadastro
+                de equipamentos para iniciar o acompanhamento.</p
+            >
+            <div class="alert-toolbar">
+                <label
+                    >Situação<select
+                        [(ngModel)]="filterStatus"
+                        (ngModelChange)="limitSchedules = 8"
+                        ><option value="TODAS">Todas as preventivas</option
+                        ><option value="VENCIDA">Vencidas</option
+                        ><option value="HOJE">Vencem hoje</option
+                        ><option value="EM_DIA">Em dia</option></select
+                    ></label
+                >
+                <label
+                    >Pesquisar equipamento<input
+                        [(ngModel)]="search"
+                        (ngModelChange)="limitSchedules = 8"
+                        placeholder="Nome, patrimônio, série, setor ou linha"
+                /></label>
+                <button
+                    mat-stroked-button
+                    (click)="loadAlerts()"
+                    [disabled]="loadingAlerts"
+                    >{{
+                        loadingAlerts ? 'Atualizando...' : 'Atualizar alertas'
+                    }}</button
+                >
+            </div>
+            <div class="table-wrap"
+                ><table
+                    ><thead
+                        ><tr
+                            ><th>Equipamento</th><th>Setor / linha</th
+                            ><th>Preventiva</th><th>Última execução</th
+                            ><th>Vencimento</th><th>Situação</th
+                            ><th>Ações</th></tr
+                        ></thead
+                    ><tbody>
+                        <tr
+                            *ngFor="
+                                let row of schedulesVisible
+                                    | slice: 0 : limitSchedules
+                            "
+                        >
+                            <td
+                                ><strong>{{ row.equipment_name }}</strong
+                                ><small
+                                    >{{ row.type_name }} ·
+                                    {{
+                                        row.asset_number ||
+                                            row.serial ||
+                                            'ID ' + row.equipment_id
+                                    }}</small
+                                ></td
+                            >
+                            <td
+                                >{{ row.sector_name || '—'
+                                }}<small>{{
+                                    row.line_name || 'Sem linha'
+                                }}</small></td
+                            >
+                            <td>{{ labelPeriodicity(row.frequency) }}</td
+                            ><td>{{
+                                row.last_performed
+                                    ? (row.last_performed | date: 'dd/MM/yyyy')
+                                    : 'Não registrada'
+                            }}</td>
+                            <td>{{ row.next_due | date: 'dd/MM/yyyy' }}</td
+                            ><td
+                                ><span
+                                    class="badge"
+                                    [class.overdue]="row.status === 'VENCIDA'"
+                                    [class.today]="row.status === 'HOJE'"
+                                    >{{ labelStatus(row) }}</span
+                                ></td
+                            >
+                            <td
+                                ><div class="row-actions"
+                                    ><button
+                                        mat-stroked-button
+                                        (click)="showEquipment(row)"
+                                        [disabled]="loading || processing"
+                                        >Ficha</button
+                                    ><button
+                                        mat-stroked-button
+                                        (click)="useSchedule(row)"
+                                        [disabled]="loading || processing"
+                                        >Roteiro</button
+                                    ><button
+                                        mat-flat-button
+                                        class="primary"
+                                        (click)="openCompletion(row)"
+                                        [disabled]="
+                                            loading ||
+                                            processing ||
+                                            !!errorAlerts
+                                        "
+                                        >{{
+                                            orderOpen(row)
+                                                ? 'Preencher OS'
+                                                : 'Emitir OS'
+                                        }}</button
+                                    ></div
+                                ><small *ngIf="orderOpen(row) as order"
+                                    >{{ order.number }} aberta</small
+                                ></td
+                            >
+                        </tr>
+                        <tr *ngIf="!loadingAlerts && !schedulesVisible.length"
+                            ><td colspan="7" class="muted"
+                                >Nenhuma preventiva encontrada para os filtros
+                                selecionados.</td
+                            ></tr
+                        >
+                    </tbody></table
+                ></div
+            >
+            <div class="list-footer"
+                ><span
+                    >{{ schedulesVisible.length }} preventiva(s)
+                    encontrada(s)</span
+                ><button
+                    mat-stroked-button
+                    *ngIf="schedulesVisible.length > limitSchedules"
+                    (click)="limitSchedules = limitSchedules + 8"
+                    >Mostrar mais 8</button
+                ></div
+            >
+        </section>
+    </div>
+    <div [hidden]="view !== 'ORDENS'">
+        <section class="card"
+            ><h2>Ordens de serviço preventivas</h2
+            ><label class="order-search"
+                >Pesquisar OS<input
+                    [(ngModel)]="searchOrders"
+                    (ngModelChange)="limitOrders = 8"
+                    placeholder="Número, equipamento ou técnico" /></label
+            ><p class="muted"
+                >Todas as OS abertas e as últimas 100 concluídas ou canceladas.
+                Abra o arquivo HTML baixado para imprimir ou salvar em PDF.</p
+            >
+            <div class="table-wrap"
+                ><table
+                    ><thead
+                        ><tr
+                            ><th>OS</th><th>Equipamento</th><th>Preventiva</th
+                            ><th>Prevista</th><th>Técnico previsto</th
+                            ><th>Situação</th><th>Ações</th></tr
+                        ></thead
+                    ><tbody>
+                        <tr
+                            *ngFor="
+                                let order of ordersVisible
+                                    | slice: 0 : limitOrders
+                            "
+                            ><td
+                                ><strong>{{ order.number }}</strong></td
+                            ><td>{{ order.equipment_name }}</td
+                            ><td>{{ labelPeriodicity(order.frequency) }}</td
+                            ><td
+                                >{{ order.planned_date | date: 'dd/MM/yyyy'
+                                }}<small>{{
+                                    order.planned_time?.slice(0, 5)
+                                }}</small></td
+                            ><td>{{ order.assigned_name }}</td
+                            ><td>{{
+                                order.status === 'ABERTA'
+                                    ? 'Aberta'
+                                    : order.status === 'CONCLUIDA'
+                                      ? 'Concluída'
+                                      : 'Cancelada'
+                            }}</td
+                            ><td
+                                ><div class="row-actions"
+                                    ><button
+                                        mat-stroked-button
+                                        (click)="downloadOrder(order)"
+                                        >Imprimir</button
+                                    ><button
+                                        mat-stroked-button
+                                        (click)="openDetailsOrder(order)"
+                                        [disabled]="processing"
+                                        >{{
+                                            order.status === 'ABERTA'
+                                                ? 'Preencher OS'
+                                                : 'Consultar'
+                                        }}</button
+                                    ><button
+                                        mat-button
+                                        *ngIf="order.status === 'ABERTA'"
+                                        (click)="openCancellation(order)"
+                                        [disabled]="processing"
+                                        >Cancelar OS</button
+                                    ></div
+                                ></td
+                            ></tr
+                        >
+                        <tr *ngIf="!ordersVisible.length"
+                            ><td colspan="7" class="muted"
+                                >Nenhuma OS preventiva emitida.</td
+                            ></tr
+                        >
+                    </tbody></table
+                ></div
+            >
+            <div class="list-footer"
+                ><span>{{ ordersVisible.length }} OS encontrada(s)</span
+                ><button
+                    mat-stroked-button
+                    *ngIf="ordersVisible.length > limitOrders"
+                    (click)="limitOrders = limitOrders + 8"
+                    >Mostrar mais 8</button
+                ></div
+            >
+        </section>
+        <details class="card execution-history" *ngIf="executions.length"
+            ><summary
+                >Histórico de execuções
+                <span>{{ executions.length }} registro(s)</span></summary
+            ><p class="muted"
+                >Últimas 100 execuções registradas. Gerar ou imprimir o
+                checklist não altera a agenda.</p
+            >
+            <div class="table-wrap"
+                ><table
+                    ><thead
+                        ><tr
+                            ><th>Equipamento</th><th>Preventiva</th
+                            ><th>Data realizada</th><th>Técnico</th
+                            ><th>Novo vencimento</th><th>Observações</th></tr
+                        ></thead
+                    ><tbody
+                        ><tr *ngFor="let execution of executions"
+                            ><td>{{ execution.equipment_name }}</td
+                            ><td>{{ labelPeriodicity(execution.frequency) }}</td
+                            ><td>{{
+                                execution.performed_date | date: 'dd/MM/yyyy'
+                            }}</td
+                            ><td>{{ execution.technician_name }}</td
+                            ><td>{{
+                                execution.next_due | date: 'dd/MM/yyyy'
+                            }}</td
+                            ><td class="history-notes">{{
+                                execution.notes || '—'
+                            }}</td></tr
+                        ></tbody
+                    ></table
+                ></div
+            >
+        </details></div
+    >
+</section>
+<app-form-modal
+    *ngIf="orderInEditing as order"
+    [title]="
+        order.number +
+        ' · ' +
+        (order.status === 'ABERTA' ? 'Preencher OS' : 'Consultar OS')
+    "
+    [subtitle]="
+        order.equipment_name + ' · ' + labelPeriodicity(order.frequency)
+    "
+    icon="assignment"
+    [wide]="true"
+    [busy]="processing"
+    (closed)="closeOrder()"
+>
+    <p
+        ><strong>Prevista:</strong>
+        {{ order.planned_date | date: 'dd/MM/yyyy' }}
+        {{ order.planned_time?.slice(0, 5) }} ·
+        <strong>Técnico previsto:</strong> {{ order.assigned_name }}</p
+    >
+    <p class="muted"
+        >Próximo prazo:
+        {{
+            order.recurrence_basis === 'PLANEJADA'
+                ? 'Calendário a partir do vencimento de referência'
+                : 'Data realizada'
+        }}. O usuário que confirmar será registrado como executor.</p
+    >
+    <details
+        ><summary>Orientações de segurança</summary
+        ><p class="safety-text">{{ order.safety_instructions }}</p></details
+    >
+    <p *ngIf="order.cancellation_reason" class="error"
+        >Cancelamento: {{ order.cancellation_reason }}</p
+    >
+    <div class="order-fields"
+        ><label
+            >Data realizada<input
+                type="date"
+                [(ngModel)]="order.performed_date"
+                [max]="today"
+                [disabled]="processing || order.status !== 'ABERTA'" /></label
+        ><label
+            >Horário realizado<input
+                type="time"
+                [(ngModel)]="order.performed_time"
+                [disabled]="processing || order.status !== 'ABERTA'" /></label
+    ></div>
+    <div *ngFor="let item of order.items; let index = index" class="order-item"
+        ><h3>{{ index + 1 }}. {{ item }}</h3>
+        <label
+            >Resultado<select
+                [(ngModel)]="order.results[index].status"
+                [disabled]="processing || order.status !== 'ABERTA'"
+                ><option value="PENDENTE">Pendente</option
+                ><option value="REALIZADO">Realizado</option
+                ><option value="NAO_REALIZADO">Não realizado</option
+                ><option value="NA">Não aplicável</option></select
+            ></label
+        >
+        <label
+            >Observação / justificativa<textarea
+                [(ngModel)]="order.results[index].notes"
+                maxlength="2000"
+                [disabled]="processing || order.status !== 'ABERTA'"
+                placeholder="Obrigatória para não realizado ou não aplicável"
+            ></textarea>
+        </label>
+    </div>
+    <h3>Peças substituídas</h3
+    ><p class="muted"
+        >Registre as peças efetivamente substituídas. Este registro não
+        movimenta estoque nem solicita compras.</p
+    >
+    <div class="part-row" *ngFor="let part of order.parts; let index = index"
+        ><label
+            >Descrição<input
+                [(ngModel)]="part.description"
+                maxlength="250"
+                [disabled]="processing || order.status !== 'ABERTA'" /></label
+        ><label
+            >Código / Part number<input
+                [(ngModel)]="part.partNumber"
+                maxlength="160"
+                [disabled]="processing || order.status !== 'ABERTA'" /></label
+        ><label
+            >Quantidade<input
+                type="number"
+                [(ngModel)]="part.quantity"
+                min="0.001"
+                max="1000000"
+                [disabled]="processing || order.status !== 'ABERTA'" /></label
+        ><button
+            mat-icon-button
+            aria-label="Remover peça"
+            *ngIf="order.status === 'ABERTA'"
+            (click)="order.parts.splice(index, 1)"
+            [disabled]="processing"
+            ><mat-icon>delete</mat-icon></button
+        ></div
+    >
+    <button
+        mat-stroked-button
+        *ngIf="order.status === 'ABERTA'"
+        (click)="
+            order.parts.push({ description: '', partNumber: '', quantity: 1 })
+        "
+        [disabled]="processing || order.parts.length >= 50"
+        >Adicionar peça</button
+    >
+    <label
+        >Observações gerais<textarea
+            class="compact-text"
+            [(ngModel)]="order.notes"
+            maxlength="4000"
+            [disabled]="processing || order.status !== 'ABERTA'"
+        ></textarea>
+    </label>
+    <p *ngIf="order.executor_name"
+        ><strong>Executor:</strong> {{ order.executor_name }}</p
+    >
+    <p *ngIf="order.status === 'ABERTA'" class="muted"
+        >Você pode salvar parcialmente. Para concluir, informe a data, resolva
+        os itens pendentes ou não realizados e justifique os não aplicáveis. A
+        agenda só é atualizada na conclusão.</p
+    >
+    <p *ngIf="errorOrder" class="error" role="alert">{{ errorOrder }}</p>
+    <div modalActions class="modal-actions"
+        ><button
+            mat-stroked-button
+            (click)="closeOrder()"
+            [disabled]="processing"
+            >Fechar</button
+        ><button
+            mat-stroked-button
+            (click)="downloadOrder(order)"
+            [disabled]="processing"
+            >Imprimir versão salva</button
+        ><button
+            mat-stroked-button
+            *ngIf="order.status === 'ABERTA'"
+            (click)="saveOrder()"
+            [disabled]="processing"
+            >Salvar preenchimento</button
+        ><button
+            mat-flat-button
+            class="primary"
+            *ngIf="order.status === 'ABERTA'"
+            (click)="saveOrder(true)"
+            [disabled]="processing || !canCompleteOrder"
+            >Concluir OS</button
+        ></div
+    >
+</app-form-modal>
+<app-form-modal
+    *ngIf="orderCancel as order"
+    title="Cancelar OS preventiva"
+    [subtitle]="order.number + ' · ' + order.equipment_name"
+    icon="cancel"
+    [busy]="processing"
+    (closed)="!processing && (orderCancel = null)"
+>
+    <p
+        >O histórico da OS será preservado e o vencimento da agenda não será
+        alterado.</p
+    ><label
+        >Motivo do cancelamento<textarea
+            [(ngModel)]="reasonCancellation"
+            maxlength="2000"
+            [disabled]="processing"
+        ></textarea></label
+    ><p *ngIf="errorOrder" class="error" role="alert">{{ errorOrder }}</p
+    ><div modalActions class="modal-actions"
+        ><button
+            mat-stroked-button
+            (click)="orderCancel = null"
+            [disabled]="processing"
+            >Voltar</button
+        ><button
+            mat-flat-button
+            class="primary"
+            (click)="cancelOrder()"
+            [disabled]="processing || reasonCancellation.trim().length < 5"
+            >Confirmar cancelamento</button
+        ></div
+    >
+</app-form-modal>

@@ -1,0 +1,306 @@
+/* Estilo local de order-dialog: aparência, estados visuais e adaptação da tela; não acessa a API nem o banco. */
+.service-tabs {
+    display: flex;
+    flex-shrink: 0;
+    gap: 24px;
+    padding: 0 32px;
+    border-bottom: 1px solid #e7ebef;
+    margin-bottom: 18px;
+    button {
+        display: flex;
+        gap: 8px;
+        align-items: center;
+        padding: 14px 0;
+        border: 0;
+        border-bottom: 3px solid transparent;
+        background: transparent;
+        color: #7b8794;
+        font: inherit;
+        font-size: 13px;
+        font-weight: 600;
+        &.selected {
+            color: #c8102e;
+            border-bottom-color: #c8102e;
+        }
+        &:disabled {
+            opacity: 0.55;
+            cursor: default;
+        }
+    }
+    mat-icon {
+        width: 18px;
+        height: 18px;
+        font-size: 18px;
+    }
+}
+.machine-context {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 16px;
+    padding: 18px;
+    background: #f6f9fc;
+    border: 1px solid #e1e9f0;
+    border-radius: 10px;
+    margin-bottom: 22px;
+    span {
+        display: block;
+        color: #7b8b9b;
+        font-size: 11px;
+        margin-bottom: 7px;
+    }
+    strong {
+        font-size: 13px;
+        color: #354f62;
+        overflow-wrap: anywhere;
+    }
+}
+.reported-problem {
+    margin-bottom: 22px;
+    padding-left: 14px;
+    border-left: 3px solid #c8102e;
+    span {
+        color: #8491a1;
+        font-size: 12px;
+    }
+    p {
+        margin: 6px 0 0;
+        color: #263f51;
+        font-size: 14px;
+        font-weight: 600;
+    }
+}
+.parts-heading {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 16px;
+    h3 {
+        font-size: 16px;
+        margin: 0 0 8px;
+    }
+    p {
+        margin: 0;
+        font-size: 13px;
+        line-height: 1.6;
+    }
+}
+.attendance-fields {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 16px;
+    textarea {
+        min-height: 160px;
+    }
+}
+/* Responsividade: aplica estas regras quando a largura da tela atende à condição abaixo. */
+@media (max-width: 800px) {
+    .attendance-fields {
+        grid-template-columns: 1fr;
+    }
+}
+.parts-search {
+    margin-top: 20px;
+}
+.service-order .parts-search .part-filter {
+    flex-direction: row;
+    align-items: center;
+    font-size: 12px;
+    font-weight: 400;
+    input[type='checkbox'] {
+        width: 16px;
+        min-height: 16px;
+        height: 16px;
+        padding: 0;
+        accent-color: #c8102e;
+    }
+}
+.parts-table {
+    font-size: 12px;
+    th {
+        white-space: nowrap;
+    }
+    td {
+        vertical-align: middle;
+    }
+    small {
+        display: block;
+        margin-top: 6px;
+        font-size: 11px;
+    }
+    button {
+        white-space: nowrap;
+    }
+}
+.part-link {
+    display: inline-block;
+    padding: 5px 8px;
+    border-radius: 6px;
+    background: #f2f4f7;
+    color: #7b8794;
+    font-size: 10px;
+    white-space: nowrap;
+    &.linked {
+        background: #e7f7f0;
+        color: #168c6d;
+    }
+}
+.replacement-request {
+    margin-top: 24px;
+    padding: 22px;
+    background: #fafcfe;
+    border: 1px solid #dce5ed;
+    border-radius: 12px;
+    .request-destination {
+        padding: 12px;
+        background: #edf5fb;
+        border-radius: 8px;
+        font-size: 12px;
+        line-height: 1.6;
+        margin: 18px 0 22px;
+    }
+}
+.linked-requests {
+    margin-top: 28px;
+    h3 {
+        font-size: 16px;
+    }
+}
+.linked-request {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 18px;
+    padding: 18px 0;
+    border-top: 1px solid #e8edf2;
+    font-size: 12px;
+    p {
+        margin: 9px 0;
+    }
+    small {
+        font-size: 11px;
+    }
+    .request-status {
+        display: inline-block;
+        margin-left: 10px;
+        background: #edf2f7;
+        color: #62788b;
+        padding: 4px 8px;
+        border-radius: 5px;
+        font-size: 10px;
+    }
+}
+.request-actions {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 8px;
+}
+@media (max-width: 600px) {
+    .service-tabs {
+        padding: 0 20px;
+        gap: 15px;
+        button {
+            font-size: 11px;
+            line-height: 1.5;
+        }
+    }
+    .machine-context {
+        grid-template-columns: 1fr;
+        gap: 12px;
+    }
+    .linked-request {
+        flex-direction: column;
+        align-items: stretch;
+    }
+    .request-actions {
+        align-items: stretch;
+    }
+    .replacement-request {
+        padding: 16px;
+    }
+}
+
+/* O card abre o catálogo compartilhado sem expor a tabela de peças dentro da OS. */
+.spare-parts-card {
+    display: flex;
+    align-items: flex-start;
+    gap: 18px;
+    width: 100%;
+    max-width: 620px;
+    padding: 24px;
+    text-align: left;
+    background: #fff;
+    border: 1px solid #dce3ec;
+    border-radius: 14px;
+    color: #17202f;
+    cursor: pointer;
+    font: inherit;
+    transition:
+        border-color 0.15s,
+        box-shadow 0.15s;
+}
+.spare-parts-card:hover:not(:disabled) {
+    border-color: #c8102e;
+    box-shadow: 0 5px 18px #17202f0d;
+}
+.spare-parts-card:focus-visible {
+    outline: 2px solid #c8102e;
+    outline-offset: 3px;
+}
+.spare-parts-card:disabled {
+    cursor: wait;
+    opacity: 0.65;
+}
+.catalog-card-icon {
+    display: grid;
+    place-items: center;
+    flex: 0 0 52px;
+    height: 52px;
+    background: #fff1f3;
+    color: #c8102e;
+    border-radius: 12px;
+}
+.catalog-card-content {
+    display: grid;
+    gap: 10px;
+    line-height: 1.5;
+}
+.catalog-card-content strong {
+    font-size: 20px;
+}
+.catalog-card-content > span {
+    font-size: 13px;
+    color: #64748b;
+}
+.catalog-card-content .catalog-card-action {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    color: #c8102e;
+    font-weight: 600;
+    margin-top: 4px;
+}
+.catalog-card-action mat-icon {
+    font-size: 19px;
+    width: 19px;
+    height: 19px;
+}
+
+.reported-occurrence {
+    padding: 14px 16px;
+    margin: 12px 0 18px;
+    background: #f5f8fc;
+    border: 1px solid #e2e8f0;
+    border-radius: 10px;
+}
+.reported-occurrence span {
+    font-size: 12px;
+    color: #64748b;
+}
+.reported-occurrence p {
+    white-space: pre-wrap;
+    overflow-wrap: anywhere;
+    line-height: 1.6;
+    color: #263747;
+    margin: 8px 0 0;
+}

@@ -1,0 +1,50 @@
+/* Estilo local de equipamentos: aparência, estados visuais e adaptação da tela; não acessa a API nem o banco. */
+/* Estilos adicionais deste componente. Os estilos globais existentes permanecem em src/styles.scss. */
+.preventive-config {
+    min-width: 0;
+}
+.preventive-options {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 14px;
+    margin-bottom: 24px;
+}
+.preventive-option {
+    padding: 16px;
+    border: 1px solid #dce1e8;
+    border-radius: 12px;
+}
+.preventive-option .preventive-check {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 10px;
+    margin: 0;
+    font-weight: 600;
+    cursor: pointer;
+}
+.preventive-check input[type='checkbox'] {
+    width: 20px;
+    height: 20px;
+    min-height: 0;
+    padding: 0;
+    margin: 0;
+    flex-shrink: 0;
+    accent-color: #c8102e;
+}
+.preventive-option .modal-field {
+    margin-top: 14px;
+}
+.preventive-tag {
+    display: inline-block;
+    margin: 3px;
+    padding: 4px 8px;
+    border-radius: 12px;
+    background: #edf2f7;
+    font-size: 12px;
+}
+@media (max-width: 650px) {
+    .preventive-options {
+        grid-template-columns: 1fr;
+    }
+}

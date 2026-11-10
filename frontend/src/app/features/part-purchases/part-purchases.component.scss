@@ -1,0 +1,89 @@
+/* Estilo local de spare-purchase: aparência, estados visuais e adaptação da tela; não acessa a API nem o banco. */
+:host {
+    display: block;
+    min-height: 100%;
+    color: #141824;
+}
+.purchase-screen {
+    max-width: 1400px;
+    margin: auto;
+    padding: 30px;
+}
+.heading {
+    display: flex;
+    justify-content: space-between;
+    gap: 20px;
+    align-items: center;
+    margin-bottom: 24px;
+}
+.heading small {
+    letter-spacing: 0.15em;
+    color: #c8102e;
+    font-weight: 700;
+}
+.heading h1 {
+    margin: 5px 0 8px;
+    font-size: 30px;
+}
+.heading p {
+    color: #667085;
+}
+.heading a {
+    color: #c8102e;
+    text-decoration: none;
+}
+.panel {
+    background: #fff;
+    border: 1px solid #e5e7eb;
+    border-radius: 16px;
+    padding: 24px;
+    margin-bottom: 18px;
+}
+.panel h2 {
+    margin: 0 0 20px;
+    font-size: 20px;
+}
+.purchase-toolbar {
+    margin-bottom: 24px;
+}
+.purchase-toolbar button,
+.panel button {
+    background: linear-gradient(100deg, #ed001b, #bb0018);
+    border: 0;
+    border-radius: 28px;
+    color: #fff;
+    padding: 12px 22px;
+    font: inherit;
+    font-size: 14px;
+    font-weight: 600;
+}
+.panel button.muted {
+    background: #f3f4f6;
+    color: #475569;
+}
+.panel button.danger {
+    background: #b42318;
+}
+.error {
+    color: #b42318;
+}
+.success {
+    color: #16794b;
+}
+.tablewrap {
+    overflow-x: auto;
+}
+.detail {
+    border-top: 1px solid #e5e7eb;
+    margin-top: 18px;
+    padding-top: 18px;
+}
+/* Responsividade: aplica estas regras quando a largura da tela atende à condição abaixo. */
+@media (max-width: 600px) {
+    .purchase-screen {
+        padding: 16px;
+    }
+    .heading {
+        display: block;
+    }
+}

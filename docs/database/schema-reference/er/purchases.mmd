@@ -1,0 +1,102 @@
+%% Gerado do catálogo físico. PK = chave primária; FK = referência a outra tabela.
+erDiagram
+    usuarios {
+        int8 id PK
+        timestamptz ultimo_acesso
+        varchar nome
+        varchar matricula
+        text senha_hash
+        varchar perfil
+        bool ativo
+        timestamptz criado_em
+        int8 linha_id
+    }
+    solicitacoes_compra {
+        int8 id PK
+        varchar tipo_compra
+        varchar situacao
+        text justificativa
+        varchar prioridade
+        text parecer_gestor
+        timestamptz enviado_em
+        timestamptz decidido_em
+        timestamptz criado_em
+        timestamptz atualizado_em
+        int8 equipamento_id
+        int8 gestor_id
+        int8 solicitante_id FK
+        int8 ordem_servico_id
+        varchar serie_equipamento
+    }
+    eventos_solicitacao_compra {
+        int8 id PK
+        varchar acao
+        text detalhes
+        timestamptz criado_em
+        int8 autor_id
+        int8 solicitacao_id FK
+    }
+    pecas_reposicao {
+        int8 id PK
+        varchar codigo
+        varchar descricao
+        varchar numero_peca
+        varchar fabricante
+        varchar categoria
+        varchar unidade
+        numeric estoque_minimo
+        numeric estoque_maximo
+        numeric ponto_reposicao
+        varchar local_armazenamento
+        varchar fornecedor_preferencial
+        numeric custo_medio
+        numeric ultimo_custo
+        varchar nome_arquivo_foto
+        varchar tipo_mime_foto
+        bytea conteudo_foto
+        varchar nome_arquivo_ficha
+        bytea conteudo_ficha
+        bool ativo
+        timestamptz criado_em
+        timestamptz atualizado_em
+    }
+    itens_solicitacao_compra {
+        int8 id PK
+        numeric quantidade
+        text observacao_item
+        jsonb retrato_ficha_tecnica
+        int8 solicitacao_id FK
+        int8 peca_id FK
+    }
+    fichas_tecnicas_pecas {
+        int8 peca_id PK, FK
+        varchar situacao_fiscal
+        timestamptz validado_em
+        timestamptz atualizado_em
+        text descricao_ingles
+        varchar ncm
+        text descricao_pli
+        text descricao_portugues
+        text classificacao
+        text funcao_independente
+        text detalhes_conexoes
+        text vida_util
+        text classificacao_patrimonial
+        text funcao_principal
+        text funcao_secundaria
+        text materia_prima
+        text utilizacao
+        text maquina_aplicacao
+        text mecanico_eletrico
+        text tipo_corrente
+        text potencia
+        text tensao
+        text amperagem
+        text referencia_imagem
+        int8 validado_por_id
+    }
+    usuarios ||--o{ solicitacoes_compra : "solicitante_id"
+    solicitacoes_compra ||--o{ itens_solicitacao_compra : "solicitacao_id"
+    pecas_reposicao ||--o{ itens_solicitacao_compra : "peca_id"
+    solicitacoes_compra ||--o{ eventos_solicitacao_compra : "solicitacao_id"
+    pecas_reposicao ||--o| fichas_tecnicas_pecas : "peca_id"

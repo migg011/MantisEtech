@@ -1,0 +1,70 @@
+<!-- Shared menu: routerLink changes the route, routerLinkActive highlights the item, and router-outlet receives the chosen component. -->
+<div class="shell">
+    <aside *ngIf="authentication.user()?.role !== 'OPERADOR'">
+        <div class="sidebrand">
+            <img
+                src="/assets/M.png"
+                alt="Símbolo MANTIS"
+                class="mantis-sidebar-symbol"
+            />
+            <span class="mantis-sidebar-text">
+                <strong>MANTIS</strong>
+                <small>MAINTENANCE MANAGEMENT</small>
+            </span>
+        </div>
+        <div class="sidelabel">MENU PRINCIPAL</div>
+        <a routerLinkActive="active" routerLink="/dashboard">
+            <mat-icon>dashboard</mat-icon>
+            Dashboard</a
+        ><a routerLinkActive="active" routerLink="/ordens">
+            <mat-icon>assignment</mat-icon>
+            Ordens de serviço</a
+        ><a routerLinkActive="active" routerLink="/totem">
+            <mat-icon>precision_manufacturing</mat-icon>
+            Totem / Linha SMT</a
+        >
+        <a routerLinkActive="active" routerLink="/status-linhas">
+            <mat-icon>tv</mat-icon>
+            Modo de exposição
+        </a>
+        <ng-container
+            *ngIf="
+                authentication.user()?.role === 'ADMINISTRADOR' ||
+                authentication.user()?.role === 'TECNICO'
+            "
+        >
+            <div class="sidelabel">CADASTROS</div>
+            <a routerLinkActive="active" routerLink="/cadastro">
+                <mat-icon>apps</mat-icon>
+                Central de Cadastros
+            </a>
+            <a routerLinkActive="active" routerLink="/setores">
+                <mat-icon>domain</mat-icon>
+                Setores</a
+            ><a
+                routerLinkActive="active"
+                *ngIf="authentication.user()?.role === 'ADMINISTRADOR'"
+                routerLink="/usuarios"
+            >
+                <mat-icon>people</mat-icon>
+                Usuários</a
+            ></ng-container
+        >
+    </aside>
+    <main>
+        <header
+            ><span class="eyebrow">MANTIS REPORTING SYSTEM</span>
+            <div class="actions"
+                ><span
+                    >{{ authentication.user()?.name }} ·
+                    {{ authentication.user()?.role }}</span
+                >
+                <button mat-button (click)="authentication.logout()">
+                    <mat-icon>logout</mat-icon>
+                    Sair
+                </button>
+            </div>
+        </header>
+        <router-outlet />
+    </main>
+</div>

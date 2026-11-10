@@ -1,0 +1,123 @@
+:host {
+    display: block;
+    font-family: Inter, Arial, sans-serif;
+}
+.part-sheet {
+    color: #172b3a;
+}
+header {
+    padding-bottom: 14px;
+    small {
+        color: #c8102e;
+        font-size: 11px;
+        letter-spacing: 1px;
+        font-weight: 700;
+    }
+    h2 {
+        margin: 4px 0;
+        font-size: 25px;
+        overflow-wrap: anywhere;
+    }
+    p {
+        margin: 4px 0;
+    }
+    span {
+        font-size: 13px;
+        color: #718292;
+    }
+}
+nav {
+    display: flex;
+    gap: 6px;
+    flex-wrap: wrap;
+    border-bottom: 1px solid #e1e6ed;
+    padding-bottom: 10px;
+    margin-bottom: 18px;
+    button {
+        padding: 9px 12px;
+        border: 1px solid #dce3eb;
+        background: #fff;
+        border-radius: 7px;
+        color: #40586d;
+        font: inherit;
+        font-size: 13px;
+    }
+    button[aria-pressed='true'] {
+        background: #fff1f3;
+        border-color: #c8102e;
+        color: #c8102e;
+    }
+}
+.part-sheet-grid {
+    display: grid;
+    grid-template-columns: minmax(150px, 230px) minmax(0, 1fr);
+    gap: 22px;
+}
+aside {
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    background: #f8fafc;
+    border: 1px solid #e1e6ed;
+    border-radius: 10px;
+    padding: 12px;
+    img {
+        width: 100%;
+        max-height: 240px;
+        object-fit: contain;
+    }
+}
+h3 {
+    margin: 0 0 12px;
+    font-size: 16px;
+}
+dl {
+    margin: 0;
+    display: grid;
+    gap: 12px;
+    div {
+        display: grid;
+        grid-template-columns: minmax(100px, 40%) minmax(0, 1fr);
+        gap: 10px;
+    }
+    dt {
+        font-size: 12px;
+        color: #718292;
+    }
+    dd {
+        font-size: 13px;
+        margin: 0;
+        overflow-wrap: anywhere;
+    }
+}
+small {
+    color: #718292;
+    font-size: 12px;
+}
+button:focus-visible {
+    outline: 2px solid #c8102e;
+    outline-offset: 2px;
+}
+@media (max-width: 600px) {
+    .part-sheet-grid {
+        grid-template-columns: 1fr;
+    }
+    aside img {
+        max-height: 160px;
+    }
+    header h2 {
+        font-size: 21px;
+    }
+}
+
+/* The movement uses the sheet width; the photo follows only the identification. */
+.part-sheet-grid.full-width {
+    grid-template-columns: minmax(0, 1fr);
+}
+aside {
+    align-self: start;
+    min-height: 180px;
+    max-height: 300px;
+}

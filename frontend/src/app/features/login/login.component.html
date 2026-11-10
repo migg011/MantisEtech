@@ -1,0 +1,76 @@
+<!-- Entrada: ngModel sincroniza matrícula/senha; ngSubmit chama entrar(). A confirmação vem da API. -->
+<div class="login">
+    <div class="hero">
+        <div class="brand">
+            <img
+                src="/assets/M.png"
+                alt="Símbolo MANTIS"
+                class="mantis-simbolo"
+            />
+            <span>
+                <b>MANTIS</b>
+                <small>Maintenance & Asset Management</small>
+            </span>
+        </div>
+        <div class="mesh">
+            <div class="glow"></div>
+        </div>
+        <div class="hero-copy"
+            ><h1>Mantis Reporting System</h1>
+            <p
+                >MAIS DISPONIBILIDADE. MENOS PARADAS.<br />MELHOR RESULTADO.</p
+            ></div
+        >
+        <small class="version">● MANTIS • v1.0</small></div
+    >
+    <div class="signin">
+        <div class="login-box">
+            <div class="eyebrow">PLATAFORMA INDUSTRIAL</div>
+            <h1>Bem-vindo ao <em>MANTIS!</em></h1>
+            <p class="muted">Faça login para acessar o sistema.</p>
+            <!-- ngModel mantém campo e classe sincronizados; isso ainda não é uma gravação no banco. -->
+            <form (ngSubmit)="submit()">
+                <mat-form-field appearance="outline" class="full">
+                    <mat-label>E-mail ou Matrícula</mat-label>
+                    <mat-icon matPrefix>person_outline</mat-icon>
+                    <input
+                        matInput
+                        [(ngModel)]="registration"
+                        name="registration"
+                        required
+                        autocomplete="username"
+                /></mat-form-field>
+                <mat-form-field appearance="outline" class="full">
+                    <mat-label>Senha</mat-label>
+                    <mat-icon matPrefix>lock_outline</mat-icon>
+                    <input
+                        matInput
+                        [(ngModel)]="password"
+                        name="password"
+                        required
+                        [type]="showPassword ? 'text' : 'password'"
+                        autocomplete="current-password"
+                    />
+                    <button
+                        type="button"
+                        mat-icon-button
+                        matSuffix
+                        (click)="showPassword = !showPassword"
+                    >
+                        <mat-icon>{{
+                            showPassword ? 'visibility_off' : 'visibility'
+                        }}</mat-icon>
+                    </button>
+                </mat-form-field>
+                <p *ngIf="errorMessage" class="error">{{ errorMessage }}</p>
+                <button
+                    mat-flat-button
+                    class="primary full"
+                    [disabled]="loading"
+                    >{{ loading ? 'Entrando...' : 'Entrar' }} →
+                </button>
+            </form>
+            <p class="footnote">Acesso controlado por perfil • MANTIS</p></div
+        >
+    </div>
+</div>

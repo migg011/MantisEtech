@@ -1,0 +1,452 @@
+Project MANTIS {
+  database_type: 'PostgreSQL'
+  Note: 'Modelo do catálogo verificado. Use o SQL físico para reprodução exata de índices e restrições.'
+}
+
+Table public.auth_group {
+  id integer [not null, pk, increment]
+  name varchar(150) [not null]
+  indexes {
+    name [unique, name: 'auth_group_name_key']
+  }
+  Note: 'Grupos nativos de permissões do Django. Não são os perfis ADMINISTRADOR, TECNICO e OPERADOR usados pela API.'
+}
+
+Table public.auth_group_permissions {
+  id bigint [not null, pk, increment]
+  group_id integer [not null]
+  permission_id integer [not null]
+  indexes {
+    (group_id, permission_id) [unique, name: 'auth_group_permissions_group_id_permission_id_0cd325b0_uniq']
+  }
+  Note: 'Associação N:N entre grupos nativos e permissões do Django.'
+}
+
+Table public.auth_permission {
+  id integer [not null, pk, increment]
+  name varchar(255) [not null]
+  content_type_id integer [not null]
+  codename varchar(100) [not null]
+  indexes {
+    (content_type_id, codename) [unique, name: 'auth_permission_content_type_id_codename_01ab375a_uniq']
+  }
+  Note: 'Catálogo de permissões nativas geradas pelo Django; não substitui as verificações de perfil da API.'
+}
+
+Table public.django_content_type {
+  id integer [not null, pk, increment]
+  app_label varchar(100) [not null]
+  model varchar(100) [not null]
+  indexes {
+    (app_label, model) [unique, name: 'django_content_type_app_label_model_76bd3d3b_uniq']
+  }
+  Note: 'Identifica os modelos para a infraestrutura de permissões do Django.'
+}
+
+Table public.django_migrations {
+  id bigint [not null, pk, increment]
+  app varchar(255) [not null]
+  name varchar(255) [not null]
+  applied timestamptz [not null]
+  Note: 'Registra as migrações aplicadas. Não guarda o histórico de alterações dos registros de negócio.'
+}
+
+Table public.equipment {
+  id bigint [not null, pk, increment]
+  model_number varchar(100) [null]
+  model varchar(160) [null]
+  serial varchar(160) [null]
+  manufacturer varchar(160) [null]
+  manufacturing_date date [null]
+  manufacturing_date_text varchar(10) [null]
+  length_mm numeric(12,2) [null]
+  width_mm numeric(12,2) [null]
+  height_mm numeric(12,2) [null]
+  weight_kg numeric(12,2) [null]
+  voltage_v numeric(12,2) [null]
+  frequency_hz numeric(12,2) [null]
+  current_a numeric(12,2) [null]
+  power_w numeric(12,2) [null]
+  pneumatic_pressure_bar numeric(12,2) [null]
+  asset_number varchar(100) [null]
+  description text [null]
+  process_description text [null]
+  position integer [null]
+  active boolean [not null]
+  created_at timestamptz [not null]
+  equipment_type_id smallint [not null]
+  line_id bigint [null]
+  sector_id bigint [null]
+  name varchar(160) [not null]
+  indexes {
+    asset_number [unique, name: 'equipment_asset_number_key']
+    serial [unique, name: 'equipment_serial_key']
+    (line_id, position) [unique, name: 'line_position_unique']
+  }
+  Note: 'Cadastro técnico da máquina; o banco impede posição duplicada ou alocação sem posição válida.'
+}
+
+Table public.equipment_attachments {
+  id bigint [not null, pk, increment]
+  kind varchar(10) [not null]
+  filename varchar(180) [not null]
+  mime_type varchar(60) [not null]
+  content bytea [not null]
+  size_bytes integer [not null]
+  created_at timestamptz [not null]
+  equipment_id bigint [not null]
+  uploaded_by bigint [not null]
+  indexes {
+    (equipment_id, kind) [unique, name: 'attachment_equipment_kind']
+  }
+  Note: 'Armazena o conteúdo de foto/manual no PostgreSQL, com um arquivo por categoria e máquina.'
+}
+
+Table public.equipment_movements {
+  id bigint [not null, pk, increment]
+  from_position integer [null]
+  to_position integer [null]
+  action varchar(20) [not null]
+  created_at timestamptz [not null]
+  equipment_id bigint [not null]
+  performed_by bigint [not null]
+  from_line_id bigint [null]
+  to_line_id bigint [null]
+  Note: 'Registra a origem, destino, posição e autoria das mudanças de montagem.'
+}
+
+Table public.equipment_preventives {
+  id bigint [not null, pk, increment]
+  frequency varchar(20) [not null]
+  next_due date [not null]
+  last_performed date [null]
+  active boolean [not null]
+  equipment_id bigint [not null]
+  checklist_items jsonb [null]
+  indexes {
+    (equipment_id, frequency) [unique, name: 'unique_equipment_preventive']
+  }
+  Note: 'Agenda independente por equipamento e periodicidade, preservada quando desmarcada.'
+}
+
+Table public.equipment_types {
+  id smallint [not null, pk]
+  name varchar(100) [not null]
+  indexes {
+    name [unique, name: 'equipment_types_name_key']
+  }
+  Note: 'Catálogo de tipos de equipamento utilizado pelo cadastro Angular.'
+}
+
+Table public.line_pendencies {
+  id bigint [not null, pk, increment]
+  equipment_serial varchar(160) [null]
+  description text [not null]
+  priority varchar(20) [not null]
+  status varchar(20) [not null]
+  created_at timestamptz [not null]
+  resolved_at timestamptz [null]
+  resolution text [not null]
+  created_by_id bigint [not null]
+  equipment_id bigint [not null]
+  line_id bigint [not null]
+  resolved_by_id bigint [null]
+  work_order_id bigint [not null]
+  Note: 'Ação pendente originada em uma OS, preservando sua linha e máquina de origem.'
+}
+
+Table public.lines {
+  id bigint [not null, pk, increment]
+  code varchar(40) [not null]
+  name varchar(120) [not null]
+  description text [null]
+  active boolean [not null]
+  created_at timestamptz [not null]
+  sector_id bigint [null]
+  indexes {
+    code [unique, name: 'lines_code_key']
+  }
+  Note: 'Representa a linha SMT vinculada a um setor; sua composição vem dos equipamentos alocados.'
+}
+
+Table public.maintenance_part_requisitions {
+  id bigint [not null, pk, increment]
+  equipment_serial varchar(160) [null]
+  quantity numeric(14,3) [not null]
+  note text [not null]
+  created_at timestamptz [not null]
+  equipment_id bigint [not null]
+  requester_id bigint [not null]
+  spare_part_id bigint [not null]
+  work_order_id bigint [not null]
+  Note: 'Solicitação direta de peça para manutenção, independente do processo de compra.'
+}
+
+Table public.preventive_checklists {
+  id bigint [not null, pk, increment]
+  frequency varchar(20) [not null]
+  items jsonb [not null]
+  equipment_type_id smallint [not null]
+  indexes {
+    (equipment_type_id, frequency) [unique, name: 'unique_preventive_type_frequency']
+  }
+  Note: 'Itens aprovados pela equipe para cada tipo de máquina e periodicidade.'
+}
+
+Table public.preventive_executions {
+  id bigint [not null, pk, increment]
+  performed_date date [not null]
+  previous_due date [not null]
+  next_due date [not null]
+  notes text [not null]
+  created_at timestamptz [not null]
+  schedule_id bigint [not null]
+  technician_id bigint [not null]
+  order_id bigint [null]
+  indexes {
+    order_id [unique, name: 'preventive_executions_order_id_key']
+  }
+  Note: 'Histórico da execução e do vencimento substituído; imprimir não registra execução.'
+}
+
+Table public.preventive_orders {
+  id bigint [not null, pk, increment]
+  status varchar(20) [not null]
+  expected_due date [not null]
+  planned_date date [not null]
+  planned_time time [null]
+  recurrence_basis varchar(20) [not null]
+  frequency varchar(20) [not null]
+  equipment_snapshot jsonb [not null]
+  items jsonb [not null]
+  results jsonb [not null]
+  safety_instructions text [not null]
+  parts jsonb [not null]
+  notes text [not null]
+  performed_date date [null]
+  performed_time time [null]
+  assigned_name varchar(160) [not null]
+  created_at timestamptz [not null]
+  executor_name varchar(160) [not null]
+  finished_at timestamptz [null]
+  cancellation_reason text [not null]
+  revision integer [not null]
+  assigned_to_id bigint [null]
+  created_by_id bigint [not null]
+  finished_by_id bigint [null]
+  schedule_id bigint [not null]
+  Note: 'OS preventiva independente da corretiva, com roteiro e identificação congelados na emissão.'
+}
+
+Table public.problem_types {
+  id bigint [not null, pk, increment]
+  name varchar(180) [not null]
+  priority varchar(20) [not null]
+  active boolean [not null]
+  equipment_type_id smallint [null]
+  Note: 'Catálogo de problemas selecionáveis; a desativação preserva o histórico das OS.'
+}
+
+Table public.sectors {
+  id bigint [not null, pk, increment]
+  code varchar(40) [not null]
+  name varchar(120) [not null]
+  description text [null]
+  active boolean [not null]
+  created_at timestamptz [not null]
+  indexes {
+    code [unique, name: 'sectors_code_key']
+  }
+  Note: 'Agrupa linhas e equipamentos, preservando o cadastro por desativação lógica.'
+}
+
+Table public.spare_part_compatibility {
+  equipment_id bigint [not null]
+  spare_part_id bigint [not null]
+  indexes {
+    (spare_part_id, equipment_id) [pk, name: 'spare_part_compatibility_pkey']
+  }
+  Note: 'Relaciona peças aos equipamentos compatíveis, impedindo pares duplicados pela chave composta.'
+}
+
+Table public.spare_part_technical {
+  spare_part_id bigint [not null, pk]
+  fiscal_status varchar(20) [not null]
+  fiscal_validated_at timestamptz [null]
+  updated_at timestamptz [not null]
+  description_en text [null]
+  ncm varchar(10) [null]
+  pli_description text [null]
+  description_pt text [null]
+  classification text [null]
+  independent_function text [null]
+  connection_details text [null]
+  useful_life text [null]
+  asset_classification text [null]
+  main_function text [null]
+  secondary_function text [null]
+  raw_material text [null]
+  intended_use text [null]
+  application_machine text [null]
+  mechanical_electrical text [null]
+  current_type text [null]
+  power text [null]
+  voltage text [null]
+  amperage text [null]
+  picture_reference text [null]
+  fiscal_validated_by bigint [null]
+  Note: 'Ficha reutilizável da peça e registro de sua validação fiscal interna.'
+}
+
+Table public.spare_parts {
+  id bigint [not null, pk, increment]
+  code varchar(40) [not null]
+  description varchar(250) [not null]
+  part_number varchar(120) [null]
+  manufacturer varchar(160) [null]
+  category varchar(100) [null]
+  unit varchar(20) [not null]
+  minimum_stock numeric(14,3) [not null]
+  maximum_stock numeric(14,3) [null]
+  reorder_point numeric(14,3) [not null]
+  storage_location varchar(160) [null]
+  preferred_supplier varchar(160) [null]
+  average_cost numeric(14,2) [null]
+  last_cost numeric(14,2) [null]
+  photo_filename varchar(255) [null]
+  photo_mime varchar(100) [null]
+  photo_data bytea [null]
+  datasheet_filename varchar(255) [null]
+  datasheet_data bytea [null]
+  active boolean [not null]
+  created_at timestamptz [not null]
+  updated_at timestamptz [not null]
+  indexes {
+    code [unique, name: 'spare_parts_code_key']
+  }
+  Note: 'Cadastro mestre de reposição com referências de estoque e custos, sem um saldo movimentado.'
+}
+
+Table public.spare_purchase_events {
+  id bigint [not null, pk, increment]
+  action varchar(32) [not null]
+  details text [null]
+  created_at timestamptz [not null]
+  actor_id bigint [not null]
+  request_id bigint [not null]
+  Note: 'Histórico de autoria e ações da solicitação, separado do seu estado atual.'
+}
+
+Table public.spare_purchase_request_items {
+  id bigint [not null, pk, increment]
+  quantity numeric(14,3) [not null]
+  item_note text [null]
+  technical_snapshot jsonb [null]
+  request_id bigint [not null]
+  spare_part_id bigint [not null]
+  Note: 'Relaciona a peça e a quantidade à compra e mantém os dados técnicos congelados no envio.'
+}
+
+Table public.spare_purchase_requests {
+  id bigint [not null, pk, increment]
+  purchase_type varchar(16) [not null]
+  status varchar(24) [not null]
+  justification text [not null]
+  priority varchar(12) [not null]
+  manager_comment text [null]
+  submitted_at timestamptz [null]
+  decided_at timestamptz [null]
+  created_at timestamptz [not null]
+  updated_at timestamptz [not null]
+  equipment_id bigint [null]
+  manager_id bigint [not null]
+  requester_id bigint [not null]
+  work_order_id bigint [null]
+  equipment_serial varchar(160) [null]
+  Note: 'Cabeçalho da compra com solicitante, gestor designado, justificativa e estado de aprovação.'
+}
+
+Table public.users {
+  id bigint [not null, pk, increment]
+  last_login timestamptz [null]
+  name varchar(160) [not null]
+  registration varchar(50) [not null]
+  password_hash text [not null]
+  role varchar(20) [not null]
+  active boolean [not null]
+  created_at timestamptz [not null]
+  line_id bigint [null]
+  indexes {
+    registration [unique, name: 'users_registration_key']
+  }
+  Note: 'Conta por matrícula, com perfil e linha do operador; usa a tabela users e sua coluna password_hash.'
+}
+
+Table public.work_orders {
+  id bigint [not null, pk, increment]
+  priority varchar(20) [not null]
+  status varchar(20) [not null]
+  problem text [not null]
+  root_cause text [null]
+  corrective_action text [null]
+  preventive_action text [null]
+  started_at timestamptz [null]
+  finished_at timestamptz [null]
+  created_at timestamptz [not null]
+  assigned_to bigint [null]
+  equipment_id bigint [not null]
+  opened_by bigint [not null]
+  problem_type_id bigint [null]
+  downtime_seconds integer [null]
+  Note: 'Preserva o problema, responsáveis, ações e horários do atendimento de manutenção.'
+}
+
+Ref: public.auth_group_permissions.permission_id > public.auth_permission.id
+Ref: public.auth_group_permissions.group_id > public.auth_group.id
+Ref: public.auth_permission.content_type_id > public.django_content_type.id
+Ref: public.equipment.equipment_type_id > public.equipment_types.id
+Ref: public.equipment.line_id > public.lines.id
+Ref: public.equipment.sector_id > public.sectors.id
+Ref: public.equipment_attachments.equipment_id > public.equipment.id
+Ref: public.equipment_attachments.uploaded_by > public.users.id
+Ref: public.equipment_movements.equipment_id > public.equipment.id
+Ref: public.equipment_movements.from_line_id > public.lines.id
+Ref: public.equipment_movements.performed_by > public.users.id
+Ref: public.equipment_movements.to_line_id > public.lines.id
+Ref: public.equipment_preventives.equipment_id > public.equipment.id
+Ref: public.line_pendencies.created_by_id > public.users.id
+Ref: public.line_pendencies.equipment_id > public.equipment.id
+Ref: public.line_pendencies.line_id > public.lines.id
+Ref: public.line_pendencies.resolved_by_id > public.users.id
+Ref: public.line_pendencies.work_order_id > public.work_orders.id
+Ref: public.lines.sector_id > public.sectors.id
+Ref: public.maintenance_part_requisitions.equipment_id > public.equipment.id
+Ref: public.maintenance_part_requisitions.spare_part_id > public.spare_parts.id
+Ref: public.maintenance_part_requisitions.work_order_id > public.work_orders.id
+Ref: public.maintenance_part_requisitions.requester_id > public.users.id
+Ref: public.preventive_checklists.equipment_type_id > public.equipment_types.id
+Ref: public.preventive_executions.schedule_id > public.equipment_preventives.id
+Ref: public.preventive_orders.id - public.preventive_executions.order_id
+Ref: public.preventive_executions.technician_id > public.users.id
+Ref: public.preventive_orders.assigned_to_id > public.users.id
+Ref: public.preventive_orders.created_by_id > public.users.id
+Ref: public.preventive_orders.finished_by_id > public.users.id
+Ref: public.preventive_orders.schedule_id > public.equipment_preventives.id
+Ref: public.problem_types.equipment_type_id > public.equipment_types.id
+Ref: public.spare_part_compatibility.spare_part_id > public.spare_parts.id
+Ref: public.spare_part_compatibility.equipment_id > public.equipment.id
+Ref: public.spare_part_technical.fiscal_validated_by > public.users.id
+Ref: public.spare_parts.id - public.spare_part_technical.spare_part_id
+Ref: public.spare_purchase_events.request_id > public.spare_purchase_requests.id
+Ref: public.spare_purchase_events.actor_id > public.users.id
+Ref: public.spare_purchase_request_items.request_id > public.spare_purchase_requests.id
+Ref: public.spare_purchase_request_items.spare_part_id > public.spare_parts.id
+Ref: public.spare_purchase_requests.work_order_id > public.work_orders.id
+Ref: public.spare_purchase_requests.equipment_id > public.equipment.id
+Ref: public.spare_purchase_requests.manager_id > public.users.id
+Ref: public.spare_purchase_requests.requester_id > public.users.id
+Ref: public.users.line_id > public.lines.id
+Ref: public.work_orders.assigned_to > public.users.id
+Ref: public.work_orders.equipment_id > public.equipment.id
+Ref: public.work_orders.opened_by > public.users.id
+Ref: public.work_orders.problem_type_id > public.problem_types.id

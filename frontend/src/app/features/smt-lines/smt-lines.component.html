@@ -1,0 +1,238 @@
+<!-- Montagem: seletores guardam linha, máquina e posição; os botões chamam allocate/release/dismantle para persistir a mudança. -->
+<div class="page">
+    <div class="eyebrow">CADASTROS</div>
+    <h1>Linhas SMT — {{ nameSector() }}</h1>
+    <div
+        class="actions"
+        *ngIf="idSector"
+        style="margin: 16px 0; gap: 8px; flex-wrap: wrap"
+    >
+        <a mat-stroked-button [routerLink]="['/setores', idSector]"
+            >Visão do setor</a
+        >
+        <a
+            mat-stroked-button
+            [routerLink]="['/setores', idSector, 'equipamentos']"
+            >Repositório</a
+        >
+        <a
+            mat-flat-button
+            class="primary"
+            [routerLink]="['/setores', idSector, 'linhas']"
+            >Linhas SMT</a
+        >
+    </div>
+    <p *ngIf="!idSector" class="error"
+        >Selecione um setor antes de criar ou montar linhas.
+        <a routerLink="/setores">Abrir setores</a></p
+    >
+    <p class="muted"
+        >Cadastre a linha mesmo sem equipamentos. As posições serão preenchidas
+        após o cadastro das máquinas.</p
+    >
+    <button
+        mat-flat-button
+        class="primary"
+        *ngIf="idSector"
+        (click)="openFormLine()"
+        ><mat-icon>add</mat-icon>Nova linha</button
+    >
+    <p *ngIf="messageLine" class="success" role="status">{{ messageLine }}</p>
+    <app-form-modal
+        *ngIf="formOpen"
+        [title]="idLineEditing ? 'Editar linha SMT' : 'Nova linha SMT'"
+        [subtitle]="
+            idLineEditing
+                ? 'Altere o nome e a descrição da linha.'
+                : 'Cadastre uma linha de produção neste setor.'
+        "
+        icon="view_week"
+        [busy]="registering"
+        (closed)="formOpen = false"
+    >
+        <p class="muted"
+            >Setor: <b>{{ nameSector() }}</b></p
+        >
+        <div class="fields modal-single">
+            <label class="modal-field">
+                <span>Nome da linha</span>
+                <input
+                    [(ngModel)]="name"
+                    [disabled]="registering"
+                    placeholder="Ex.: Linha SMT 01"
+                    maxlength="120"
+            /></label>
+            <label class="modal-field">
+                <span>Descrição (opcional)</span>
+                <textarea
+                    rows="3"
+                    [(ngModel)]="description"
+                    [disabled]="registering"
+                    placeholder="Descreva as atividades desta linha..."
+                ></textarea>
+            </label>
+        </div>
+        <p class="error" *ngIf="error">{{ error }}</p>
+        <div modalActions class="modal-actions"
+            ><button
+                mat-stroked-button
+                [disabled]="registering"
+                (click)="formOpen = false"
+                >Cancelar</button
+            >
+            <button
+                mat-flat-button
+                class="primary"
+                (click)="register()"
+                [disabled]="registering || !idSector || name.trim().length < 2"
+            >
+                {{ idLineEditing ? 'Salvar alterações' : 'Salvar linha' }}
+            </button>
+        </div></app-form-modal
+    >
+    <div class="card" style="margin-top: 20px"
+        ><h2>Montagem da linha SMT</h2>
+        <p class="muted"
+            >Selecione uma linha cadastrada e uma máquina disponível no
+            repositório. A alocação impede o uso da máquina em outra linha.</p
+        >
+        <div class="fields">
+            <mat-form-field>
+                <mat-label>Linha a montar</mat-label>
+                <mat-select
+                    [(ngModel)]="idLineAssembly"
+                    (selectionChange)="loadAssembly()"
+                >
+                    <mat-option
+                        *ngFor="let l of linesSector()"
+                        [value]="l.id"
+                        >{{ l.name }}</mat-option
+                    >
+                </mat-select>
+            </mat-form-field>
+            <mat-form-field>
+                <mat-label>Equipamento disponível</mat-label>
+                <mat-select [(ngModel)]="idEquipmentAssembly">
+                    <mat-option
+                        *ngFor="let e of equipmentAvailable"
+                        [value]="e.id"
+                        >{{ e.type_name }} —
+                        {{
+                            e.model || e.asset_number || e.serial || '#' + e.id
+                        }}
+                    </mat-option>
+                </mat-select>
+            </mat-form-field>
+            <mat-form-field>
+                <mat-label>Posição na linha</mat-label>
+                <input
+                    matInput
+                    type="number"
+                    min="1"
+                    [(ngModel)]="positionAssembly"
+            /></mat-form-field>
+        </div>
+        <p *ngIf="errorAssembly" class="error">{{ errorAssembly }}</p>
+        <p *ngIf="successMessageAssembly" class="success">{{
+            successMessageAssembly
+        }}</p>
+        <button
+            mat-flat-button
+            class="primary"
+            [disabled]="
+                !idLineAssembly ||
+                !idEquipmentAssembly ||
+                !positionAssembly ||
+                positionAssembly < 1 ||
+                processing
+            "
+            (click)="allocate()"
+            >Adicionar à linha
+        </button>
+        <h3 *ngIf="idLineAssembly" style="margin-top: 24px"
+            >Equipamentos alocados nesta linha</h3
+        >
+        <a
+            *ngIf="idLineAssembly"
+            mat-stroked-button
+            routerLink="/totem"
+            [queryParams]="{ lineId: idLineAssembly }"
+            ><mat-icon>view_week</mat-icon>Visualizar linha montada</a
+        >
+        <div class="table-wrap" *ngIf="idLineAssembly">
+            <table>
+                <tr>
+                    <th>Posição</th>
+                    <th>Equipamento</th>
+                    <th>Comprimento (mm)</th>
+                    <th>Ação</th>
+                </tr>
+                <tr *ngFor="let e of equipmentAllocated">
+                    <td>{{ e.position }}</td>
+                    <td
+                        >{{ e.type_name }} —
+                        {{ e.model || e.asset_number || '#' + e.id }}</td
+                    >
+                    <td>{{ e.length_mm || 0 }}</td>
+                    <td>
+                        <button
+                            mat-stroked-button
+                            [disabled]="processing"
+                            (click)="release(e)"
+                            >Devolver ao repositório
+                        </button>
+                    </td>
+                </tr>
+            </table>
+        </div>
+        <p *ngIf="idLineAssembly && !equipmentAllocated.length" class="muted"
+            >Esta linha ainda não possui equipamentos.</p
+        >
+        <div class="actions" *ngIf="idLineAssembly" style="margin-top: 16px">
+            <button
+                mat-stroked-button
+                [disabled]="processing || !equipmentAllocated.length"
+                (click)="dismantle()"
+            >
+                Desmontar linha e devolver todos ao repositório
+            </button>
+            <span class="muted"
+                >{{ equipmentAllocated.length }} máquinas ·
+                {{ metersAllocated() | number: '1.2-2' }} m</span
+            >
+        </div>
+    </div>
+    <div class="card" style="margin-top: 20px"
+        ><h2>Linhas cadastradas</h2>
+        <div class="table-wrap">
+            <table>
+                <tr>
+                    <th>Nome</th>
+                    <th>Setor</th>
+                    <th>Equipamentos</th>
+                    <th>Comprimento total (m)</th>
+                    <th>Descrição</th>
+                    <th>Ações</th>
+                </tr>
+                <tr *ngFor="let l of linesSector()">
+                    <td>{{ l.name }}</td>
+                    <td>{{ l.sector_name || '—' }}</td>
+                    <td>{{ l.equipment_count ?? 0 }}</td>
+                    <td>{{ dimensionsLines(l) | number: '1.2-2' }}</td>
+                    <td>{{ l.description || '—' }}</td>
+                    <td
+                        ><button
+                            mat-stroked-button
+                            [disabled]="registering"
+                            (click)="editLine(l)"
+                            ><mat-icon>edit</mat-icon>Editar</button
+                        ></td
+                    >
+                </tr>
+            </table>
+        </div>
+        <p *ngIf="!linesSector().length" class="muted"
+            >Nenhuma linha cadastrada neste setor.</p
+        ></div
+    >
+</div>

@@ -1,0 +1,120 @@
+<div class="page categories-page">
+    <a class="back-link" routerLink="/cadastro"
+        ><mat-icon>arrow_back</mat-icon>Central de Cadastros</a
+    >
+    <header
+        ><div
+            ><div class="eyebrow">CADASTRO / MANTIS</div
+            ><h1>Categorias de materiais</h1
+            ><p class="muted"
+                >Organize as peças e os materiais com classificações
+                padronizadas.</p
+            ></div
+        ><button
+            mat-flat-button
+            class="primary"
+            (click)="open()"
+            [disabled]="saving"
+            ><mat-icon>add</mat-icon>Nova categoria</button
+        ></header
+    >
+    <p class="error" role="alert" *ngIf="errorMessage && !formOpen">{{
+        errorMessage
+    }}</p
+    ><p class="success" role="status" *ngIf="successMessage">{{
+        successMessage
+    }}</p>
+    <section class="card"
+        ><div class="list-heading"
+            ><h2>Categorias cadastradas</h2
+            ><label
+                >Pesquisar categoria<input
+                    [(ngModel)]="search"
+                    placeholder="Nome ou descrição" /></label
+        ></div>
+        <p class="muted"
+            >Exemplos: NPM, NXT, Limpeza e EPI. Uma peça pode pertencer a mais
+            de uma categoria.</p
+        >
+        <p *ngIf="loading" role="status">Carregando categorias...</p>
+        <div class="table-wrap"
+            ><table *ngIf="!loading"
+                ><thead
+                    ><tr
+                        ><th>Categoria</th><th>Descrição</th
+                        ><th>Peças cadastradas</th><th>Situação</th
+                        ><th>Ações</th></tr
+                    ></thead
+                ><tbody
+                    ><tr *ngFor="let c of filtered"
+                        ><td
+                            ><strong>{{ c.name }}</strong></td
+                        ><td>{{ c.description || '—' }}</td
+                        ><td>{{ c.part_count }}</td
+                        ><td
+                            ><span
+                                class="status"
+                                [class.inactive]="!c.active"
+                                >{{ c.active ? 'Ativa' : 'Inativa' }}</span
+                            ></td
+                        ><td
+                            ><button
+                                mat-button
+                                (click)="open(c)"
+                                [disabled]="saving"
+                                >Editar</button
+                            ><button
+                                mat-button
+                                (click)="toggle(c)"
+                                [disabled]="saving"
+                                >{{
+                                    c.active ? 'Desativar' : 'Reativar'
+                                }}</button
+                            ></td
+                        ></tr
+                    ></tbody
+                ></table
+            ></div
+        >
+        <p class="muted" *ngIf="!loading && !filtered.length"
+            >Nenhuma categoria encontrada.</p
+        >
+    </section>
+    <app-form-modal
+        *ngIf="formOpen"
+        [title]="editingId ? 'Editar categoria' : 'Nova categoria'"
+        subtitle="Esta categoria ficará disponível no cadastro das peças."
+        icon="category"
+        [busy]="saving"
+        (closed)="close()"
+    >
+        <div class="category-form"
+            ><label class="modal-field"
+                ><span>Nome *</span
+                ><input
+                    [(ngModel)]="name"
+                    maxlength="100"
+                    placeholder="Ex.: NPM"
+                    [disabled]="saving" /></label
+            ><label class="modal-field"
+                ><span>Descrição (opcional)</span
+                ><input
+                    [(ngModel)]="description"
+                    maxlength="250"
+                    [disabled]="saving" /></label></div
+        ><p class="error" role="alert" *ngIf="errorMessage">{{
+            errorMessage
+        }}</p>
+        <div modalActions class="modal-actions"
+            ><button mat-button [disabled]="saving" (click)="close()"
+                >Cancelar</button
+            ><button
+                mat-flat-button
+                class="primary"
+                [disabled]="saving || !name.trim()"
+                (click)="save()"
+                >{{ saving ? 'Salvando...' : 'Salvar categoria' }}</button
+            ></div
+        >
+    </app-form-modal>
+</div>

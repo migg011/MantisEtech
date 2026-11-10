@@ -1,0 +1,644 @@
+/* Reference hierarchy: four indicators, availability and types, evolution, and latest orders. */
+:host {
+    display: block;
+}
+.maintenance-dashboard {
+    --dash-blue: #2664ca;
+    --dash-green: #129b55;
+    --dash-red: #e53e4b;
+    color: #17283b;
+    max-width: 1660px;
+    margin: auto;
+}
+.dashboard-heading {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 20px;
+    margin-bottom: 22px;
+    flex-wrap: wrap;
+}
+.dashboard-heading h1 {
+    font-size: 30px;
+    letter-spacing: -0.8px;
+    margin: 0 0 4px;
+    font-weight: 750;
+}
+.dashboard-heading p {
+    margin: 0;
+    color: #79899b;
+    font-size: 14px;
+}
+.dashboard-filters {
+    display: flex;
+    align-items: flex-end;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+.dashboard-filters label {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+    font-size: 11px;
+    color: #65788d;
+    font-weight: 600;
+}
+.dashboard-filters select {
+    font: inherit;
+    font-size: 12px;
+    color: #23364d;
+    border: 1px solid #dce5ef;
+    border-radius: 8px;
+    background: #fff;
+    padding: 10px 12px;
+    max-width: 240px;
+    height: 38px;
+}
+.refresh-button {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: white;
+    border: 1px solid #dce5ef;
+    border-radius: 8px;
+    color: #60758a;
+    height: 38px;
+    width: 38px;
+    cursor: pointer;
+}
+.refresh-button mat-icon {
+    font-size: 20px;
+    width: 20px;
+    height: 20px;
+}
+.refresh-button:disabled {
+    opacity: 0.5;
+}
+.kpi-grid {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 16px;
+    margin-bottom: 18px;
+}
+.kpi-card {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 21px 18px;
+    background: #fff;
+    border: 1px solid #e1e8f0;
+    border-radius: 11px;
+    box-shadow: 0 2px 5px #142c4b03;
+    color: inherit;
+    text-decoration: none;
+    min-width: 0;
+}
+.kpi-card > div {
+    min-width: 0;
+}
+.kpi-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex: 0 0 44px;
+    height: 44px;
+    border-radius: 10px;
+}
+.kpi-icon mat-icon {
+    font-size: 22px;
+    width: 22px;
+    height: 22px;
+}
+.blue {
+    color: #2664ca;
+    background: #eaf2ff;
+}
+.green {
+    color: #129b55;
+    background: #e9f9ef;
+}
+.red {
+    color: #e53e4b;
+    background: #fff0f1;
+}
+.orange {
+    color: #ef8624;
+    background: #fff3e7;
+}
+.kpi-label {
+    display: block;
+    font-size: 12px;
+    font-weight: 600;
+    color: #5c6f83;
+    margin-bottom: 5px;
+}
+.kpi-card strong {
+    display: block;
+    font-size: 29px;
+    font-weight: 750;
+    line-height: 1.1;
+    letter-spacing: -0.8px;
+}
+.kpi-card small {
+    display: block;
+    font-size: 10px;
+    color: #8492a2;
+    margin-top: 6px;
+}
+.dashboard-middle {
+    display: grid;
+    grid-template-columns: 1.25fr 1fr;
+    gap: 18px;
+    margin-bottom: 18px;
+}
+.dashboard-panel {
+    background: #fff;
+    border: 1px solid #e1e8f0;
+    border-radius: 11px;
+    padding: 20px;
+    min-width: 0;
+    box-shadow: 0 2px 5px #142c4b03;
+}
+.panel-heading {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    margin-bottom: 20px;
+}
+.panel-heading h2 {
+    font-size: 14px;
+    font-weight: 750;
+    color: #24374b;
+    margin: 0;
+}
+.subtle-label {
+    font-size: 10px;
+    color: #8290a0;
+}
+.availability-content {
+    display: flex;
+    align-items: center;
+    gap: 22px;
+}
+.availability-block {
+    text-align: center;
+    flex: 0 0 124px;
+}
+.availability-block > span {
+    display: block;
+    font-size: 10px;
+    color: #63778b;
+    margin-top: 9px;
+}
+.availability-ring {
+    height: 116px;
+    width: 116px;
+    padding: 10px;
+    border-radius: 50%;
+    margin: auto;
+}
+.availability-ring > div {
+    height: 100%;
+    border-radius: 50%;
+    background: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+.availability-ring strong {
+    font-size: 24px;
+    color: #233b32;
+    font-weight: 750;
+    letter-spacing: -1px;
+}
+.reliability-metrics {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 10px;
+    flex: 1;
+    min-width: 0;
+}
+.reliability-metrics article {
+    border: 1px solid #e7edf4;
+    border-radius: 8px;
+    padding: 14px 12px;
+    min-height: 106px;
+    background: #fcfdff;
+    min-width: 0;
+}
+.reliability-metrics span {
+    display: block;
+    font-size: 11px;
+    color: #556a80;
+    font-weight: 600;
+}
+.reliability-metrics strong {
+    display: block;
+    font-size: 23px;
+    margin: 10px 0 5px;
+    line-height: 1.1;
+    white-space: nowrap;
+    letter-spacing: -0.7px;
+}
+.reliability-metrics small {
+    font-size: 9px;
+    color: #8a98a8;
+    line-height: 1.4;
+    display: block;
+}
+.panel-note {
+    font-size: 10px;
+    line-height: 1.5;
+    color: #8796a6;
+    margin: 16px 0 0;
+}
+.orders-distribution {
+    display: flex;
+    align-items: center;
+    justify-content: space-around;
+    gap: 24px;
+    min-height: 145px;
+}
+.orders-ring {
+    width: 140px;
+    height: 140px;
+    border-radius: 50%;
+    padding: 17px;
+    flex: 0 0 140px;
+}
+.orders-ring > div {
+    background: white;
+    border-radius: 50%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+.orders-ring strong {
+    font-size: 32px;
+    letter-spacing: -1px;
+}
+.orders-ring small {
+    font-size: 10px;
+    color: #8191a3;
+    margin-top: 4px;
+}
+.type-legend {
+    display: flex;
+    flex-direction: column;
+    gap: 19px;
+    flex: 1;
+    max-width: 235px;
+}
+.type-legend > div {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    font-size: 11px;
+}
+.type-legend span {
+    display: flex;
+    align-items: center;
+    gap: 7px;
+}
+.type-legend strong {
+    font-weight: 600;
+    white-space: nowrap;
+}
+.type-legend strong small {
+    color: #8b99aa;
+    font-weight: 400;
+}
+.unavailable-type {
+    color: #93a0af;
+}
+.unavailable-type > small {
+    font-size: 9px;
+}
+.legend-dot {
+    display: inline-block;
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    flex-shrink: 0;
+}
+.blue-dot {
+    background: #2664ca;
+}
+.red-dot {
+    background: #ed3b48;
+}
+.gray-dot {
+    background: #bdc8d4;
+}
+.dashboard-bottom {
+    display: grid;
+    grid-template-columns: 1fr 1.15fr;
+    gap: 18px;
+}
+.chart-legend {
+    display: flex;
+    gap: 13px;
+    font-size: 10px;
+    color: #7c8da0;
+}
+.chart-legend span {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+.evolution-panel svg {
+    display: block;
+    width: 100%;
+    height: auto;
+    min-height: 175px;
+    overflow: visible;
+}
+svg text {
+    font:
+        10px Arial,
+        sans-serif;
+    fill: #95a3b3;
+}
+.chart-grid {
+    stroke: #edf1f6;
+    stroke-width: 1;
+}
+.series-open,
+.series-closed {
+    fill: none;
+    stroke-width: 2.6;
+    stroke-linejoin: round;
+    stroke-linecap: round;
+}
+.series-open {
+    stroke: #ed3b48;
+}
+.series-closed {
+    stroke: #2664ca;
+}
+.point-open {
+    fill: #ed3b48;
+}
+.point-closed {
+    fill: #2664ca;
+}
+.panel-heading > a {
+    font-size: 10px;
+    text-decoration: none;
+    color: #6c7e92;
+}
+.orders-table-wrap {
+    overflow-x: auto;
+}
+table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 10px;
+    white-space: nowrap;
+}
+thead {
+    background: #f8fafc;
+}
+th {
+    font-size: 9px;
+    font-weight: 600;
+    color: #6e8297;
+    text-align: left;
+    padding: 10px 8px;
+    border-bottom: 1px solid #edf1f5;
+}
+td {
+    padding: 11px 8px;
+    border-bottom: 1px solid #edf1f5;
+    color: #526980;
+}
+tbody tr:last-child td {
+    border-bottom: 0;
+}
+td > a {
+    font-weight: 600;
+    color: #506c8d;
+    text-decoration: none;
+    font-size: 10px;
+}
+.equipment-name {
+    max-width: 145px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+.type-chip {
+    color: #2867bb;
+    font-size: 9px;
+}
+.type-chip.corrective {
+    color: #e53e4b;
+}
+.status-chip {
+    font-size: 9px;
+    background: #fff4e5;
+    color: #b5791f;
+    padding: 4px 7px;
+    border-radius: 5px;
+    display: inline-block;
+}
+.status-chip.in-progress {
+    background: #ffedf0;
+    color: #d64c60;
+}
+.status-chip.complete {
+    background: #eaf8ef;
+    color: #25a361;
+}
+.status-chip.cancelled {
+    background: #f0f2f5;
+    color: #85909e;
+}
+.order-date {
+    font-size: 9px;
+    color: #8497aa;
+}
+.empty-orders {
+    text-align: center;
+    padding: 35px 12px;
+    color: #8b9aab;
+}
+.dashboard-footer {
+    display: flex;
+    justify-content: space-between;
+    gap: 20px;
+    color: #8a98a8;
+    font-size: 10px;
+    margin-top: 16px;
+    align-items: flex-start;
+    flex-wrap: wrap;
+}
+.dashboard-footer details {
+    max-width: 600px;
+}
+.dashboard-footer summary {
+    cursor: pointer;
+    color: #60768e;
+}
+.dashboard-footer p {
+    line-height: 1.6;
+}
+.dashboard-loading {
+    background: white;
+    border: 1px solid #e1e8f0;
+    border-radius: 12px;
+    padding: 60px;
+    text-align: center;
+    color: #708296;
+    font-size: 14px;
+}
+.loading-dot {
+    display: inline-block;
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: #c8102e;
+    margin-right: 8px;
+}
+.dashboard-error {
+    background: #fff1f3;
+    padding: 12px 16px;
+    border-radius: 8px;
+    color: #b3223b;
+    font-size: 13px;
+}
+.dashboard-error button {
+    border: 0;
+    background: transparent;
+    color: inherit;
+    font: inherit;
+    text-decoration: underline;
+    cursor: pointer;
+}
+a:focus-visible,
+button:focus-visible,
+select:focus-visible {
+    outline: 2px solid #2664ca;
+    outline-offset: 3px;
+}
+@media (min-width: 1500px) {
+    .dashboard-panel {
+        padding: 24px;
+    }
+    .kpi-card {
+        padding: 24px;
+    }
+    .reliability-metrics article {
+        padding: 18px;
+    }
+    .panel-heading h2 {
+        font-size: 16px;
+    }
+    table {
+        font-size: 12px;
+    }
+    th {
+        font-size: 11px;
+    }
+    td > a {
+        font-size: 11px;
+    }
+    .order-date,
+    .status-chip,
+    .type-chip {
+        font-size: 10px;
+    }
+}
+@media (max-width: 1150px) {
+    .dashboard-middle,
+    .dashboard-bottom {
+        grid-template-columns: 1fr;
+    }
+    .kpi-card {
+        gap: 10px;
+        padding: 17px 12px;
+    }
+    .kpi-label {
+        font-size: 10px;
+    }
+    .availability-content {
+        justify-content: space-around;
+    }
+    .orders-distribution {
+        justify-content: center;
+    }
+    .type-legend {
+        max-width: 340px;
+    }
+}
+@media (max-width: 700px) {
+    .kpi-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 10px;
+    }
+    .dashboard-filters {
+        width: 100%;
+    }
+    .dashboard-filters label:first-child {
+        flex: 1;
+    }
+    .dashboard-filters select {
+        max-width: 100%;
+        width: 100%;
+    }
+    .dashboard-heading h1 {
+        font-size: 26px;
+    }
+    .kpi-card {
+        padding: 14px 12px;
+        gap: 10px;
+    }
+    .kpi-icon {
+        flex-basis: 34px;
+        height: 34px;
+    }
+    .kpi-card strong {
+        font-size: 25px;
+    }
+    .kpi-card small {
+        font-size: 9px;
+    }
+    .availability-content {
+        gap: 15px;
+        flex-direction: column;
+    }
+    .reliability-metrics {
+        width: 100%;
+    }
+    .reliability-metrics article {
+        padding: 12px 8px;
+    }
+    .reliability-metrics strong {
+        font-size: 20px;
+    }
+    .dashboard-panel {
+        padding: 16px;
+    }
+    .orders-ring {
+        width: 120px;
+        height: 120px;
+        flex-basis: 120px;
+        padding: 15px;
+    }
+    .orders-distribution {
+        gap: 18px;
+    }
+    .type-legend > div {
+        font-size: 10px;
+        gap: 8px;
+    }
+    .unavailable-type > small {
+        font-size: 8px;
+    }
+    .dashboard-loading {
+        padding: 35px 15px;
+    }
+}

@@ -1,0 +1,277 @@
+<!-- O modelo é uma proposta para revisão. Somente eventos de agendas reais oferecem a ação de OS. -->
+<section class="calendar-card">
+    <header class="calendar-heading"
+        ><div
+            ><h2>Calendário de preventivas</h2
+            ><p>Planeje por mês e consulte as atividades de cada dia.</p></div
+        ><span class="mode-badge">{{
+            mode === 'MODELO' ? 'Proposta · 2026' : 'Agendas reais'
+        }}</span></header
+    >
+    <div class="calendar-filters">
+        <label
+            >Base do calendário<select
+                [(ngModel)]="mode"
+                (ngModelChange)="changeMode()"
+                ><option value="MODELO">Modelo da planilha · 2026</option
+                ><option value="REAL">Equipamentos cadastrados</option></select
+            ></label
+        >
+        <label
+            >Ano<select [(ngModel)]="year" (ngModelChange)="changeYear()"
+                ><option [ngValue]="2026">2026</option
+                ><option [ngValue]="2027">2027</option
+                ><option
+                    *ngIf="year !== 2026 && year !== 2027"
+                    [ngValue]="year"
+                    >{{ year }}</option
+                ></select
+            ></label
+        >
+        <label
+            >Seção / setor<select
+                [(ngModel)]="sector"
+                (ngModelChange)="eventSelected = null"
+                ><option value="">Todos</option
+                ><option *ngFor="let item of sectors" [value]="item">{{
+                    item
+                }}</option></select
+            ></label
+        >
+        <label
+            >Periodicidade<select
+                [(ngModel)]="periodicity"
+                (ngModelChange)="eventSelected = null"
+                ><option value="">Todas</option
+                ><option
+                    *ngFor="let item of periodicities"
+                    [value]="item.value"
+                    >{{ item.label }}</option
+                ><option value="NAO_INFORMADA">A definir</option></select
+            ></label
+        >
+        <label class="calendar-search"
+            >Pesquisar<input
+                [(ngModel)]="search"
+                (ngModelChange)="eventSelected = null"
+                placeholder="Máquina, modelo ou técnico"
+        /></label>
+    </div>
+    <p *ngIf="mode === 'MODELO'" class="proposal-note"
+        ><mat-icon>info</mat-icon
+        ><span
+            >Proposta baseada em 2025, mantendo dia, mês e horário em 2026.
+            Técnicos são referências da origem. Revise fins de semana e
+            disponibilidade antes de cadastrar a programação. Nenhuma máquina ou
+            OS foi criada.</span
+        ></p
+    >
+    <p *ngIf="mode === 'REAL'" class="proposal-note"
+        ><mat-icon>event</mat-icon
+        ><span
+            >Próximos vencimentos dos equipamentos cadastrados e datas das OS
+            preventivas abertas. Novos ciclos aparecem conforme a agenda é
+            atualizada.</span
+        ></p
+    >
+    <p *ngIf="errorData && mode === 'REAL'" class="error" role="alert">{{
+        errorData
+    }}</p>
+    <div *ngIf="mode === 'MODELO' && error" class="error" role="alert"
+        >{{ error }}
+        <button type="button" (click)="loadModel()" [disabled]="loading"
+            >Tentar novamente</button
+        ></div
+    >
+    <p *ngIf="loading && mode === 'MODELO'" role="status"
+        >Carregando referência...</p
+    >
+    <div class="calendar-toolbar"
+        ><div class="month-navigation"
+            ><button
+                type="button"
+                aria-label="Mês anterior"
+                (click)="changeMonth(-1)"
+                ><mat-icon>chevron_left</mat-icon></button
+            ><label
+                ><span class="sr-only">Mês</span
+                ><select [(ngModel)]="month" (ngModelChange)="clearSelection()"
+                    ><option
+                        *ngFor="let item of months; let index = index"
+                        [ngValue]="index"
+                        >{{ item }}</option
+                    ></select
+                ></label
+            ><strong>{{ year }}</strong
+            ><button
+                type="button"
+                aria-label="Próximo mês"
+                (click)="changeMonth(1)"
+                ><mat-icon>chevron_right</mat-icon></button
+            ></div
+        ><span>{{ eventsMonth.length }} programação(ões) no mês</span></div
+    >
+    <div class="calendar-layout">
+        <div class="calendar-grid" role="group" aria-label="Dias do mês">
+            <div class="weekday" *ngFor="let day of daysWeek">{{ day }}</div>
+            <ng-container *ngFor="let cell of days"
+                ><button
+                    type="button"
+                    *ngIf="cell.day; else blankDay"
+                    class="calendar-day"
+                    [class.chosen]="cell.date === dateSelected"
+                    [class.has-events]="cell.events.length"
+                    [attr.aria-pressed]="cell.date === dateSelected"
+                    [attr.aria-label]="
+                        cell.date + ': ' + cell.events.length + ' programações'
+                    "
+                    (click)="chooseDay(cell.date)"
+                    ><span class="day-number">{{ cell.day }}</span
+                    ><span class="day-count" *ngIf="cell.events.length">{{
+                        cell.events.length
+                    }}</span
+                    ><span
+                        class="event-preview"
+                        *ngFor="let item of cell.events | slice: 0 : 2"
+                        >{{ item.time }} {{ item.machine }}</span
+                    ><small *ngIf="cell.events.length > 2"
+                        >+ {{ cell.events.length - 2 }} outra(s)</small
+                    ></button
+                ><ng-template #blankDay
+                    ><div class="blank-day"></div></ng-template
+            ></ng-container>
+        </div>
+        <aside class="day-panel"
+            ><header
+                ><h3>{{
+                    dateSelected
+                        ? (dateSelected | date: 'dd/MM/yyyy')
+                        : 'Selecione um dia'
+                }}</h3
+                ><span>{{ eventsDay.length }} atividade(s)</span></header
+            >
+            <div *ngIf="!eventsDay.length" class="calendar-empty"
+                ><mat-icon>event_available</mat-icon
+                ><strong>Sem programação neste dia</strong
+                ><p *ngIf="mode === 'REAL'"
+                    >As atividades aparecerão após configurar as preventivas dos
+                    equipamentos.</p
+                ><p *ngIf="mode === 'MODELO'"
+                    >Escolha uma data marcada ou ajuste os filtros.</p
+                ></div
+            >
+            <div class="day-list"
+                ><button
+                    type="button"
+                    class="day-event"
+                    *ngFor="let event of eventsDay"
+                    (click)="eventSelected = event"
+                    [class.selected]="eventSelected?.id === event.id"
+                    ><span class="event-time">{{
+                        event.time || 'Sem horário'
+                    }}</span
+                    ><strong>{{ event.machine }}</strong
+                    ><small
+                        >{{ event.sector }} ·
+                        {{ label(event.frequency) }}</small
+                    ><small>{{ event.technician || 'Técnico a definir' }}</small
+                    ><span class="warning-label" *ngIf="event.warnings.length"
+                        ><mat-icon>info</mat-icon>Revisar dados</span
+                    ></button
+                ></div
+            >
+        </aside>
+    </div>
+    <section *ngIf="eventSelected as event" class="event-detail"
+        ><header
+            ><div
+                ><span class="detail-eyebrow">{{
+                    mode === 'MODELO'
+                        ? 'PROPOSTA · REF. DA PLANILHA ' + event.reference
+                        : event.reference
+                }}</span
+                ><h3>{{ event.machine }}</h3></div
+            ><button
+                type="button"
+                aria-label="Fechar detalhe"
+                (click)="eventSelected = null"
+                ><mat-icon>close</mat-icon></button
+            ></header
+        >
+        <dl
+            ><div
+                ><dt>Data proposta / prevista</dt
+                ><dd
+                    >{{ event.date | date: 'dd/MM/yyyy' }} {{ event.time }}</dd
+                ></div
+            ><div
+                ><dt>Seção / setor</dt><dd>{{ event.sector }}</dd></div
+            ><div
+                ><dt>Modelo</dt><dd>{{ event.model || '—' }}</dd></div
+            ><div
+                ><dt>Periodicidade</dt
+                ><dd>{{ label(event.frequency) }}</dd></div
+            ><div
+                ><dt
+                    >Técnico
+                    {{ mode === 'MODELO' ? 'de referência' : 'previsto' }}</dt
+                ><dd>{{ event.technician || 'A definir' }}</dd></div
+            ><div *ngIf="event.source_row"
+                ><dt>Origem</dt
+                ><dd
+                    >Ordens de Serviço · linha {{ event.source_row }} ·
+                    {{ event.source_date | date: 'dd/MM/yyyy' }}</dd
+                ></div
+            ></dl
+        >
+        <ul class="event-warnings" *ngIf="event.warnings.length"
+            ><li *ngFor="let warning of event.warnings">{{ warning }}</li></ul
+        >
+        <details *ngIf="event.items.length"
+            ><summary
+                >Checklist de referência ·
+                {{ event.items.length }} atividades</summary
+            ><ol
+                ><li *ngFor="let item of event.items">{{ item }}</li></ol
+            ></details
+        >
+        <p *ngIf="mode === 'MODELO'" class="draft-explanation"
+            >Para executar esta proposta, cadastre a máquina e configure sua
+            agenda real. O modelo não emite OS nem comprova manutenção
+            realizada.</p
+        >
+        <button
+            type="button"
+            class="primary"
+            *ngIf="mode === 'REAL' && event.schedule"
+            [disabled]="!!errorData"
+            (click)="execute.emit(event.schedule!)"
+            >{{
+                event.order
+                    ? 'Acessar OS ' + event.order.number
+                    : 'Preparar OS preventiva'
+            }}</button
+        >
+    </section>
+    <details
+        class="source-review"
+        *ngIf="mode === 'MODELO' && calendarModel as source"
+        ><summary
+            >Pendências da base · {{ source.summary.missing_frequency }} sem
+            periodicidade · {{ source.excluded_rows.length }} linha(s) sem data
+            válida</summary
+        ><p
+            >312 propostas com datas válidas. As frequências genéricas não foram
+            inferidas e os status de execução de 2025 não foram transferidos.</p
+        ><ul
+            ><li *ngFor="let row of source.excluded_rows"
+                >Linha {{ row.row }} · referência {{ row.reference }}:
+                {{ row.reason }}</li
+            ></ul
+        ><p
+            >Há {{ source.summary.warning_events }} proposta(s) com avisos para
+            revisão individual. A quantidade de máquinas de origem não
+            representa equipamentos cadastrados no MANTIS.</p
+        ></details
+    >
+</section>
