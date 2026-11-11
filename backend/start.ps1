@@ -9,7 +9,7 @@ function Confirmar-Comando {
     if ($LASTEXITCODE -ne 0) { throw 'O comando anterior falhou. Confira a mensagem acima antes de continuar.' }
 }
 
-# No primeiro uso, cria configuração privada na RAIZ do projeto (onde está docker-compose.yml).
+# No primeiro uso, cria configuração privada na RAIZ do projeto (compartilhada pelo Django e Docker).
 $projectRoot = Split-Path $PSScriptRoot -Parent
 $envPath = Join-Path $projectRoot '.env'
 $examplePath = Join-Path $projectRoot '.env.example'
@@ -17,17 +17,21 @@ $examplePath = Join-Path $projectRoot '.env.example'
 if (-not (Test-Path -LiteralPath $envPath)) {
     if (-not (Test-Path -LiteralPath $examplePath)) {
         @"
-POSTGRES_PASSWORD=SUBSTITUA_POR_UMA_SENHA_FORTE
+BD_NOME=mantis
+BD_USUARIO=mantis
+BD_SENHA=SUBSTITUA_POR_UMA_SENHA_FORTE
+BD_HOST=127.0.0.1
+BD_PORT=5433
 DJANGO_SECRET_KEY=SUBSTITUA_POR_UM_SEGREDO_ALEATORIO_COM_64_CARACTERES
 DJANGO_DEBUG=true
 DJANGO_ALLOWED_HOSTS=localhost,127.0.0.1
-DATABASE_URL=postgresql://mantis:SUBSTITUA_POR_UMA_SENHA_FORTE@127.0.0.1:5433/mantis
+
 "@ | Set-Content -Path $examplePath -Encoding UTF8
     }
     $appSecret = [guid]::NewGuid().ToString('N') + [guid]::NewGuid().ToString('N')
     $dbPassword = [guid]::NewGuid().ToString('N')
     $content = Get-Content -LiteralPath $examplePath -Raw
-    $content = $content.Replace('SUBSTITUA_POR_UM_SEGREDO_ALEATORIO_COM_64_CARACTERES', $appSecret)
+    $content = $content.Replace('SUBSTITUA_POR_UM_SEGREDO_ALEATORIO_COM_64_CARACTERES', $appSecret).Replace('SUBSTITUA_POR_UM_SEGREDO_ALEATORIO', $appSecret)
     $content = $content.Replace('SUBSTITUA_POR_UMA_SENHA_FORTE', $dbPassword).Replace('SUA_SENHA', $dbPassword)
     [System.IO.File]::WriteAllText($envPath, $content)
     Write-Host "Configuração local criada em $envPath com senhas aleatórias."
@@ -46,8 +50,8 @@ if (-not (Test-Path -LiteralPath $pythonPath)) {
 # Cada comando prepara uma camada: pacotes Python -> banco disponível -> tabelas -> conta inicial.
 & $pythonPath -m pip install -r requirements.lock.txt
 Confirmar-Comando
-# O Compose padrão usa a porta 5433; o arquivo está na raiz do projeto.
-docker compose -f ..\docker-compose.yml up -d --wait postgres
+# O Compose fica em docker; as variáveis vêm do .env da raiz.
+docker compose --env-file "$envPath" -f docker/compose.yml up -d --wait postgres
 Confirmar-Comando
 & $pythonPath manage.py migrate --noinput
 Confirmar-Comando

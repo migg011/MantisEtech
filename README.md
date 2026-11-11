@@ -1,4 +1,4 @@
-﻿# Projeto Mantis
+# Projeto Mantis
 
 Sistema de gestão de manutenção industrial, equipamentos, linhas SMT e peças de reposição.
 
@@ -47,7 +47,7 @@ Consulte [as categorias](docs/CATEGORIAS_SPARE_PARTS.md), [o estoque](docs/ENTRA
 Dentro de `backend`:
 
 ```powershell
-.\.venv\Scripts\python.exe manage.py test --settings=config.test_settings --noinput
+.\.venv\Scripts\python.exe manage.py test --settings=config.test_postgres --noinput
 ```
 
 Dentro de `frontend`:

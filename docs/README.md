@@ -5,6 +5,7 @@ os diretórios mantêm os nomes em inglês. A interface permanece em PT-BR.
 
 ## Guias funcionais
 
+- [Guia de banca: backend, API e banco](GUIA_BANCA_BACKEND_API_BANCO.md): árvore essencial, revisão inicial e plano de oito dias.
 - [Categorias de materiais](CATEGORIAS_PECAS.md)
 - [Entradas e movimentações de estoque](ENTRADA_PECAS.md)
 - [Ficha de peças](FICHA_PECAS.md)
@@ -17,7 +18,7 @@ os diretórios mantêm os nomes em inglês. A interface permanece em PT-BR.
 
 ## Código e banco
 
-- [Caminhos atuais do código](CODE_PATHS.json): substitui o mapa antigo que apontava para arquivos em português removidos.
+- Para listar os arquivos atuais, use `git ls-files backend frontend` na raiz do projeto.
 - [Arquitetura atual](../backend/ESTRUTURA.md).
 - `database/`: catálogos, consultas, diagramas e apresentações históricos.
   São retratos anteriores à refatoração e podem omitir tabelas ou alterações
@@ -35,3 +36,11 @@ pelo aplicativo em `frontend/src/assets` foram preservados.
 
 Uma cópia anterior à limpeza foi guardada fora do repositório, em
 `../Mantis-docs-backup-2026-11-07` (relativo à raiz do projeto).
+
+## Painel administrativo
+
+As regras de acesso e os comandos do Django Admin estão no
+[guia de backend e banco](GUIA_BANCA_BACKEND_API_BANCO.md#django-admin).
+O painel protege a própria conta do administrador e exige linha ativa para
+operadores. A preparação e entrega dos arquivos estáticos na imagem da API
+estão descritas em [Docker do backend](../backend/docker/README.md).

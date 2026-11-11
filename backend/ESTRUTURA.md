@@ -13,7 +13,6 @@ backend/
 │   ├── settings.py                 # Ambiente, PostgreSQL, DRF, CORS, idioma
 │   ├── urls.py                     # Inclui as URLs do domínio
 │   ├── wsgi.py / asgi.py
-│   ├── test_settings.py            # SQLite em memória
 │   └── test_postgres.py            # PostgreSQL exclusivo de testes
 └── maintenance/
     ├── models.py                   # Modelos e relacionamentos existentes
@@ -110,7 +109,7 @@ Na pasta `backend`, com o ambiente virtual ativado:
 
 ```powershell
 python manage.py check
-python manage.py test --settings=config.test_settings --noinput
+python manage.py test --settings=config.test_postgres --noinput
 python manage.py test --settings=config.test_postgres --noinput
 ```
 
