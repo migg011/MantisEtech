@@ -193,12 +193,12 @@ class AngularAPITests(TestCase):
         self.assertEqual(len(history), 100)
         self.assertTrue(all(order['status'] == 'CONCLUIDA' for order in history))
 
-    def test_backend_has_no_frontend_or_page_routes(self):
-        """Django entrega API JSON sem servir páginas ou os arquivos do Angular."""
+    def test_backend_keeps_angular_routes_separate_from_admin(self):
+        """O painel admin não passa a servir as páginas do Angular."""
         root = Path(settings.BASE_DIR)
         for folder in ('maintenance/templates', 'maintenance/static', 'staticfiles'):
             self.assertFalse((root / folder).exists(), folder)
-        self.assertEqual(settings.TEMPLATES, [])
+        self.assertEqual(self.client.get('/admin/login/').status_code, 200)
         for path in ('/', '/entrar/', '/totem/', '/setores/', '/static/maintenance/app.css', '/api/unknown'):
             self.send('get', path, expected=404)
         self.assertEqual(self.send('get', '/api/health')['status'], 'ok')

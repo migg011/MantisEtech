@@ -1,6 +1,6 @@
-﻿# MANTIS �?" API Django para o Angular
+# MANTIS �?" API Django para o Angular
 
-Este diretório contém exclusivamente o backend: API JSON, autenticação, validação, regras de negócio, modelos e migrações PostgreSQL. **Não contém frontend Django, templates, CSS ou JavaScript.** As telas ficam em `../frontend` (Angular).
+Este diretório contém exclusivamente o backend: API JSON, autenticação, validação, regras de negócio, modelos e migrações PostgreSQL. As telas operacionais ficam em `../frontend` (Angular). O Django também fornece o painel administrativo `/admin/`.
 
 A API mantém os caminhos e os formatos de dados consumidos pelo Angular. A estrutura utiliza views/viewsets DRF, serializers, filtros, permissões e serviços. Consulte [ESTRUTURA.md](ESTRUTURA.md) para navegar pelo backend.
 
@@ -21,9 +21,9 @@ npm install
 npm start
 ```
 
-Interface: **http://localhost:4200**. API: **http://127.0.0.1:8000/api/health**. O proxy Angular encaminha `/api` para a porta 8000. Não existe página de login ou painel no Django.
+Interface: **http://localhost:4200**. API: **http://127.0.0.1:8000/api/health**. O proxy Angular encaminha `/api` para a porta 8000. O Django Admin fica em http://127.0.0.1:8000/admin/, com acesso por matrícula e senha de administrador ativo.
 
-O banco padrão usa porta **5433**, nome `mantis` e o serviço `postgres` do Compose na raiz. O `.env` da raiz configura Django e Docker; também é possível configurar o Django com os campos `BD_*`.
+O banco padrão usa porta **5433**, nome `mantis` e o serviço `postgres` de `docker/compose.yml`. O `.env` da raiz configura Django e Docker; ambos usam os campos `BD_*`.
 
 ## Instalação manual
 
@@ -36,7 +36,7 @@ Copy-Item ..\.env.example ..\.env
 Configure `DJANGO_SECRET_KEY` (32+ caracteres), `POSTGRES_PASSWORD` e a mesma senha em `DATABASE_URL`. Codifique caracteres reservados na URL. O inicializador usa senhas hexadecimais para evitar esse problema. Depois:
 
 ```powershell
-docker compose -f ..\docker-compose.yml up -d --wait postgres
+docker compose --env-file ../.env -f docker/compose.yml up -d --wait postgres
 .\.venv\Scripts\python.exe manage.py migrate
 .\.venv\Scripts\python.exe manage.py create_admin
 .\.venv\Scripts\python.exe manage.py runserver 127.0.0.1:8000
@@ -105,7 +105,7 @@ Em produção, sirva o build Angular por um servidor web e encaminhe `/api` para
 Teste isolado em SQLite na memória, sem tocar no banco configurado:
 
 ```powershell
-.\.venv\Scripts\python.exe manage.py test --settings=config.test_settings
+.\.venv\Scripts\python.exe manage.py test --settings=config.test_postgres
 ```
 
 Teste com PostgreSQL exclusivo de desenvolvimento, incluindo migrações e concorrência:

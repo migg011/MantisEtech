@@ -1,7 +1,9 @@
 """Configuração de URLs; o router e as rotas pertencem ao app maintenance."""
 from django.urls import include, path
+from django.contrib import admin
 
 urlpatterns = [
+    path('admin/', admin.site.urls),
     path('api/', include('maintenance.urls')),
     path('api/v1/', include('maintenance.urls_v1')),
 ]

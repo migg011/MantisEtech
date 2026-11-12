@@ -1,16 +1,13 @@
-"""Configuração do Mantis: Django, PostgreSQL e API REST consumida pelo Angular."""
 import os
 from pathlib import Path
-from urllib.parse import parse_qs, unquote, urlparse
 
-from django.core.exceptions import ImproperlyConfigured
 from dotenv import load_dotenv
 
-# Ambiente: a raiz atende também ao Docker Compose. Variáveis do processo têm prioridade.
+# Ambiente
 BASE_DIR = Path(__file__).resolve().parent.parent
 PROJECT_DIR = BASE_DIR.parent
 load_dotenv(PROJECT_DIR / '.env')
-load_dotenv(BASE_DIR / '.env')
+
 
 
 def environment_list(name, default=''):
@@ -21,37 +18,29 @@ def environment_boolean(name, default=False):
     return os.getenv(name, str(default)).strip().lower() in ('true', '1', 'yes')
 
 
-# Segurança e execução
+# Segurança
 SECRET_KEY = os.getenv('DJANGO_SECRET_KEY', '')
-if len(SECRET_KEY) < 32:
-    raise ImproperlyConfigured('Defina DJANGO_SECRET_KEY com pelo menos 32 caracteres no .env.')
 DEBUG = environment_boolean('DJANGO_DEBUG')
 ALLOWED_HOSTS = environment_list('DJANGO_ALLOWED_HOSTS', 'localhost,127.0.0.1')
-ROOT_URLCONF = 'config.urls'
-WSGI_APPLICATION = 'config.wsgi.application'
-ASGI_APPLICATION = 'config.asgi.application'
-DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
-APPEND_SLASH = False  # O contrato Angular usa /api/orders, sem barra final.
 
-# Aplicações: framework, bibliotecas e domínio separados.
-DJANGO_APPS = [
+# Aplicações
+INSTALLED_APPS = [
+    'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-]
-THIRD_PARTY_APPS = [
     'rest_framework',
     'rest_framework.authtoken',
     'django_filters',
     'corsheaders',
+    'maintenance.apps.MaintenanceConfig',
 ]
-LOCAL_APPS = ['maintenance.apps.MaintenanceConfig']
-INSTALLED_APPS = DJANGO_APPS + THIRD_PARTY_APPS + LOCAL_APPS
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
+    'whitenoise.middleware.WhiteNoiseMiddleware',
     'corsheaders.middleware.CorsMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -60,12 +49,25 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
-TEMPLATES = []  # A interface é Angular; documentos usam um Engine isolado nos serviços.
+ROOT_URLCONF = 'config.urls'
+TEMPLATES = [{
+    'BACKEND': 'django.template.backends.django.DjangoTemplates',
+    'DIRS': [],
+    'APP_DIRS': True,
+    'OPTIONS': {'context_processors': [
+        'django.template.context_processors.request',
+        'django.contrib.auth.context_processors.auth',
+        'django.contrib.messages.context_processors.messages',
+    ]},
+}]
+WSGI_APPLICATION = 'config.wsgi.application'
+ASGI_APPLICATION = 'config.asgi.application'
+DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+APPEND_SLASH = False  # Rotas do Angular usam /api/orders, sem barra final.
 
-# PostgreSQL: aceita DATABASE_URL existente ou BD_*.
-# BD_NOME seleciona explicitamente o formato por campos; sem ele, usa DATABASE_URL.
-if os.getenv('BD_NOME'):
-    DATABASES = {'default': {
+# Banco de dados
+DATABASES = {
+    'default': {
         'ENGINE': 'django.db.backends.postgresql',
         'NAME': os.environ['BD_NOME'],
         'USER': os.getenv('BD_USUARIO', 'mantis'),
@@ -73,24 +75,10 @@ if os.getenv('BD_NOME'):
         'HOST': os.getenv('BD_HOST', '127.0.0.1'),
         'PORT': os.getenv('BD_PORT', '5433'),
         'CONN_MAX_AGE': 60,
-    }}
-else:
-    connection = urlparse(os.getenv('DATABASE_URL', ''))
-    if connection.scheme not in ('postgres', 'postgresql') or not connection.hostname or not connection.path.strip('/'):
-        raise ImproperlyConfigured('Defina DATABASE_URL ou BD_NOME/BD_USUARIO/BD_SENHA/BD_HOST/BD_PORT no .env.')
-    DATABASES = {'default': {
-        'ENGINE': 'django.db.backends.postgresql',
-        'NAME': unquote(connection.path.lstrip('/')),
-        'USER': unquote(connection.username or ''),
-        'PASSWORD': unquote(connection.password or ''),
-        'HOST': connection.hostname,
-        'PORT': connection.port or 5432,
-        'CONN_MAX_AGE': 60,
-        'OPTIONS': {key: values[-1] for key, values in parse_qs(connection.query).items()
-                    if key in ('sslmode', 'connect_timeout')},
-    }}
+    }
+}
 
-# Identidade: mantém matrícula, perfis e hashes existentes do Mantis.
+# Usuário e senhas
 AUTH_USER_MODEL = 'maintenance.User'
 AUTHENTICATION_BACKENDS = ['maintenance.backends.RegistrationBackend']
 AUTH_PASSWORD_VALIDATORS = [
@@ -100,8 +88,7 @@ AUTH_PASSWORD_VALIDATORS = [
 ]
 API_TOKEN_MAX_AGE = 8 * 60 * 60
 
-# REST Framework: um único fluxo de autenticação para todos os endpoints.
-# Bearer assinado preserva o Angular e a invalidação após troca de senha/desativação.
+# API: autenticação Bearer do Mantis
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': ['maintenance.authentication.BearerAuthentication'],
     'DEFAULT_PERMISSION_CLASSES': ['maintenance.permissions.ActiveAccount'],
@@ -118,7 +105,7 @@ REST_FRAMEWORK = {
     'TEST_REQUEST_DEFAULT_FORMAT': 'json',
 }
 
-# Angular: proxy em desenvolvimento e origens explícitas para chamadas diretas.
+# CORS e CSRF
 CORS_ALLOWED_ORIGINS = environment_list(
     'CORS_ALLOWED_ORIGINS',
     'http://localhost:4200,http://127.0.0.1:4200,http://localhost:4201,http://127.0.0.1:4201',
@@ -126,20 +113,25 @@ CORS_ALLOWED_ORIGINS = environment_list(
 CORS_ALLOW_CREDENTIALS = False  # A API autentica pelo cabeçalho; não por cookie.
 CSRF_TRUSTED_ORIGINS = environment_list('CSRF_TRUSTED_ORIGINS')
 
-# Idioma, datas, arquivos e limites já utilizados pelo Mantis.
+# Idioma e fuso horário
 LANGUAGE_CODE = 'pt-br'
 TIME_ZONE = 'America/Manaus'
 USE_I18N = True
 USE_TZ = True
+
+# Arquivos estáticos e uploads
 STATIC_URL = '/static/'
 STATIC_ROOT = BASE_DIR / 'staticfiles'
 DATA_UPLOAD_MAX_MEMORY_SIZE = 8 * 1024 * 1024
 FILE_UPLOAD_MAX_MEMORY_SIZE = 6 * 1024 * 1024
+
+# Segurança HTTP
 SECURE_CONTENT_TYPE_NOSNIFF = True
 X_FRAME_OPTIONS = 'DENY'
 SESSION_COOKIE_SECURE = environment_boolean('DJANGO_COOKIE_SECURE')
 CSRF_COOKIE_SECURE = environment_boolean('DJANGO_COOKIE_SECURE')
 
+# Logs
 LOGGING = {
     'version': 1,
     'disable_existing_loggers': False,

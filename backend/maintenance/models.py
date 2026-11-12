@@ -57,7 +57,7 @@ class UserManager(BaseUserManager):
         user.save(using=self._db)
         return user
     def create_superuser(self, registration, password=None, **extra):
-        """Define o perfil administrador deste sistema e delega à criação de usuário; não instala o painel admin do Django."""
+        """Cria um administrador com acesso ao sistema e ao Django Admin."""
         extra['role'] = 'ADMINISTRADOR'
         return self.create_user(registration, password, **extra)
 
@@ -88,6 +88,20 @@ class User(AbstractBaseUser):
     def is_admin(self):
         """Indicate whether the account has the administrator profile for internal rules."""
         return self.role == 'ADMINISTRADOR'
+    @property
+    def is_staff(self):
+        return self.active and self.is_admin
+
+    @property
+    def is_superuser(self):
+        return self.active and self.is_admin
+
+    def has_perm(self, perm, obj=None):
+        return self.is_superuser
+
+    def has_module_perms(self, app_label):
+        return self.is_superuser
+
     @property
     def is_staff_member(self):
         """Identifica os perfis administrador e técnico usados nas operações de manutenção."""

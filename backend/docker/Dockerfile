@@ -5,6 +5,7 @@ WORKDIR /app
 COPY requirements.lock.txt ./
 RUN pip install --no-cache-dir -r requirements.lock.txt
 COPY . .
+RUN BD_NOME=build DJANGO_SECRET_KEY=build-only-not-for-runtime python manage.py collectstatic --noinput
 RUN useradd --create-home mantis && chown -R mantis:mantis /app
 # A aplicação roda com usuário sem privilégios de root dentro do contêiner.
 USER mantis
