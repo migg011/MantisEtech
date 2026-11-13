@@ -70,6 +70,7 @@ class User(AbstractBaseUser):
     password = models.TextField(db_column='senha_hash')
     role = models.CharField('Perfil', max_length=20, choices=ROLES, db_column='perfil')
     line = models.ForeignKey(Line, on_delete=models.PROTECT, null=True, blank=True, verbose_name='Linha SMT', db_column='linha_id')
+    sector = models.ForeignKey(Sector, on_delete=models.PROTECT, null=True, blank=True, verbose_name='Setor', db_column='setor_id')
     active = models.BooleanField(default=True, db_column='ativo')
     created_at = models.DateTimeField(default=timezone.now, db_column='criado_em')
     objects = UserManager()

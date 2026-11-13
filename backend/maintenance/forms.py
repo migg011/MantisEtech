@@ -106,13 +106,14 @@ class UserForm(forms.ModelForm):
     class Meta:
         """Define the UserForm model and the fields included in validation and saving."""
         model = User
-        fields = ['name', 'registration', 'role', 'line']
+        fields = ['name', 'registration', 'role', 'line', 'sector']
 
     def __init__(self, *args, actor=None, **kwargs):
         """Receive the actor to protect the current account; require a password only for new accounts."""
         super().__init__(*args, **kwargs)
         self.actor = actor
         self.fields['line'].queryset = Line.objects.filter(active=True)
+        self.fields['sector'].queryset = Sector.objects.filter(active=True)
         self.fields['new_password'].required = not bool(self.instance.pk)
 
     def clean(self):
@@ -122,6 +123,10 @@ class UserForm(forms.ModelForm):
             self.add_error('line', 'Operador precisa de uma linha SMT ativa.')
         if data.get('role') != 'OPERADOR':
             data['line'] = None
+        if data.get('role') in ('OPERADOR', 'TECNICO') and not data.get('sector'):
+            self.add_error('sector', 'Operador e técnico precisam de um setor ativo.')
+        if data.get('role') == 'ADMINISTRADOR':
+            data['sector'] = None
         if self.actor and self.instance.pk == self.actor.pk and data.get('role') != 'ADMINISTRADOR':
             self.add_error('role', 'Você não pode remover seu próprio perfil de administrador.')
         if data.get('new_password'):

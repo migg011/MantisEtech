@@ -85,11 +85,15 @@ def work_orders(context, pk=None):
         return Result(order_data(record), status=201)
     require_role(context, *MAINTENANCE_ROLES)
     with transaction.atomic():
-        record = get_object_or_404(WorkOrder.objects.select_for_update(), pk=pk)
+        record = get_object_or_404(WorkOrder.objects.select_for_update().select_related('equipment'), pk=pk)
         if record.status == 'CONCLUIDA':
             raise ApiError('Esta OS já foi concluída.', 409)
         if not record.started_at or record.assigned_to_id != context.user.pk:
             raise ApiError('Inicie o atendimento com sua matrícula e senha antes de alterar esta OS.', 409)
+        if (not context.user.is_admin
+                and record.equipment.sector_id
+                and record.equipment.sector_id != context.user.sector_id):
+            raise ApiError('Equipamento indisponível ou pertencente a outro setor.', 403)
         data = form_data(forms.WorkOrderUpdateForm, request_body(context), instance=record)
         record = validate_form(forms.WorkOrderUpdateForm(data, instance=record)).save(commit=False)
         if record.status not in ('EM_ANDAMENTO', 'CONCLUIDA'):
