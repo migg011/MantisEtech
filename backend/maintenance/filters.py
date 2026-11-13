@@ -10,6 +10,7 @@ from .models import (
 
 class UserFilter(filters.FilterSet):
     q = filters.CharFilter(method='search')
+    sectorId = filters.NumberFilter(field_name='sector_id', min_value=1)
 
     def search(self, queryset, name, value):
         return queryset.filter(Q(name__icontains=value) | Q(registration__icontains=value))

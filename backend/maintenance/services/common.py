@@ -32,7 +32,7 @@ def serialize_record(record, exclude=()):
 
 def user_data(user, *, login=False):
     """Expõe dados públicos da conta; no login usa lineId, conforme o modelo de usuário Angular."""
-    data = {key: getattr(user, key) for key in ('id', 'name', 'registration', 'role', 'line_id', 'active')}
+    data = {key: getattr(user, key) for key in ('id', 'name', 'registration', 'role', 'line_id', 'sector_id', 'active')}
     if login:
         data['lineId'] = data.pop('line_id')
     return data
@@ -65,10 +65,12 @@ def validate_form(form):
 
 
 def visible_equipment(user):
-    """Restringe o operador aos equipamentos ativos de sua linha ativa, sem confiar nos filtros da tela."""
+    """Restringe operadores à própria linha e técnicos ao próprio setor; o administrador vê tudo."""
     items = Equipment.objects.filter(active=True).select_related('equipment_type', 'sector', 'line')
     if user.role == 'OPERADOR':
         return items.filter(line_id=user.line_id, line__active=True) if user.line_id else items.none()
+    if user.role == 'TECNICO':
+        return items.filter(sector_id=user.sector_id) if user.sector_id else items.none()
     return items
 
 

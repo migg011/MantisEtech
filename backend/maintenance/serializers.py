@@ -66,7 +66,7 @@ INPUT_BY_OPERATION = {
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = models.User
-        fields = ['id', 'last_login', 'name', 'registration', 'role', 'line', 'active', 'created_at']
+        fields = ['id', 'last_login', 'name', 'registration', 'role', 'line', 'sector', 'active', 'created_at']
         read_only_fields = fields
 
 
