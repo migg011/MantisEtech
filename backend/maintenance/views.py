@@ -125,3 +125,9 @@ class ActivityLogView(OperationMixin, APIView):
     def get(self, request):
         return self.execute(operations.activity_log)
 
+class StockReceiptView(OperationMixin, APIView):
+    permission_classes = [MaintenanceTeam]
+
+    def post(self, request):
+        return self.execute(operations.stock_receipt)
+

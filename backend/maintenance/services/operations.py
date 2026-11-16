@@ -9,3 +9,4 @@ from .purchases import *
 from .totem import *
 from .feeders import *
 from .audit import *
+from .stock_receipt import *

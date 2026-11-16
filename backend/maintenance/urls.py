@@ -31,6 +31,7 @@ urlpatterns = [
     path('me', views.CurrentUserView.as_view(), name='current-user'),
     path('dashboard', views.DashboardView.as_view(), name='dashboard'),
     path('activity-log', views.ActivityLogView.as_view(), name='activity-log'),
+    path('spare-parts/receipts', views.StockReceiptView.as_view(), name='stock-receipts'),
     path('line-status', views.LineStatusView.as_view(), name='line-status'),
     path('preventive-calendar-template', views.CalendarTemplateView.as_view(), name='calendar-template'),
     path('spare-purchase/managers', views.ManagersView.as_view(), name='managers'),
