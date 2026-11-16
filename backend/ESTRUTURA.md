@@ -38,6 +38,10 @@ backend/
     │   ├── purchases.py
     │   ├── registrations.py        # Transações de montagem e aprovação
     │   ├── stock.py
+    │   ├── stock_receipt.py           # Entrada de peças por nota fiscal
+    │   ├── totem.py                   # Sessão de operador no totem
+    │   ├── feeders.py                 # Cadastro e manutenções de feeders
+    │   ├── audit.py                   # Registro de atividades (auditoria)
     │   ├── preventive_schedule.py
     │   ├── preventive.py
     │   ├── preventive_orders.py
