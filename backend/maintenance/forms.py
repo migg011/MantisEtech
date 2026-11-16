@@ -226,7 +226,8 @@ class PlacementForm(forms.Form):
 class AttachmentForm(forms.Form):
     """Validate photo/manual size and binary signature without trusting the file extension."""
     kind = forms.ChoiceField(label='Categoria', choices=[('PHOTO', 'Foto PNG/JPG (até 3 MB)'),
-                                                        ('MANUAL', 'Manual PDF (até 5 MB)')])
+                                                        ('MANUAL', 'Manual PDF (até 5 MB)'),
+                                                        ('ELECTRICAL', 'Esquema elétrico PDF (até 5 MB)')])
     file = forms.FileField(label='Arquivo')
 
     def clean(self):
