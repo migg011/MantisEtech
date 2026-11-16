@@ -218,7 +218,7 @@ class PreventiveChecklistSerializer(serializers.ModelSerializer):
 class EquipmentPreventiveSerializer(serializers.ModelSerializer):
     class Meta:
         model = models.EquipmentPreventive
-        fields = ['id', 'equipment', 'frequency', 'next_due', 'last_performed', 'active', 'checklist_items']
+        fields = ['id', 'equipment', 'frequency', 'next_due', 'planned_time', 'last_performed', 'active', 'checklist_items']
         read_only_fields = fields
 
 

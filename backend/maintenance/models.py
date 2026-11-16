@@ -249,6 +249,7 @@ class EquipmentPreventive(models.Model):
     equipment = models.ForeignKey(Equipment, on_delete=models.PROTECT, related_name='preventive_schedules', db_column='equipamento_id')
     frequency = models.CharField(max_length=20, choices=PREVENTIVE_FREQUENCIES, db_column='periodicidade')
     next_due = models.DateField(db_index=True, db_column='proximo_vencimento')
+    planned_time = models.TimeField('Horário planejado', null=True, blank=True, db_column='hora_programada')
     last_performed = models.DateField(null=True, blank=True, db_column='ultima_execucao')
     active = models.BooleanField(default=True, db_column='ativo')
     checklist_items = models.JSONField(null=True, blank=True, db_column='itens_roteiro')

@@ -51,34 +51,46 @@ def validate_schedules(value):
             raise ValidationError('Periodicidade inválida ou duplicada.')
         found.add(frequency)
         next_due = record.get('nextDue')
+        planned_time_raw = record.get('plannedTime')
+        planned_time = None
+        if planned_time_raw not in (None, ''):
+            from datetime import time as _time
+            try:
+                planned_time = _time.fromisoformat(planned_time_raw)
+            except (TypeError, ValueError):
+                raise ValidationError('Horário planejado inválido.')
         result.append((frequency,
-                       parse_date(next_due, 'Próximo vencimento') if next_due not in (None, '') else None))
+                       parse_date(next_due, 'Próximo vencimento') if next_due not in (None, '') else None,
+                       planned_time))
     return result
 
 
 def sync_schedules(equipment, selections):
     """Executado com a máquina bloqueada e dentro da transação do cadastro."""
-    selected = [frequency for frequency, _ in selections]
+    selected = [frequency for frequency, _, _ in selections]
+    dates = {frequency: due for frequency, due, _ in selections}
     for schedule in equipment.preventive_schedules.filter(orders__status='ABERTA'):
-        submitted = dict(selections)
-        if schedule.frequency not in submitted or (
-                submitted[schedule.frequency] is not None and submitted[schedule.frequency] != schedule.next_due):
+        if schedule.frequency not in dates or (
+                dates[schedule.frequency] is not None and dates[schedule.frequency] != schedule.next_due):
             raise ValidationError(
                 'Conclua ou cancele a OS preventiva aberta antes de alterar seu vencimento ou desmarcar a periodicidade.')
     # Unchecking means deactivating. Deleting the schedule would destroy the history and order references.
     equipment.preventive_schedules.exclude(frequency__in=selected).update(active=False)
-    for frequency, next_due in selections:
+    for frequency, next_due, planned_time in selections:
         schedule, created = EquipmentPreventive.objects.get_or_create(
             equipment=equipment, frequency=frequency,
-            defaults={'next_due': next_due or calculate_next_due(timezone.localdate(), frequency)})
+            defaults={'next_due': next_due or calculate_next_due(timezone.localdate(), frequency),
+                      'planned_time': planned_time})
         if not created:
             schedule.active = True
             if next_due is not None:
                 schedule.next_due = next_due
-            schedule.save(update_fields=['active', 'next_due'])
+            schedule.planned_time = planned_time
+            schedule.save(update_fields=['active', 'next_due', 'planned_time'])
 
 
 def schedule_data(schedule):
     """Retorna identificação, periodicidade, próxima data e última execução em um dicionário serializável pelo Django."""
     return {'id': schedule.pk, 'frequency': schedule.frequency,
-            'next_due': schedule.next_due, 'last_performed': schedule.last_performed}
+            'next_due': schedule.next_due, 'planned_time': schedule.planned_time,
+            'last_performed': schedule.last_performed}
