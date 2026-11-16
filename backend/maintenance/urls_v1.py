@@ -32,6 +32,7 @@ urlpatterns = [
     path('auth/login/', views.LoginView.as_view(), name='v1-login'),
     path('auth/me/', views.CurrentUserView.as_view(), name='v1-me'),
     path('health/check/', views.HealthView.as_view(), name='v1-health'),
+    path('activity-log/', views.ActivityLogView.as_view(), name='v1-activity-log'),
     path('', include(router.urls)),
     path('', include('maintenance.urls')),
 ]

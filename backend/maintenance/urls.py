@@ -30,6 +30,7 @@ urlpatterns = [
     path('health', views.HealthView.as_view(), name='health'),
     path('me', views.CurrentUserView.as_view(), name='current-user'),
     path('dashboard', views.DashboardView.as_view(), name='dashboard'),
+    path('activity-log', views.ActivityLogView.as_view(), name='activity-log'),
     path('line-status', views.LineStatusView.as_view(), name='line-status'),
     path('preventive-calendar-template', views.CalendarTemplateView.as_view(), name='calendar-template'),
     path('spare-purchase/managers', views.ManagersView.as_view(), name='managers'),

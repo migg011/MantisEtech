@@ -113,6 +113,21 @@ class User(AbstractBaseUser):
         return f'{self.name} ({self.registration})'
 
 
+class ActivityLog(models.Model):
+    """Registro de atividades (POST/PATCH/DELETE) para auditoria administrativa."""
+    actor_id = models.PositiveBigIntegerField(db_column='autor_id')
+    actor_name = models.CharField('Autor', max_length=200, db_column='autor_nome')
+    actor_registration = models.CharField('Matrícula', max_length=80, db_column='autor_matricula')
+    method = models.CharField('Método HTTP', max_length=8, db_column='metodo')
+    route = models.CharField('Rota', max_length=180, db_column='rota')
+    target = models.JSONField('Alvo', default=dict, db_column='alvo')
+    created_at = models.DateTimeField(default=timezone.now, db_index=True, db_column='criado_em')
+    class Meta:
+        """Mapeia ActivityLog para a tabela registro_atividades."""
+        db_table = 'registro_atividades'
+        ordering = ['-created_at', '-pk']
+
+
 class OperatorSession(models.Model):
     """Sessão aberta por um operador em um totem; carrega a linha ativa e expira automaticamente."""
     id = models.UUIDField(primary_key=True, default=uuid4, editable=False)
