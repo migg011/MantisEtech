@@ -1,6 +1,7 @@
 """Persistência PostgreSQL e restrições de integridade; tabelas e colunas físicas em português, com compatibilidade da API e ORM."""
 
 from django.contrib.auth.base_user import AbstractBaseUser, BaseUserManager
+from uuid import uuid4
 from django.db import models
 from django.db.models import Q
 from django.db.models.functions import Lower
@@ -110,6 +111,19 @@ class User(AbstractBaseUser):
     def __str__(self):
         """Representação legível de User para mensagens e diagnósticos; não grava dados."""
         return f'{self.name} ({self.registration})'
+
+
+class OperatorSession(models.Model):
+    """Sessão aberta por um operador em um totem; carrega a linha ativa e expira automaticamente."""
+    id = models.UUIDField(primary_key=True, default=uuid4, editable=False)
+    user = models.ForeignKey(User, on_delete=models.CASCADE, verbose_name='Operador', db_column='usuario_id')
+    line = models.ForeignKey(Line, on_delete=models.SET_NULL, null=True, blank=True, verbose_name='Linha ativa', db_column='linha_id')
+    opened_at = models.DateTimeField(default=timezone.now, db_column='aberta_em')
+    expires_at = models.DateTimeField(db_index=True, db_column='expira_em')
+    class Meta:
+        """Mapeia OperatorSession para a tabela sessoes_operadores."""
+        db_table = 'sessoes_operadores'
+        ordering = ['-opened_at']
 
 class EquipmentType(models.Model):
     """Catálogo de tipos de equipamento utilizado pelo cadastro Angular."""

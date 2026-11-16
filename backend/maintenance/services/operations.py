@@ -6,3 +6,4 @@ from .users import *
 from .corrective import *
 from .parts import *
 from .purchases import *
+from .totem import *

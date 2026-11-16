@@ -372,3 +372,14 @@ class PreventiveOrderViewSet(MantisViewSet):
     @action(detail=True, methods=['get'], url_path='document')
     def document(self, request, pk=None):
         return self.execute(preventive_orders.document, pk=pk)
+
+class OperatorSessionViewSet(MantisViewSet):
+    def list(self, request):
+        return self.execute(operations.operator_sessions)
+
+    def create(self, request):
+        return self.execute(operations.operator_sessions)
+
+    def destroy(self, request, pk=None):
+        return self.execute(operations.close_operator_session, pk=pk)
+
