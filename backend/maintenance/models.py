@@ -153,11 +153,11 @@ class Equipment(models.Model):
     width_mm = models.DecimalField('Largura (mm)', max_digits=12, decimal_places=2, blank=True, null=True, db_column='largura_mm')
     height_mm = models.DecimalField('Altura (mm)', max_digits=12, decimal_places=2, blank=True, null=True, db_column='altura_mm')
     weight_kg = models.DecimalField('Peso (kg)', max_digits=12, decimal_places=2, blank=True, null=True, db_column='peso_kg')
-    voltage_v = models.DecimalField('Tensão (V)', max_digits=12, decimal_places=2, blank=True, null=True, db_column='tensao_v')
-    frequency_hz = models.DecimalField('Frequência (Hz)', max_digits=12, decimal_places=2, blank=True, null=True, db_column='frequencia_hz')
+    voltage_v = models.CharField('Tensão (V)', max_length=40, blank=True, null=True, db_column='tensao_v')
+    frequency_hz = models.CharField('Frequência (Hz)', max_length=40, blank=True, null=True, db_column='frequencia_hz')
     current_a = models.DecimalField('Corrente (A)', max_digits=12, decimal_places=2, blank=True, null=True, db_column='corrente_a')
     power_w = models.DecimalField('Potência (W)', max_digits=12, decimal_places=2, blank=True, null=True, db_column='potencia_w')
-    pneumatic_pressure_bar = models.DecimalField('Pressão pneumática (bar)', max_digits=12, decimal_places=2, blank=True, null=True, db_column='pressao_pneumatica_bar')
+    pneumatic_pressure_bar = models.CharField('Pressão pneumática (bar)', max_length=40, blank=True, null=True, db_column='pressao_pneumatica_bar')
     asset_number = models.CharField('Patrimônio', max_length=100, unique=True, blank=True, null=True, db_column='numero_patrimonio')
     description = models.TextField('Descrição', blank=True, null=True, db_column='descricao')
     process_description = models.TextField('Descrição do processo', blank=True, null=True, db_column='descricao_processo')
@@ -322,7 +322,7 @@ class LinePendency(models.Model):
 class EquipmentAttachment(models.Model):
     """Armazena o conteúdo de foto/manual no PostgreSQL, com um arquivo por categoria e máquina."""
     equipment = models.ForeignKey(Equipment, on_delete=models.CASCADE, related_name='attachments', db_column='equipamento_id')
-    kind = models.CharField(max_length=10, choices=[('PHOTO', 'Foto'), ('MANUAL', 'Manual')], db_column='categoria')
+    kind = models.CharField(max_length=10, choices=[('PHOTO', 'Foto'), ('MANUAL', 'Manual técnico'), ('ELECTRICAL', 'Esquema elétrico')], db_column='categoria')
     filename = models.CharField(max_length=180, db_column='nome_arquivo')
     mime_type = models.CharField(max_length=60, db_column='tipo_mime')
     content = models.BinaryField(db_column='conteudo')
