@@ -191,6 +191,59 @@ class Equipment(models.Model):
         """Representação legível de Equipment para mensagens e diagnósticos; não grava dados."""
         return f'{self.asset_number or self.serial or self.pk} — {self.model or self.equipment_type}'
 
+class FeederPlatform(models.TextChoices):
+    NXT = 'NXT', 'NXT Fuji'
+    NPM = 'NPM', 'NPM Panasonic'
+
+
+class FeederTape(models.TextChoices):
+    EMBOSS = 'EMBOSS', 'Emboss'
+    PAPER = 'PAPER', 'Paper'
+    BOTH = 'BOTH', 'Emboss e Paper'
+
+
+class Feeder(models.Model):
+    """Cadastro do feeder associado a um setor e, opcionalmente, a uma linha."""
+    sector = models.ForeignKey(Sector, on_delete=models.PROTECT, related_name='feeders', verbose_name='Setor', db_column='setor_id')
+    line = models.ForeignKey(Line, on_delete=models.PROTECT, related_name='feeders', null=True, blank=True, verbose_name='Linha SMT', db_column='linha_id')
+    platform = models.CharField('Plataforma', max_length=3, choices=FeederPlatform.choices, db_column='plataforma')
+    part_number = models.CharField('Part number', max_length=100, db_column='part_number')
+    width = models.CharField('Largura', max_length=40, db_column='largura')
+    model_number = models.CharField('Modelo', max_length=100, blank=True, default='', db_column='modelo')
+    serial_number = models.CharField('Número de série', max_length=100, blank=True, default='', db_column='numero_serie')
+    tape_type = models.CharField('Tipo de fita', max_length=6, choices=FeederTape.choices, blank=True, default='', db_column='tipo_fita')
+    manufacturing_code = models.CharField('Código do fabricante', max_length=40, blank=True, default='', db_column='codigo_fabricante')
+    class Meta:
+        """Mapeia Feeder para a tabela feeders."""
+        db_table = 'feeders'
+        ordering = ['part_number', 'id']
+        constraints = [
+            models.CheckConstraint(condition=Q(platform__in=FeederPlatform.values), name='feeder_valid_platform'),
+        ]
+    def __str__(self):
+        return f'{self.platform} {self.part_number}'
+
+
+class FeederMaintenanceType(models.TextChoices):
+    PREVENTIVE = 'PREVENTIVE', 'Preventiva'
+    REPAIR = 'REPAIR', 'Conserto'
+
+
+class FeederMaintenance(models.Model):
+    """Registro do que foi feito em uma preventiva ou conserto do feeder."""
+    feeder = models.ForeignKey(Feeder, on_delete=models.PROTECT, related_name='maintenance_records', verbose_name='Feeder', db_column='feeder_id')
+    kind = models.CharField('Tipo', max_length=10, choices=FeederMaintenanceType.choices, default=FeederMaintenanceType.PREVENTIVE, db_column='tipo')
+    date = models.DateField('Data', db_column='data')
+    description = models.TextField('Descrição', max_length=4000, db_column='descricao')
+    class Meta:
+        """Mapeia FeederMaintenance para a tabela feeder_preventives."""
+        db_table = 'feeder_preventives'
+        ordering = ['-date', '-id']
+        constraints = [
+            models.CheckConstraint(condition=Q(kind__in=FeederMaintenanceType.values), name='feeder_valid_maintenance_type'),
+        ]
+
+
 class EquipmentPreventive(models.Model):
     """Agenda independente por equipamento e periodicidade, preservada quando desmarcada."""
     equipment = models.ForeignKey(Equipment, on_delete=models.PROTECT, related_name='preventive_schedules', db_column='equipamento_id')

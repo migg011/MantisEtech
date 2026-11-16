@@ -22,6 +22,7 @@ router.register('preventive-checklists', viewsets.PreventiveChecklistViewSet, ba
 router.register('preventive-schedules', viewsets.EquipmentPreventiveViewSet, basename='preventive-schedules')
 router.register('preventive-executions', viewsets.PreventiveExecutionViewSet, basename='preventive-executions')
 router.register('preventive-orders', viewsets.PreventiveOrderViewSet, basename='preventive-orders')
+router.register('feeders', viewsets.FeederViewSet, basename='feeders')
 router.register('operator-sessions', viewsets.OperatorSessionViewSet, basename='operator-sessions')
 
 urlpatterns = [

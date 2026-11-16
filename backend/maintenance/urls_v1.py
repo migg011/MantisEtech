@@ -26,6 +26,7 @@ router.register('equipment-preventives', viewsets.EquipmentPreventiveViewSet, ba
 router.register('preventive-executions', viewsets.PreventiveExecutionViewSet, basename='v1-preventive-execution')
 router.register('preventive-orders', viewsets.PreventiveOrderViewSet, basename='v1-preventive-order')
 router.register('operator-sessions', viewsets.OperatorSessionViewSet, basename='v1-operator-session')
+router.register('feeders', viewsets.FeederViewSet, basename='v1-feeder')
 
 urlpatterns = [
     path('auth/login/', views.LoginView.as_view(), name='v1-login'),

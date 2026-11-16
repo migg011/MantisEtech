@@ -238,3 +238,18 @@ class PreventiveOrderSerializer(serializers.ModelSerializer):
                   'performed_date', 'performed_time', 'assigned_to', 'assigned_name', 'created_by', 'created_at',
                   'finished_by', 'executor_name', 'finished_at', 'cancellation_reason', 'revision']
         read_only_fields = fields
+
+class FeederSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = models.Feeder
+        fields = ['id', 'sector', 'line', 'platform', 'part_number', 'width',
+                  'model_number', 'serial_number', 'tape_type', 'manufacturing_code']
+        read_only_fields = fields
+
+
+class FeederMaintenanceSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = models.FeederMaintenance
+        fields = ['id', 'feeder', 'kind', 'date', 'description']
+        read_only_fields = fields
+

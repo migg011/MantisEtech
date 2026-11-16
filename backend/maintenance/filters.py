@@ -3,7 +3,7 @@ import django_filters as filters
 from django.db.models import Q
 
 from .models import (
-    Equipment, EquipmentPreventive, Line, LinePendency, PreventiveOrder, ProblemType,
+    Equipment, EquipmentPreventive, Feeder, Line, LinePendency, PreventiveOrder, ProblemType,
     PurchaseRequest, Sector, SparePart, User, WorkOrder,
 )
 
@@ -104,6 +104,23 @@ class PreventiveOrderFilter(filters.FilterSet):
     class Meta:
         model = PreventiveOrder
         fields = ['status', 'frequency']
+
+
+
+
+class FeederFilter(filters.FilterSet):
+    sectorId = filters.NumberFilter(field_name='sector_id', min_value=1)
+    lineId = filters.NumberFilter(field_name='line_id', min_value=1)
+    platform = filters.CharFilter(field_name='platform')
+    q = filters.CharFilter(method='search')
+
+    def search(self, queryset, name, value):
+        return queryset.filter(Q(part_number__icontains=value) | Q(serial_number__icontains=value)
+                               | Q(model_number__icontains=value))
+
+    class Meta:
+        model = Feeder
+        fields = []
 
 
 def apply_filters(filter_class, parameters, queryset):
