@@ -7,7 +7,7 @@ from django import forms
 from django.contrib.auth.password_validation import validate_password
 from django.core.exceptions import ValidationError
 
-from .models import (Sector, Line, Equipment, User, WorkOrder, ProblemType, SparePart,
+from .models import (Sector, Line, Equipment, Feeder, FeederMaintenance, User, WorkOrder, ProblemType, SparePart,
                      SparePartTechnical, SparePartCompatibility, PurchaseRequest, PurchaseItem, TECHNICAL_FIELDS)
 
 
@@ -226,7 +226,8 @@ class PlacementForm(forms.Form):
 class AttachmentForm(forms.Form):
     """Validate photo/manual size and binary signature without trusting the file extension."""
     kind = forms.ChoiceField(label='Categoria', choices=[('PHOTO', 'Foto PNG/JPG (até 3 MB)'),
-                                                        ('MANUAL', 'Manual PDF (até 5 MB)')])
+                                                        ('MANUAL', 'Manual PDF (até 5 MB)'),
+                                                        ('ELECTRICAL', 'Esquema elétrico PDF (até 5 MB)')])
     file = forms.FileField(label='Arquivo')
 
     def clean(self):
@@ -350,3 +351,37 @@ class DecisionForm(forms.Form):
     decision = forms.ChoiceField(label='Decisão', choices=[('APROVADA', 'Aprovar'), ('REJEITADA', 'Rejeitar'),
                                                             ('DEVOLVIDA', 'Devolver para revisão')])
     comment = forms.CharField(label='Comentário', widget=forms.Textarea, max_length=1500, required=False)
+
+class FeederForm(forms.ModelForm):
+    """Valida obrigatórios do feeder e opcionais da plataforma Panasonic."""
+    class Meta:
+        model = Feeder
+        fields = ['sector', 'line', 'platform', 'part_number', 'width',
+                  'model_number', 'serial_number', 'tape_type', 'manufacturing_code']
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields['sector'].queryset = Sector.objects.filter(active=True)
+        self.fields['line'].queryset = Line.objects.filter(active=True)
+
+    def clean(self):
+        data = super().clean()
+        line = data.get('line')
+        sector = data.get('sector')
+        if line and sector and line.sector_id and line.sector_id != sector.pk:
+            self.add_error('line', 'A linha pertence a outro setor.')
+        return data
+
+
+class FeederMaintenanceForm(forms.ModelForm):
+    """Valida a entrada de preventiva/conserto do feeder."""
+    class Meta:
+        model = FeederMaintenance
+        fields = ['feeder', 'kind', 'date', 'description']
+
+    def clean_description(self):
+        value = (self.cleaned_data.get('description') or '').strip()
+        if len(value) < 3:
+            raise ValidationError('Descreva o que foi feito no feeder.')
+        return value
+

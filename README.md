@@ -10,6 +10,22 @@ Sistema de gestão de manutenção industrial, equipamentos, linhas SMT e peças
 - `docs`: documentação funcional, banco PostgreSQL, diagramas e material de apresentação.
 - [Índice da documentação](docs/README.md): guias funcionais e referências históricas do banco.
 
+## Novidades na branch dev
+
+A branch `dev` reúne um conjunto de features portadas da cópia de apresentação, seguindo a estrutura do origin:
+
+- Vínculo entre usuário e setor, restringindo a visibilidade de equipamentos e o fechamento de OS ao setor da conta.
+- Faixas em tensão, frequência e pressão do equipamento e nova categoria `ELECTRICAL` para anexar o esquema elétrico.
+- Cadastro de **feeders** com dados Panasonic (modelo, série, tipo de fita, código do fabricante) e histórico de preventiva/conserto por feeder.
+- Sessão de operador no totem (`/api/operator-sessions`) para registrar quem está logado em qual linha.
+- Horário planejado na agenda de preventiva, aproveitado na geração das ordens.
+- Registro de atividades (`/api/activity-log`) com gravação automática em POST/PATCH/DELETE bem-sucedidos.
+- Entrada de peças por nota fiscal (`/api/spare-parts/receipts`), gravando vários movimentos de estoque em uma transação.
+- Comando `seed_demo` que preenche o banco com cadastros fictícios para a apresentação.
+- Deploy de demonstração no Render (`backend/Dockerfile.demo` + `render.yaml`).
+
+Veja `backend/ESTRUTURA.md` para onde cada peça encaixa na arquitetura DRF.
+
 ## Executar localmente
 
 Consulte os pré-requisitos e detalhes em [backend/README.md](backend/README.md) .

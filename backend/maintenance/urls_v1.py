@@ -25,11 +25,15 @@ router.register('preventive-checklists', viewsets.PreventiveChecklistViewSet, ba
 router.register('equipment-preventives', viewsets.EquipmentPreventiveViewSet, basename='v1-equipment-preventive')
 router.register('preventive-executions', viewsets.PreventiveExecutionViewSet, basename='v1-preventive-execution')
 router.register('preventive-orders', viewsets.PreventiveOrderViewSet, basename='v1-preventive-order')
+router.register('operator-sessions', viewsets.OperatorSessionViewSet, basename='v1-operator-session')
+router.register('feeders', viewsets.FeederViewSet, basename='v1-feeder')
 
 urlpatterns = [
     path('auth/login/', views.LoginView.as_view(), name='v1-login'),
     path('auth/me/', views.CurrentUserView.as_view(), name='v1-me'),
     path('health/check/', views.HealthView.as_view(), name='v1-health'),
+    path('activity-log/', views.ActivityLogView.as_view(), name='v1-activity-log'),
+    path('spare-parts/receipts/', views.StockReceiptView.as_view(), name='v1-stock-receipts'),
     path('', include(router.urls)),
     path('', include('maintenance.urls')),
 ]

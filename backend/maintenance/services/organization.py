@@ -171,7 +171,7 @@ def transfer_equipment(context, pk):
 def attachments(context, pk, kind=None, download=False):
     """Lista metadados, baixa arquivos ou valida o base64 enviado pelo Angular antes de substituir o anexo."""
     record = get_object_or_404(visible_equipment(context.user), pk=pk)
-    if kind and kind not in ('PHOTO', 'MANUAL'):
+    if kind and kind not in ('PHOTO', 'MANUAL', 'ELECTRICAL'):
         raise ApiError('Categoria de anexo inválida.')
     if context.method == 'GET':
         if download:

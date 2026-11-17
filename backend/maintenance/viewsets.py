@@ -372,3 +372,34 @@ class PreventiveOrderViewSet(MantisViewSet):
     @action(detail=True, methods=['get'], url_path='document')
     def document(self, request, pk=None):
         return self.execute(preventive_orders.document, pk=pk)
+
+class OperatorSessionViewSet(MantisViewSet):
+    def list(self, request):
+        return self.execute(operations.operator_sessions)
+
+    def create(self, request):
+        return self.execute(operations.operator_sessions)
+
+    def destroy(self, request, pk=None):
+        return self.execute(operations.close_operator_session, pk=pk)
+
+class FeederViewSet(MantisViewSet):
+    serializer_class = serializers.FeederSerializer
+    filterset_class = filters.FeederFilter
+
+    def list(self, request):
+        return self.execute(operations.feeders)
+
+    def retrieve(self, request, pk=None):
+        return self.execute(operations.feeders, pk=pk)
+
+    def create(self, request):
+        return self.execute(operations.feeders)
+
+    def partial_update(self, request, pk=None):
+        return self.execute(operations.feeders, pk=pk)
+
+    @action(detail=True, methods=['get', 'post'], url_path='maintenance')
+    def maintenance(self, request, pk=None):
+        return self.execute(operations.feeder_maintenance, pk=pk)
+

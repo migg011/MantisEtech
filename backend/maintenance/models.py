@@ -1,6 +1,7 @@
 """Persistência PostgreSQL e restrições de integridade; tabelas e colunas físicas em português, com compatibilidade da API e ORM."""
 
 from django.contrib.auth.base_user import AbstractBaseUser, BaseUserManager
+from uuid import uuid4
 from django.db import models
 from django.db.models import Q
 from django.db.models.functions import Lower
@@ -111,6 +112,34 @@ class User(AbstractBaseUser):
         """Representação legível de User para mensagens e diagnósticos; não grava dados."""
         return f'{self.name} ({self.registration})'
 
+
+class ActivityLog(models.Model):
+    """Registro de atividades (POST/PATCH/DELETE) para auditoria administrativa."""
+    actor_id = models.PositiveBigIntegerField(db_column='autor_id')
+    actor_name = models.CharField('Autor', max_length=200, db_column='autor_nome')
+    actor_registration = models.CharField('Matrícula', max_length=80, db_column='autor_matricula')
+    method = models.CharField('Método HTTP', max_length=8, db_column='metodo')
+    route = models.CharField('Rota', max_length=180, db_column='rota')
+    target = models.JSONField('Alvo', default=dict, db_column='alvo')
+    created_at = models.DateTimeField(default=timezone.now, db_index=True, db_column='criado_em')
+    class Meta:
+        """Mapeia ActivityLog para a tabela registro_atividades."""
+        db_table = 'registro_atividades'
+        ordering = ['-created_at', '-pk']
+
+
+class OperatorSession(models.Model):
+    """Sessão aberta por um operador em um totem; carrega a linha ativa e expira automaticamente."""
+    id = models.UUIDField(primary_key=True, default=uuid4, editable=False)
+    user = models.ForeignKey(User, on_delete=models.CASCADE, verbose_name='Operador', db_column='usuario_id')
+    line = models.ForeignKey(Line, on_delete=models.SET_NULL, null=True, blank=True, verbose_name='Linha ativa', db_column='linha_id')
+    opened_at = models.DateTimeField(default=timezone.now, db_column='aberta_em')
+    expires_at = models.DateTimeField(db_index=True, db_column='expira_em')
+    class Meta:
+        """Mapeia OperatorSession para a tabela sessoes_operadores."""
+        db_table = 'sessoes_operadores'
+        ordering = ['-opened_at']
+
 class EquipmentType(models.Model):
     """Catálogo de tipos de equipamento utilizado pelo cadastro Angular."""
     id = models.SmallIntegerField(primary_key=True, db_column='id')
@@ -153,11 +182,11 @@ class Equipment(models.Model):
     width_mm = models.DecimalField('Largura (mm)', max_digits=12, decimal_places=2, blank=True, null=True, db_column='largura_mm')
     height_mm = models.DecimalField('Altura (mm)', max_digits=12, decimal_places=2, blank=True, null=True, db_column='altura_mm')
     weight_kg = models.DecimalField('Peso (kg)', max_digits=12, decimal_places=2, blank=True, null=True, db_column='peso_kg')
-    voltage_v = models.DecimalField('Tensão (V)', max_digits=12, decimal_places=2, blank=True, null=True, db_column='tensao_v')
-    frequency_hz = models.DecimalField('Frequência (Hz)', max_digits=12, decimal_places=2, blank=True, null=True, db_column='frequencia_hz')
+    voltage_v = models.CharField('Tensão (V)', max_length=40, blank=True, null=True, db_column='tensao_v')
+    frequency_hz = models.CharField('Frequência (Hz)', max_length=40, blank=True, null=True, db_column='frequencia_hz')
     current_a = models.DecimalField('Corrente (A)', max_digits=12, decimal_places=2, blank=True, null=True, db_column='corrente_a')
     power_w = models.DecimalField('Potência (W)', max_digits=12, decimal_places=2, blank=True, null=True, db_column='potencia_w')
-    pneumatic_pressure_bar = models.DecimalField('Pressão pneumática (bar)', max_digits=12, decimal_places=2, blank=True, null=True, db_column='pressao_pneumatica_bar')
+    pneumatic_pressure_bar = models.CharField('Pressão pneumática (bar)', max_length=40, blank=True, null=True, db_column='pressao_pneumatica_bar')
     asset_number = models.CharField('Patrimônio', max_length=100, unique=True, blank=True, null=True, db_column='numero_patrimonio')
     description = models.TextField('Descrição', blank=True, null=True, db_column='descricao')
     process_description = models.TextField('Descrição do processo', blank=True, null=True, db_column='descricao_processo')
@@ -177,11 +206,65 @@ class Equipment(models.Model):
         """Representação legível de Equipment para mensagens e diagnósticos; não grava dados."""
         return f'{self.asset_number or self.serial or self.pk} — {self.model or self.equipment_type}'
 
+class FeederPlatform(models.TextChoices):
+    NXT = 'NXT', 'NXT Fuji'
+    NPM = 'NPM', 'NPM Panasonic'
+
+
+class FeederTape(models.TextChoices):
+    EMBOSS = 'EMBOSS', 'Emboss'
+    PAPER = 'PAPER', 'Paper'
+    BOTH = 'BOTH', 'Emboss e Paper'
+
+
+class Feeder(models.Model):
+    """Cadastro do feeder associado a um setor e, opcionalmente, a uma linha."""
+    sector = models.ForeignKey(Sector, on_delete=models.PROTECT, related_name='feeders', verbose_name='Setor', db_column='setor_id')
+    line = models.ForeignKey(Line, on_delete=models.PROTECT, related_name='feeders', null=True, blank=True, verbose_name='Linha SMT', db_column='linha_id')
+    platform = models.CharField('Plataforma', max_length=3, choices=FeederPlatform.choices, db_column='plataforma')
+    part_number = models.CharField('Part number', max_length=100, db_column='part_number')
+    width = models.CharField('Largura', max_length=40, db_column='largura')
+    model_number = models.CharField('Modelo', max_length=100, blank=True, default='', db_column='modelo')
+    serial_number = models.CharField('Número de série', max_length=100, blank=True, default='', db_column='numero_serie')
+    tape_type = models.CharField('Tipo de fita', max_length=6, choices=FeederTape.choices, blank=True, default='', db_column='tipo_fita')
+    manufacturing_code = models.CharField('Código do fabricante', max_length=40, blank=True, default='', db_column='codigo_fabricante')
+    class Meta:
+        """Mapeia Feeder para a tabela feeders."""
+        db_table = 'feeders'
+        ordering = ['part_number', 'id']
+        constraints = [
+            models.CheckConstraint(condition=Q(platform__in=FeederPlatform.values), name='feeder_valid_platform'),
+        ]
+    def __str__(self):
+        return f'{self.platform} {self.part_number}'
+
+
+class FeederMaintenanceType(models.TextChoices):
+    PREVENTIVE = 'PREVENTIVE', 'Preventiva'
+    REPAIR = 'REPAIR', 'Conserto'
+
+
+class FeederMaintenance(models.Model):
+    """Registro do que foi feito em uma preventiva ou conserto do feeder."""
+    feeder = models.ForeignKey(Feeder, on_delete=models.PROTECT, related_name='maintenance_records', verbose_name='Feeder', db_column='feeder_id')
+    kind = models.CharField('Tipo', max_length=10, choices=FeederMaintenanceType.choices, default=FeederMaintenanceType.PREVENTIVE, db_column='tipo')
+    date = models.DateField('Data', db_column='data')
+    description = models.TextField('Descrição', max_length=4000, db_column='descricao')
+    class Meta:
+        """Mapeia FeederMaintenance para a tabela feeder_preventives."""
+        db_table = 'feeder_preventives'
+        ordering = ['-date', '-id']
+        constraints = [
+            models.CheckConstraint(condition=Q(kind__in=FeederMaintenanceType.values), name='feeder_valid_maintenance_type'),
+        ]
+
+
 class EquipmentPreventive(models.Model):
     """Agenda independente por equipamento e periodicidade, preservada quando desmarcada."""
     equipment = models.ForeignKey(Equipment, on_delete=models.PROTECT, related_name='preventive_schedules', db_column='equipamento_id')
     frequency = models.CharField(max_length=20, choices=PREVENTIVE_FREQUENCIES, db_column='periodicidade')
     next_due = models.DateField(db_index=True, db_column='proximo_vencimento')
+    planned_time = models.TimeField('Horário planejado', null=True, blank=True, db_column='hora_programada')
     last_performed = models.DateField(null=True, blank=True, db_column='ultima_execucao')
     active = models.BooleanField(default=True, db_column='ativo')
     checklist_items = models.JSONField(null=True, blank=True, db_column='itens_roteiro')
@@ -322,7 +405,7 @@ class LinePendency(models.Model):
 class EquipmentAttachment(models.Model):
     """Armazena o conteúdo de foto/manual no PostgreSQL, com um arquivo por categoria e máquina."""
     equipment = models.ForeignKey(Equipment, on_delete=models.CASCADE, related_name='attachments', db_column='equipamento_id')
-    kind = models.CharField(max_length=10, choices=[('PHOTO', 'Foto'), ('MANUAL', 'Manual')], db_column='categoria')
+    kind = models.CharField(max_length=10, choices=[('PHOTO', 'Foto'), ('MANUAL', 'Manual técnico'), ('ELECTRICAL', 'Esquema elétrico')], db_column='categoria')
     filename = models.CharField(max_length=180, db_column='nome_arquivo')
     mime_type = models.CharField(max_length=60, db_column='tipo_mime')
     content = models.BinaryField(db_column='conteudo')
