@@ -91,15 +91,5 @@ export class RegistrationCenter {
             route: '/cadastro/preventivas',
             adminOnly: false,
         },
-        // Próxima etapa do produto: o card informa o desenvolvimento, sem simular uma integração ativa.
-        {
-            title: 'Integração com Inteligência Artificial',
-            description:
-                'Próxima evolução do MANTIS: assistência inteligente para análise de falhas, consulta técnica e apoio ao planejamento da manutenção.',
-            icon: 'psychology',
-            color: '#6366f1',
-            route: '',
-            adminOnly: false,
-        },
     ];
 }
