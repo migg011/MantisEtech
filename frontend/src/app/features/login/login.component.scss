@@ -221,3 +221,23 @@
         min-height: 210px;
     }
 }
+
+.register-link {
+    display: flex;
+    justify-content: center;
+    gap: 5px;
+    margin-top: 20px;
+    font-size: 14px;
+    color: #777;
+}
+
+.register-link a {
+    color: #16a36a;
+    font-weight: 600;
+    text-decoration: none;
+    cursor: pointer;
+}
+
+.register-link a:hover {
+    text-decoration: underline;
+}
