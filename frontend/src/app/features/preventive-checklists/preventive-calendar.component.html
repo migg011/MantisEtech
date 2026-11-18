@@ -1,0 +1,25 @@
+<section class="calendar-card">
+    <header class="calendar-heading"><div><h2>Calendário de preventivas</h2><p>Planeje por mês e consulte as atividades de cada dia.</p></div><span class="mode-badge">Equipamentos cadastrados</span></header>
+    <div class="calendar-filters">
+        <label>Seção / setor<select [(ngModel)]="sectorValue" (ngModelChange)="selectedEvent = null"><option value="">Todos</option><option *ngFor="let item of sectors" [value]="item">{{item}}</option></select></label>
+        <label>Periodicidade<select [(ngModel)]="frequencyValue" (ngModelChange)="selectedEvent = null"><option value="">Todas</option><option *ngFor="let item of frequencies" [value]="item.value">{{item.label}}</option></select></label>
+        <label class="calendar-search">Pesquisar<input [(ngModel)]="search" (ngModelChange)="selectedEvent = null" placeholder="Máquina ou técnico"></label>
+    </div>
+    <p class="proposal-note"><mat-icon>event</mat-icon><span>Próximos vencimentos dos equipamentos cadastrados e datas das OS preventivas abertas. Novos ciclos aparecem conforme a agenda é atualizada.</span></p>
+    <p *ngIf="dataError" class="error" role="alert">{{dataError}}</p>
+    <div class="calendar-toolbar"><div class="month-navigation"><button type="button" aria-label="Mês anterior" (click)="mudarMes(-1)"><mat-icon>chevron_left</mat-icon></button><label><span class="sr-only">Mês</span><select [(ngModel)]="month" (ngModelChange)="clearSelection()"><option *ngFor="let item of meses; let index=index" [ngValue]="index">{{item}}</option></select></label><strong>{{year}}</strong><button type="button" aria-label="Próximo mês" (click)="mudarMes(1)"><mat-icon>chevron_right</mat-icon></button></div><span>{{monthlyEvents.length}} programação(ões) no mês</span></div>
+    <div class="calendar-layout">
+        <div class="calendar-grid" role="group" aria-label="Dias do mês">
+            <div class="weekday" *ngFor="let day of diasSemana">{{day}}</div>
+            <ng-container *ngFor="let cell of days"><button type="button" *ngIf="cell.day; else blankDay" class="calendar-day" [class.chosen]="cell.date === selectedDate" [class.has-events]="cell.events.length" [attr.aria-pressed]="cell.date === selectedDate" [attr.aria-label]="cell.date + ': ' + cell.events.length + ' programações'" (click)="chooseDay(cell.date)"><span class="day-number">{{cell.day}}</span><span class="day-count" *ngIf="cell.events.length">{{cell.events.length}}</span><span class="event-preview" *ngFor="let item of cell.events | slice:0:2">{{item.time}} {{item.machine}}</span><small *ngIf="cell.events.length > 2">+ {{cell.events.length - 2}} outra(s)</small></button><ng-template #blankDay><div class="blank-day"></div></ng-template></ng-container>
+        </div>
+        <aside class="day-panel"><header><h3>{{selectedDate ? (selectedDate | date:'dd/MM/yyyy') : 'Selecione um dia'}}</h3><span>{{dailyEvents.length}} atividade(s)</span></header>
+            <div *ngIf="!dailyEvents.length" class="calendar-empty"><mat-icon>event_available</mat-icon><strong>Sem programação neste dia</strong><p>As atividades aparecerão após configurar as preventivas dos equipamentos.</p></div>
+            <div class="day-list"><button type="button" class="day-event" *ngFor="let event of dailyEvents" (click)="selectedEvent = event" [class.selected]="selectedEvent?.id === event.id"><span class="event-time">{{event.time || 'Sem horário'}}</span><strong>{{event.machine}}</strong><small>{{event.sector}} · {{labelText(event.frequency)}}</small><small>{{event.technician || 'Técnico a definir'}}</small></button></div>
+        </aside>
+    </div>
+    <section *ngIf="selectedEvent as event" class="event-detail"><header><div><span class="detail-eyebrow">{{event.reference}}</span><h3>{{event.machine}}</h3></div><button type="button" aria-label="Fechar detalhe" (click)="selectedEvent = null"><mat-icon>close</mat-icon></button></header>
+        <dl><div><dt>Data prevista</dt><dd>{{event.date | date:'dd/MM/yyyy'}} {{event.time}}</dd></div><div><dt>Seção / setor</dt><dd>{{event.sector}}</dd></div><div><dt>Periodicidade</dt><dd>{{labelText(event.frequency)}}</dd></div><div><dt>Técnico previsto</dt><dd>{{event.technician || 'A definir'}}</dd></div></dl>
+        <button type="button" class="primary" *ngIf="event.schedule" [disabled]="!!dataError" (click)="execute.emit(event.schedule!)">{{event.order ? 'Acessar OS ' + event.order.number : 'Preparar OS preventiva'}}</button>
+    </section>
+</section>

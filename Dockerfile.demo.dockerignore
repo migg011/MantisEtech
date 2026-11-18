@@ -1,0 +1,12 @@
+**/.env
+**/.env.*
+**/.venv
+**/node_modules
+**/.angular
+**/dist
+**/__pycache__
+**/*.py[cod]
+imagem
+/mantis_english_v3-main
+**/.git
+**/models

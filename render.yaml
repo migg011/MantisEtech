@@ -5,7 +5,7 @@ services:
     plan: free
     region: oregon
     dockerContext: .
-    dockerfilePath: ./backend/Dockerfile.demo
+    dockerfilePath: ./Dockerfile.demo
     healthCheckPath: /api/health
     autoDeployTrigger: "off"
     envVars:

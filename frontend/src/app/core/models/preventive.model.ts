@@ -1,24 +1,22 @@
 /** Contratos JSON das preventivas: interfaces existem na compilação do Angular, não criam tabelas. Datas da API são textos ISO; a tela formata apenas sua apresentação. */
 /** Códigos enviados à API e rótulos usados nos seletores e caixas do cadastro. O backend mantém sua própria validação desses códigos. */
-export const PREVENTIVE_PERIODICITIES = [
-    { value: 'QUINZENAL', label: 'Quinzenal' },
-    { value: 'MENSAL', label: 'Mensal' },
-    { value: 'BIMESTRAL', label: 'Bimestral' },
-    { value: 'TRIMESTRAL', label: 'Trimestral' },
-    { value: 'SEMESTRAL', label: 'Semestral' },
-    { value: 'ANUAL', label: 'Anual' },
+export const PREVENTIVE_FREQUENCIES = [
+    {value: 'QUINZENAL', label: 'Quinzenal'}, {value: 'MENSAL', label: 'Mensal'},
+    {value: 'BIMESTRAL', label: 'Bimestral'}, {value: 'TRIMESTRAL', label: 'Trimestral'}, {value: 'SEMESTRAL', label: 'Semestral'},
+    {value: 'ANUAL', label: 'Anual'}
 ];
 
 /** Resumo da agenda de uma periodicidade marcada em uma máquina. */
-export interface PreventiveSchedule {
+export interface EquipmentPreventive {
     id: number;
     frequency: string;
     next_due: string;
+    planned_time?: string | null;
     last_performed: string | null;
 }
 
 /** Agenda com identificação da máquina e situação calculada no servidor para os alertas. */
-export interface EquipmentPreventive extends PreventiveSchedule {
+export interface PreventiveSchedule extends EquipmentPreventive {
     equipment_id: number;
     equipment_type_id: number;
     equipment_name: string;
@@ -67,12 +65,12 @@ export interface PreventiveOrder {
 }
 
 /** OS completa: cópia da máquina na emissão, atividades, resultados e dados preenchidos. */
-export interface PreventiveOrderDetails extends PreventiveOrder {
+export interface PreventiveOrderDetail extends PreventiveOrder {
     performed_time: string | null;
     equipment_snapshot: Record<string, string>;
     items: string[];
-    results: { status: string; notes: string }[];
-    parts: { description: string; partNumber: string; quantity: number }[];
+    results: {status: string; notes: string}[];
+    parts: {description: string; partNumber: string; quantity: number}[];
     notes: string;
     safety_instructions: string;
     cancellation_reason: string;

@@ -23,8 +23,12 @@ dist/
 .angular/
 *.tsbuildinfo
 
-# Docker
-.dockerignore
+# Referência local usada para sincronizar esta versão
+/mantis_english_v3-main/
+
+# Modelo local de reconhecimento por imagem
+/backend/models/
+Manuais/
 
 # IDE
 .vscode/

@@ -1,6 +1,1 @@
-{
-    "extends": "../tsconfig.app.json",
-    "files": ["dashboard.visual.ts"],
-    "include": ["../src/**/*.d.ts"],
-    "compilerOptions": { "outDir": "../.tmp-test-dashboard" }
-}
+{"extends":"../tsconfig.app.json","files":["dashboard.visual.ts"],"include":["../src/**/*.d.ts"],"compilerOptions":{"rootDir":"..","outDir":"../.tmp-test-dashboard"}}

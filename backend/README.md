@@ -1,8 +1,8 @@
-# MANTIS �?" API Django para o Angular
+# MANTIS — API Django para o Angular
 
-Este diretório contém exclusivamente o backend: API JSON, autenticação, validação, regras de negócio, modelos e migrações PostgreSQL. As telas operacionais ficam em `../frontend` (Angular). O Django também fornece o painel administrativo `/admin/`.
+Este diretório contém a API Django, as regras de negócio, as migrações PostgreSQL e os modelos de documentos de manutenção. As telas da aplicação ficam em `../frontend` (Angular).
 
-A API mantém os caminhos e os formatos de dados consumidos pelo Angular. A estrutura utiliza views/viewsets DRF, serializers, filtros, permissões e serviços. Consulte [ESTRUTURA.md](ESTRUTURA.md) para navegar pelo backend.
+A API publica os caminhos e formatos consumidos pelo Angular desta versão.
 
 ## Iniciar no Windows
 
@@ -21,22 +21,22 @@ npm install
 npm start
 ```
 
-Interface: **http://localhost:4200**. API: **http://127.0.0.1:8000/api/health**. O proxy Angular encaminha `/api` para a porta 8000. O Django Admin fica em http://127.0.0.1:8000/admin/, com acesso por matrícula e senha de administrador ativo.
+Interface: **http://localhost:4200**. API: **http://127.0.0.1:8000/api/health**. O proxy Angular encaminha `/api` para a porta 8000. Não existe página de login ou painel no Django.
 
-O banco padrão usa porta **5433**, nome `mantis` e o serviço `postgres` de `docker/compose.yml`. O `.env` da raiz configura Django e Docker; ambos usam os campos `BD_*`.
+As instalações novas usam a porta **5434**, o banco `mantis_django` e o volume `mantis-django_mantis_django_pgdata`. Para atualizar o Projeto-Mantis, mantenha o `.env` original na raiz e o volume do Compose anterior. Consulte as [instruções de atualização](../README.md#atualizar-uma-instalação-existente).
 
 ## Instalação manual
 
 ```powershell
 py -3 -m venv .venv
 .\.venv\Scripts\python.exe -m pip install -r requirements.lock.txt
-Copy-Item ..\.env.example ..\.env
+Copy-Item .env.example .env
 ```
 
 Configure `DJANGO_SECRET_KEY` (32+ caracteres), `POSTGRES_PASSWORD` e a mesma senha em `DATABASE_URL`. Codifique caracteres reservados na URL. O inicializador usa senhas hexadecimais para evitar esse problema. Depois:
 
 ```powershell
-docker compose --env-file ../.env -f docker/compose.yml up -d --wait postgres
+docker compose up -d --wait postgres
 .\.venv\Scripts\python.exe manage.py migrate
 .\.venv\Scripts\python.exe manage.py create_admin
 .\.venv\Scripts\python.exe manage.py runserver 127.0.0.1:8000
@@ -76,7 +76,7 @@ Criações/edições recebem JSON com os nomes camelCase que o Angular já envia
 
 No atendimento técnico da OS, administrador/técnico registram causa raiz, solução corretiva e solução preventiva. A seção **Spare Parts e solicitações** registra a solicitação de peça diretamente com quantidade, solicitante, observação, OS, máquina e serial histórico. Não cria compra, não gera rascunho e não exige gestor. O servidor determina máquina e serial a partir da OS. Solicitação de compra é um processo separado em **Solicitações de compra**, onde permanecem rascunho, ficha técnica e aprovação. Solicitar uma peça não registra retirada ou consumo de estoque.
 
-Novas OS exigem `equipmentId` e `problemTypeId`, correspondentes a um equipamento acessível e a um problema ativo do catálogo. A descrição é copiada do catálogo para preservar o histórico. O operador recebe a prioridade padrão do problema; administrador/técnico podem informar `priority`. Problemas podem valer para todos os equipamentos ou para um tipo específico. A equipe mantém o catálogo em **Central de Cadastros �?' Problemas de manutenção**, inclusive edição, desativação e reativação. As migrações incluem oito opções iniciais editáveis e preservam as OS anteriores.
+Novas OS exigem `equipmentId` e `problemTypeId`, correspondentes a um equipamento acessível e a um problema ativo do catálogo. A descrição é copiada do catálogo para preservar o histórico. O operador recebe a prioridade padrão do problema; administrador/técnico podem informar `priority`. Problemas podem valer para todos os equipamentos ou para um tipo específico. A equipe mantém o catálogo em **Central de Cadastros → Problemas de manutenção**, inclusive edição, desativação e reativação. As migrações incluem oito opções iniciais editáveis e preservam as OS anteriores.
 
 Administrador gerencia usuários e os cadastros mestres. Técnico pode criar setores, linhas e equipamentos, montar linhas, atender OS e manter fichas técnicas; não altera/exclui os cadastros mestres. Operador só consulta as máquinas/OS da linha ativa atribuída e abre OS nela. Pode solicitar compra vinculada a uma OS da própria linha pela API.
 
@@ -94,18 +94,26 @@ Na cópia restaurada, antes de `migrate`:
 
 O comando reaplica os sete scripts SQL aditivos, adiciona `users.last_login`, registra a migração inicial com `--fake-initial` e executa as demais migrações. Não elimina cadastros. Para banco novo vazio, use apenas `migrate`. Reversão de uma adoção deve ser feita restaurando backup, sem reverter migrações de tabelas adotadas.
 
-## Docker e execução da API
+## API em Docker
 
-O Compose atual, na raiz, inicia o PostgreSQL. A API é executada pelo inicializador ou por `manage.py runserver`; o Angular roda separadamente. O `Dockerfile` de backend permanece disponível para construir uma imagem da API com Waitress, mas o Compose atual não declara um serviço `web`.
+Configure `.env` e execute:
 
-Em produção, sirva o build Angular por um servidor web e encaminhe `/api` para o Django na mesma origem. Configure HTTPS, `DJANGO_DEBUG=false`, `DJANGO_ALLOWED_HOSTS` e as origens permitidas conforme o ambiente.
+```powershell
+docker compose --profile app build web
+docker compose up -d --wait postgres
+docker compose --profile app run --rm web python manage.py migrate
+docker compose --profile app run --rm web python manage.py create_admin
+docker compose --profile app up -d web
+```
+
+O contêiner usa Waitress e expõe somente a API. Angular continua sendo executado/servido separadamente. Em produção, sirva o build Angular por um servidor web e encaminhe `/api` para o Django na mesma origem; o Django não precisa servir o build. Configure HTTPS, `DJANGO_DEBUG=false` e `DJANGO_ALLOWED_HOSTS`. O proxy de desenvolvimento dispensa CORS; origens diferentes em produção exigem uma configuração explícita antes da publicação.
 
 ## Testes
 
 Teste isolado em SQLite na memória, sem tocar no banco configurado:
 
 ```powershell
-.\.venv\Scripts\python.exe manage.py test --settings=config.test_postgres
+.\.venv\Scripts\python.exe manage.py test --settings=config.test_settings
 ```
 
 Teste com PostgreSQL exclusivo de desenvolvimento, incluindo migrações e concorrência:
@@ -114,11 +122,11 @@ Teste com PostgreSQL exclusivo de desenvolvimento, incluindo migrações e conco
 .\.venv\Scripts\python.exe manage.py test
 ```
 
-O segundo comando cria um banco `test_<nome configurado>` e exige permissão para criar bancos. O teste de concorrência é pulado no SQLite.
+O segundo comando cria um banco `test_<nome configurado>` e exige permissão para criar bancos. O teste de concorrência é pulado no SQLite. Confira `VERIFICATION.md` para os resultados da migração de arquitetura.
 
 ## Ficha do equipamento na preventiva
 
-Em **Central de Cadastros �?' Check List de Preventiva**, a área **Equipamentos** abre a ficha automaticamente ao selecionar uma máquina, inclusive sem preventiva configurada. A navegação separa **Equipamentos**, **Cronograma** e **Ordens de serviço**; os indicadores de prazo filtram o cronograma. Listas de agenda e OS mostram inicialmente oito registros, com a ação **Mostrar mais 8**. Os dados técnicos extensos e o histórico geral de execuções ficam recolhidos até serem expandidos. O botão **Ficha** no cronograma também abre a identificação do equipamento. As abas dão acesso ao checklist e à emissão da OS, à foto/manual e ao histórico de movimentações e OS preventivas carregadas. O histórico de OS preserva o recorte da listagem existente: todas as abertas e as últimas 100 encerradas.
+Em **Central de Cadastros → Check List de Preventiva**, a área **Equipamentos** abre a ficha automaticamente ao selecionar uma máquina, inclusive sem preventiva configurada. A navegação separa **Equipamentos**, **Cronograma** e **Ordens de serviço**; os indicadores de prazo filtram o cronograma. Listas de agenda e OS mostram inicialmente oito registros, com a ação **Mostrar mais 8**. Os dados técnicos extensos e o histórico geral de execuções ficam recolhidos até serem expandidos. O botão **Ficha** no cronograma também abre a identificação do equipamento. As abas dão acesso ao checklist e à emissão da OS, à foto/manual e ao histórico de movimentações e OS preventivas carregadas. O histórico de OS preserva o recorte da listagem existente: todas as abertas e as últimas 100 encerradas.
 
 A aba **Spare Parts** pesquisa o catálogo geral disponível para compras por código, part number, descrição, fabricante ou categoria. Não filtra nem cria compatibilidade com a máquina. Selecione até 100 peças, informe quantidades, gestor e justificativa e use **Gerar solicitação de compra**. A operação cria um único rascunho com todos os itens, sem equipamento ou OS vinculados; envio, ficha técnica e aprovação permanecem em **Solicitações de compra**. A lista não movimenta estoque e permanece temporária até gerar o rascunho: sair ou recarregar a página descarta os itens ainda não gravados.
 
@@ -140,12 +148,12 @@ O comando atualiza `maintenance/document_templates/preventive_calendar_2026.json
 
 ## Limites
 
-Não inclui notificações externas, PDF, QR Code, IA, emissão automática de OS pelo calendário ou MTBF. Estoque possui movimentações e inventário; o painel calcula MTTR pela duração dos atendimentos concluídos. O limite de login usa cache local por processo; produção com vários processos exige cache compartilhado e limitação no proxy. Anexos dependem do backup PostgreSQL. Validação de assinatura não é antivírus. `runserver` e o inicializador são para desenvolvimento local.
+A busca por foto usa leitura de etiqueta e pode usar o modelo opcional DINOv2. O estoque permite movimentações por setor e integração com recebimentos de compras. Notificações externas e indicadores MTBF/MTTR estão fora desta versão. O limite de login usa cache local por processo; produção com vários processos exige cache compartilhado e limitação no proxy. Anexos dependem do backup PostgreSQL. Validação de assinatura não é antivírus. `runserver` e o inicializador são para desenvolvimento local.
 
 
 ### Identificação e tempos do atendimento
 
-A abertura da OS representa o início da parada. Em **Ordens de serviço �?' Atender**, o técnico ou administrador conectado confirma sua própria matrícula e senha em **Iniciar atendimento** (`POST /api/orders/:id/start`). O servidor registra o responsável e `started_at` uma única vez. Abrir o modal não inicia o atendimento. Outra conta não pode assumir ou concluir essa OS. A OS concluída não pode ser reaberta por este fluxo.
+A abertura da OS representa o início da parada. Em **Ordens de serviço → Atender**, o técnico ou administrador conectado confirma sua própria matrícula e senha em **Iniciar atendimento** (`POST /api/orders/:id/start`). O servidor registra o responsável e `started_at` uma única vez. Abrir o modal não inicia o atendimento. Outra conta não pode assumir ou concluir essa OS. A OS concluída não pode ser reaberta por este fluxo.
 
 O fechamento grava `finished_at` e `downtime_seconds` (abertura até fechamento, incluindo espera pelo técnico). O status da linha consulta `GET /api/orders?lineId=...` a cada 15 segundos, respeitando a linha do operador, exibindo todas as OS em aberto e as últimas 20 concluídas. O contador é por OS e não soma paradas simultâneas da linha. O navegador atualiza os minutos a cada segundo, tomando como referência o relógio do servidor; após concluir, o total fica fixo. O horário de abertura não é um horário de parada digitado retroativamente.
 
@@ -154,7 +162,7 @@ O fechamento grava `finished_at` e `downtime_seconds` (abertura até fechamento,
 
 Na lista de OS ou no atendimento, **Gerar pendência** registra descrição e prioridade. O servidor determina OS, máquina, serial e linha, ignorando IDs de contexto enviados pelo cliente. Máquina sem linha não pode gerar pendência de linha. O registro independe do fechamento da OS: concluir uma OS não resolve suas pendências automaticamente.
 
-Em **Central de Cadastros �?' Pendências de linha**, os registros são agrupados por linha, com pesquisa e filtros de linha/situação. **Registrar solução** salva o texto da solução, autor e horário. A linha e o serial de origem permanecem no histórico se a máquina for movida. Técnico e administrador podem consultar, registrar e resolver; o operador não acessa esse módulo.
+Em **Central de Cadastros → Pendências de linha**, os registros são agrupados por linha, com pesquisa e filtros de linha/situação. **Registrar solução** salva o texto da solução, autor e horário. A linha e o serial de origem permanecem no histórico se a máquina for movida. Técnico e administrador podem consultar, registrar e resolver; o operador não acessa esse módulo.
 
 Contratos: `GET/POST /api/orders/:id/pendencies`, `GET /api/line-pendencies?lineId=...&status=PENDENTE`, `PATCH /api/line-pendencies/:id` com `{status: "RESOLVIDA", resolution: "..."}`. A abertura de OS no painel da linha é feita pelo clique na máquina; os botões Nova OS e Atualizar foram removidos desse painel.
 
@@ -163,11 +171,11 @@ Contratos: `GET/POST /api/orders/:id/pendencies`, `GET /api/line-pendencies?line
 A rota `/ordens` usa um painel no estilo de chegadas e partidas: ao vivo mostra todas as linhas ativas, uma linha por OS em aberto e indicação explícita de linhas sem OS aberta. O histórico separado mostra as últimas 100 OS concluídas. O atendimento é aberto pelo número da OS; **Gerar pendência** fica somente dentro do atendimento.
 
 **Modo exposição** abre `/status-linhas` na mesma sessão autenticada, sem menu lateral ou cabeçalho administrativo. O botão **Tela cheia** permite ocupar o monitor. O painel consulta `GET /api/line-status` a cada 15 segundos e atualiza o contador a cada segundo. No modo de exposição as páginas alternam a cada 15 segundos, com quantidade de registros ajustada à altura da tela. Os dados de todas as OS ativas são retornados, sem o limite de 200 da listagem antiga. Operador visualiza somente sua linha. Falhas de conexão mostram um alerta explícito de dados desatualizados.
-# Código em inglês e banco em português (migração 0012)
+# Código e banco em português (migração 0012)
 
-O login e as ações dos cadastros usam nomes em inglês, como
-`login`, `save`, `edit`, `loadData` e `UserForm`.
-As 21 tabelas de negócio e suas colunas físicas continuam em português:
+O login e as ações dos cadastros passaram a usar nomes em português, como
+`entrar`, `salvar`, `editar`, `carregarDados` e `FormularioUsuario`.
+As 21 tabelas de negócio e suas colunas físicas também usam português:
 `usuarios.matricula`, `usuarios.senha_hash`, `equipamentos.numero_serie`.
 
 Os atributos ORM, as chaves HTTP/JSON e os nomes exigidos pelo Django/Angular
@@ -182,17 +190,16 @@ banco; depois execute `python manage.py migrate`. Não edite migrações antigas
 Para atualizar o guia e os metadados sem exportar os registros:
 
 ```powershell
-python manage.py map_database --output ../docs/database/generated
-python manage.py document_database --output ../docs/database/generated
+python manage.py mapear_banco --output ../docs/banco-postgres/portugues
+python manage.py documentar_portugues --output ../docs/banco-postgres/portugues
 ```
 
-Consulte `docs/README.md` para localizar os guias mantidos e distinguir as referências históricas dos metadados gerados.
+Abra `docs/banco-postgres/portugues/GUIA_PORTUGUES.html` para consultar exemplos,
+pesquisar os nomes e baixar os formatos CSV, SQL e Mermaid.
 
-## Organização do código
+## Organização do código em português
 
-Consulte [ESTRUTURA.md](ESTRUTURA.md) para seguir o caminho da informação da tela até o banco.
-O frontend usa `features`, `core` e `shared`. As regras Django estão
-organizadas por domínio em `maintenance/services/`.
-Os comandos canônicos usam nomes em inglês: `create_admin`, `adopt_legacy`,
-`map_database`, `prepare_preventive_calendar`, `document_database` e `generate_er`.
-
+Consulte `../PHASE1_README.md` para seguir o caminho da informação da tela até o banco.
+O frontend usa `funcionalidades`, `nucleo` e `compartilhados`. As regras Django estão
+em `servicos.py`, `preventivas.py`, `ordens_preventivas.py` e `agenda_preventiva.py`.
+Os módulos e comandos antigos encaminham para as implementações atuais por compatibilidade.

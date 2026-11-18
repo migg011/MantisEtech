@@ -24,7 +24,7 @@ export interface WorkOrder {
     corrective_action: string | null;
     preventive_action: string | null;
 }
-export interface WorkOrderPart {
+export interface OrderSparePart {
     id: number;
     code: string;
     description: string;
@@ -35,7 +35,7 @@ export interface WorkOrderPart {
     preferred_supplier: string | null;
     compatible: boolean;
 }
-export interface WorkOrderPurchase {
+export interface OrderPurchaseRequest {
     id: number;
     work_order_id: number | null;
     equipment_id: number | null;
@@ -47,7 +47,7 @@ export interface WorkOrderPurchase {
     status: string;
     created_at: string;
 }
-export interface WorkOrderPartRequisition {
+export interface OrderPartRequisition {
     id: number;
     spare_part_id: number;
     equipment_serial: string | null;

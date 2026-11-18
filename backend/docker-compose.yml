@@ -1,0 +1,36 @@
+# Orquestra o PostgreSQL e, com --profile app, a API Django em contêineres separados.
+# O volume mantém os dados entre reinicializações; as credenciais vêm do .env local.
+name: mantis-django
+services:
+  postgres:
+    image: postgres:17-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB:-mantis_django}
+      POSTGRES_USER: ${POSTGRES_USER:-mantis_django}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?Defina POSTGRES_PASSWORD no .env}
+    ports:
+      - '127.0.0.1:5434:5432'
+    volumes:
+      - mantis_django_pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready -U $$POSTGRES_USER -d $$POSTGRES_DB']
+      interval: 5s
+      timeout: 5s
+      retries: 10
+  # O frontend Angular continua separado; este serviço publica somente /api.
+  web:
+    build: .
+    profiles: ['app']
+    restart: unless-stopped
+    env_file: .env
+    environment:
+      DATABASE_URL: postgresql://${POSTGRES_USER:-mantis_django}:${POSTGRES_PASSWORD:?Defina POSTGRES_PASSWORD}@postgres:5432/${POSTGRES_DB:-mantis_django}
+      DJANGO_DEBUG: 'false'
+    ports:
+      - '127.0.0.1:8000:8000'
+    depends_on:
+      postgres:
+        condition: service_healthy
+volumes:
+  mantis_django_pgdata:

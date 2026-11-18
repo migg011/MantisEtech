@@ -1,7 +1,8 @@
 /** Contrato de dados JSON: tipa a resposta para o Angular; não cria tabelas nem valida requisições no servidor. */
-import { PreventiveSchedule } from './preventive.model';
+import { EquipmentPreventive } from './preventive.model';
 
 export interface Equipment {
+    sector_id?: number | null;
     sector_name?: string | null;
     width_mm?: number | string | null;
     height_mm?: number | string | null;
@@ -16,7 +17,7 @@ export interface Equipment {
     process_description?: string | null;
     model_number?: string | null;
     name?: string;
-    preventive_schedules?: PreventiveSchedule[];
+    preventive_schedules?: EquipmentPreventive[];
     id: number;
     equipment_type_id: number;
     type_name: string;

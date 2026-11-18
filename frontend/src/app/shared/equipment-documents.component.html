@@ -1,0 +1,21 @@
+@if (loading()) {
+    <p role="status">Consultando documentos...</p>
+} @else if (!error() && !files().length) {
+    <p class="muted">Nenhum documento cadastrado para este equipamento.</p>
+}
+@if (error()) {
+    <p class="error" role="alert">{{ error() }}</p>
+}
+<ul>
+    @for (file of files(); track file.kind) {
+        <li>
+            <span><strong>{{ labels[file.kind] }}</strong> · {{ file.filename }}</span>
+            <button type="button" mat-stroked-button [disabled]="!!opening()" (click)="open(file)">
+                {{ opening() === file.kind ? 'Abrindo...' : file.kind === 'PHOTO' ? (photo() ? 'Ocultar foto' : 'Ver foto') : 'Abrir PDF' }}
+            </button>
+        </li>
+    }
+</ul>
+@if (photo()) {
+    <img [src]="photo()" alt="Foto do equipamento">
+}

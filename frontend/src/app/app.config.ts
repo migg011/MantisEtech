@@ -4,11 +4,11 @@ import { provideHttpClient, withInterceptors } from '@angular/common/http';
 import { provideRouter } from '@angular/router';
 import { provideAnimationsAsync } from '@angular/platform-browser/animations/async';
 import { MAT_FORM_FIELD_DEFAULT_OPTIONS } from '@angular/material/form-field';
-import { authenticationInterceptor } from './services';
+import { authInterceptor } from './services';
 import { routes } from './app.routes';
 export const appConfig: ApplicationConfig = {
     providers: [
-        provideHttpClient(withInterceptors([authenticationInterceptor])),
+        provideHttpClient(withInterceptors([authInterceptor])),
         provideRouter(routes),
         provideAnimationsAsync(),
         {
@@ -16,8 +16,8 @@ export const appConfig: ApplicationConfig = {
             useValue: {
                 appearance: 'outline',
                 floatLabel: 'always',
-                subscriptSizing: 'dynamic',
-            },
-        },
-    ],
+                subscriptSizing: 'dynamic'
+            }
+        }
+    ]
 };
