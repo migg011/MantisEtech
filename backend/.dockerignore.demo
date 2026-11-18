@@ -1,9 +1,0 @@
-**/.env
-**/.env.*
-**/.venv
-**/node_modules
-**/.angular
-**/dist
-**/__pycache__
-**/*.py[cod]
-docs

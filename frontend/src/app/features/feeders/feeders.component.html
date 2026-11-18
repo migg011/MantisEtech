@@ -1,0 +1,183 @@
+<div class="page">
+    @if (selected(); as feeder) {
+        <button type="button" mat-stroked-button [disabled]="savingMaintenance()" (click)="selected.set(null)">
+            Voltar para feeders
+        </button>
+        <h1>Cadastro do feeder #{{ feeder.id }}</h1>
+        <section class="card">
+            <h2>{{ feeder.part_number }}</h2>
+            <p class="muted">{{ platforms[feeder.platform] }} · {{ feeder.width }} · {{ feeder.line_name || 'Sem linha vinculada' }}</p>
+            @if (feeder.platform === 'NPM' && (feeder.model_number || feeder.serial_number || feeder.tape_type || feeder.manufacturing_code)) {
+                <dl class="feeder-specs">
+                    @if (feeder.model_number) { <div><dt>Modelo</dt><dd>{{ feeder.model_number }}</dd></div> }
+                    @if (feeder.serial_number) { <div><dt>Número de série</dt><dd>{{ feeder.serial_number }}</dd></div> }
+                    @if (feeder.tape_type) { <div><dt>Tipo de fita</dt><dd>{{ tapes[feeder.tape_type] }}</dd></div> }
+                    @if (feeder.manufacturing_code) { <div><dt>Código de fabricação</dt><dd>{{ feeder.manufacturing_code }}</dd></div> }
+                </dl>
+            }
+        </section>
+        @if (historyError()) {
+            <p class="error" role="alert">{{ historyError() }}</p>
+            @if (!history()) {
+                <button type="button" mat-stroked-button (click)="openHistory(feeder)">Tentar novamente</button>
+            }
+        }
+        @if (history(); as entries) {
+            <section class="card">
+                <h2>Registrar manutenção</h2>
+                <form #maintenanceForm="ngForm" class="feeder-form" (ngSubmit)="addMaintenance(feeder)">
+                    <label>Tipo
+                        <select name="kind" [(ngModel)]="maintenanceKind" required>
+                            <option [ngValue]="null">Selecione o tipo</option>
+                            @for (kind of maintenanceKinds; track kind) {
+                                <option [ngValue]="kind">{{ maintenanceLabels[kind] }}</option>
+                            }
+                        </select>
+                    </label>
+                    <label>Data da execução
+                        <input type="date" name="date" [(ngModel)]="maintenanceDate" required>
+                    </label>
+                    <label class="description">O que foi feito?
+                        <textarea name="description" [(ngModel)]="description" maxlength="4000" required rows="2"></textarea>
+                    </label>
+                    <button mat-flat-button class="button-confirm primary" [disabled]="maintenanceForm.invalid || savingMaintenance()">
+                        Registrar manutenção
+                    </button>
+                </form>
+            </section>
+            <section class="card">
+                <h2>Histórico de manutenções</h2>
+                @for (entry of entries; track entry.id) {
+                    <article>
+                        <h3>{{ entry.date | date:'dd/MM/yyyy' }} · {{ maintenanceLabels[entry.kind] }}</h3>
+                        <p class="notes">{{ entry.description }}</p>
+                    </article>
+                } @empty {
+                    <p class="muted">Nenhuma manutenção registrada para este feeder.</p>
+                }
+            </section>
+        } @else if (!historyError()) {
+            <p class="muted">Carregando histórico...</p>
+        }
+    } @else {
+        <div class="eyebrow"><a [routerLink]="['/setores', sectorId]">VOLTAR AO SETOR</a></div>
+        <h1>Módulo de feeder</h1>
+        @if (error()) {
+            <p class="error" role="alert">{{ error() }}</p>
+        }
+        @if (data(); as sector) {
+            <p class="muted">{{ sector.sector_name }} · Cadastro e histórico de manutenções</p>
+            <section class="card">
+                <h2>Feeders cadastrados</h2>
+                <button type="button" mat-flat-button class="button-confirm primary" (click)="openRegistration(registration)">
+                    Cadastrar feeder
+                </button>
+                @if (sector.feeders.length) {
+                    <div class="table-wrap">
+                        <table>
+                            <thead><tr><th>ID</th><th>Linha</th><th>Plataforma</th><th>Part Number</th><th>Width</th><th>Ação</th></tr></thead>
+                            <tbody>
+                                @for (feeder of sector.feeders; track feeder.id) {
+                                    <tr>
+                                        <td>#{{ feeder.id }}</td>
+                                        <td>{{ feeder.line_name || 'Sem linha' }}</td>
+                                        <td>{{ platforms[feeder.platform] }}</td>
+                                        <td>{{ feeder.part_number }}</td>
+                                        <td>{{ feeder.width }}</td>
+                                        <td><button type="button" mat-stroked-button [disabled]="savingFeeder()"
+                                                    (click)="openHistory(feeder)">Abrir cadastro</button></td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                } @else {
+                    <p class="muted">Nenhum feeder cadastrado neste setor.</p>
+                }
+            </section>
+        } @else if (!error()) {
+            <p class="muted">Carregando feeders...</p>
+        }
+    }
+</div>
+
+<ng-template #registration>
+    <form #feederForm="ngForm" class="feeder-modal" (ngSubmit)="addFeeder()">
+        <header class="feeder-modal-header">
+            <div class="feeder-modal-icon"><mat-icon>precision_manufacturing</mat-icon></div>
+            <div>
+                <h2 id="feeder-dialog-title">Novo feeder</h2>
+                <p>Preencha os dados do feeder para este setor.</p>
+            </div>
+            <button type="button" class="feeder-modal-close" aria-label="Fechar modal" [disabled]="savingFeeder()" (click)="closeRegistration()">
+                <mat-icon>close</mat-icon>
+            </button>
+        </header>
+        <mat-dialog-content>
+            @if (registrationError()) {
+                <p class="error" role="alert">{{ registrationError() }}</p>
+            }
+            <fieldset class="feeder-fields" [disabled]="savingFeeder()" aria-label="Dados do feeder">
+                @if (data(); as sector) {
+                    @if (sector.lines.length) {
+                        <label>Linha SMT
+                            <select name="line" [(ngModel)]="lineId" required>
+                                <option [ngValue]="null">Selecione a linha</option>
+                                @for (line of sector.lines; track line.id) {
+                                    <option [ngValue]="line.id">{{ line.name }}</option>
+                                }
+                            </select>
+                        </label>
+                    }
+                }
+                <fieldset class="platform-field">
+                    <legend>Plataforma</legend>
+                    <div class="platform-options">
+                        <label><input type="radio" name="platform" value="NXT" [(ngModel)]="platform" required>
+                            <span>NXT <small>Fuji</small></span>
+                        </label>
+                        <label><input type="radio" name="platform" value="NPM" [(ngModel)]="platform" required>
+                            <span>NPM <small>Panasonic</small></span>
+                        </label>
+                    </div>
+                </fieldset>
+                <label>Part Number
+                    <input name="partNumber" [(ngModel)]="partNumber" maxlength="100" required>
+                </label>
+                <label>Largura
+                    <input name="width" [(ngModel)]="width" maxlength="40" placeholder="Ex.: 8 mm" required>
+                </label>
+                @if (platform === 'NPM') {
+                    <fieldset class="panasonic-fields">
+                        <legend>Dados da etiqueta Panasonic <small>opcionais</small></legend>
+                        <div class="feeder-fields">
+                            <label>Modelo (Model No.)
+                                <input name="modelNumber" [(ngModel)]="modelNumber" maxlength="100" placeholder="Ex.: KXFW1KS5A00">
+                            </label>
+                            <label>Número de série
+                                <input name="serialNumber" [(ngModel)]="serialNumber" maxlength="100">
+                            </label>
+                            <label>Tipo de fita
+                                <select name="tapeType" [(ngModel)]="tapeType">
+                                    <option value="">Selecione</option>
+                                    <option value="EMBOSS">{{ tapes.EMBOSS }}</option>
+                                    <option value="PAPER">{{ tapes.PAPER }}</option>
+                                    <option value="BOTH">{{ tapes.BOTH }}</option>
+                                </select>
+                            </label>
+                            <label>Código de fabricação
+                                <input name="manufacturingCode" [(ngModel)]="manufacturingCode" maxlength="40" placeholder="Ex.: 2017G">
+                            </label>
+                        </div>
+                    </fieldset>
+                }
+            </fieldset>
+        </mat-dialog-content>
+        <footer class="feeder-modal-footer">
+            <button class="feeder-cancel" type="button" [disabled]="savingFeeder()" (click)="closeRegistration()">Cancelar</button>
+            <button class="button-confirm feeder-save" type="submit" [disabled]="feederForm.invalid || !platform || !partNumber.trim() || !width.trim() || savingFeeder()">
+                {{ savingFeeder() ? 'Salvando...' : 'Salvar' }}
+            </button>
+        </footer>
+    </form>
+</ng-template>

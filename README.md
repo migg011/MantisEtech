@@ -1,77 +1,32 @@
-# Projeto Mantis
+# MANTIS
 
-Sistema de gestão de manutenção industrial, equipamentos, linhas SMT e peças de reposição.
+Sistema de manutenção industrial com interface Angular em `frontend`, API Django em `backend` e banco PostgreSQL.
 
-## Estrutura
+## Executar no Windows
 
-- `frontend`: interface Angular.
-- `backend`: API Django, migrações e testes.
-- [Estrutura do backend](backend/ESTRUTURA.md): organização DRF com serviços por domínio.
-- `docs`: documentação funcional, banco PostgreSQL, diagramas e material de apresentação.
-- [Índice da documentação](docs/README.md): guias funcionais e referências históricas do banco.
-
-## Novidades na branch dev
-
-A branch `dev` reúne um conjunto de features portadas da cópia de apresentação, seguindo a estrutura do origin:
-
-- Vínculo entre usuário e setor, restringindo a visibilidade de equipamentos e o fechamento de OS ao setor da conta.
-- Faixas em tensão, frequência e pressão do equipamento e nova categoria `ELECTRICAL` para anexar o esquema elétrico.
-- Cadastro de **feeders** com dados Panasonic (modelo, série, tipo de fita, código do fabricante) e histórico de preventiva/conserto por feeder.
-- Sessão de operador no totem (`/api/operator-sessions`) para registrar quem está logado em qual linha.
-- Horário planejado na agenda de preventiva, aproveitado na geração das ordens.
-- Registro de atividades (`/api/activity-log`) com gravação automática em POST/PATCH/DELETE bem-sucedidos.
-- Entrada de peças por nota fiscal (`/api/spare-parts/receipts`), gravando vários movimentos de estoque em uma transação.
-- Comando `seed_demo` que preenche o banco com cadastros fictícios para a apresentação.
-- Deploy de demonstração no Render (`backend/Dockerfile.demo` + `render.yaml`).
-
-Veja `backend/ESTRUTURA.md` para onde cada peça encaixa na arquitetura DRF.
-
-## Executar localmente
-
-Consulte os pré-requisitos e detalhes em [backend/README.md](backend/README.md) .
-
-No primeiro terminal PowerShell:
+Use Python 3.12 ou superior, Node.js compatível com o Angular e Docker Desktop. Em um terminal, abra a pasta `backend` e execute:
 
 ```powershell
-cd backend
 .\start.ps1
 ```
 
-No segundo terminal:
+Em outro terminal, abra `frontend`:
 
 ```powershell
-cd frontend
 npm ci
 npm start
 ```
 
-Acesse `http://localhost:4200`. O Angular consulta a API em `127.0.0.1:8000`; o banco é PostgreSQL. Os arquivos `.env.example` orientam a configuração. Credenciais reais, bancos e backups não fazem parte do repositório.
+A interface fica em <http://localhost:4200>. O Angular encaminha `/api` para o Django na porta 8000. A API informa sua disponibilidade em <http://127.0.0.1:8000/api/health>.
 
-## Principais módulos
+## Atualizar uma instalação existente
 
-- Autenticação e perfis de acesso.
-- Setores, equipamentos, linhas SMT e totem de operação.
-- Ordens de serviço corretivas e preventivas, calendário e checklists.
-- Spare Parts com fotos, categorias, movimentações de estoque e inventário.
-- Solicitações de peças e compras.
-- Dashboard e documentação do banco de dados.
+O inicializador aceita o `.env` anterior na raiz com variáveis `BD_*` e usa o volume original do Compose. Em instalações novas, ele cria `backend/.env` e usa o PostgreSQL na porta 5434. Faça backup do banco existente antes de iniciar a atualização, pois o inicializador aplica migrações.
 
-Consulte [as categorias](docs/CATEGORIAS_SPARE_PARTS.md), [o estoque](docs/ENTRADA_PECAS.md) e [as propostas de reposição](docs/PROPOSTA_REPOSICAO_E_COMPRAS.md) para distinguir funcionalidades entregues das próximas etapas. Integração com IA e reposição automática permanecem em planejamento.
+As migrações `0030` a `0032` reconciliam o histórico do projeto com o esquema da versão nova. Os saldos globais anteriores passam a ter saldo no setor técnico `ESTOQUE-DEMO`, junto das movimentações e compras anteriores sem setor. A migração de preventivas atualiza o vencimento das agendas anuais ativas sem ordem aberta conforme a regra da nova versão.
 
-## Testes
+## Documentação
 
-Dentro de `backend`:
-
-```powershell
-.\.venv\Scripts\python.exe manage.py test --settings=config.test_postgres --noinput
-```
-
-Dentro de `frontend`:
-
-```powershell
-npm run build
-```
-
-O repositório é privado. A publicação do código não hospeda a aplicação nem transfere o banco de dados operacional.
-
-
+- [Backend](backend/README.md) para configuração, rotas e testes.
+- [Frontend](frontend/INSTRUCTIONS.md) para desenvolvimento e compilação.
+- [Documentação do projeto](docs/README.md) para os guias de domínio mantidos no repositório.

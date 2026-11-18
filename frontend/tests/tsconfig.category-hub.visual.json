@@ -1,0 +1,1 @@
+{"extends":"../tsconfig.app.json","files":["category-hub.visual.ts"],"include":["../src/**/*.d.ts"],"compilerOptions":{"rootDir":"..","outDir":"../.tmp-test-central-categorias"}}

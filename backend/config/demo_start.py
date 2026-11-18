@@ -1,4 +1,5 @@
 """Prepara o banco da demonstração antes de iniciar o servidor."""
+
 import os
 
 import django
@@ -8,7 +9,6 @@ from django.core.management.base import CommandError
 
 
 def main():
-    """Garante migrações, cria o administrador demo (se faltar) e sobe o Waitress."""
     hostname = os.environ.get('RENDER_EXTERNAL_HOSTNAME')
     if hostname:
         os.environ.setdefault('DJANGO_ALLOWED_HOSTS', f'{hostname},localhost,127.0.0.1')
@@ -27,6 +27,7 @@ def main():
         user.set_password(password)
         user.full_clean()
         user.save()
+
     elif os.environ.get('MANTIS_DEMO_RESET_ADMIN_PASSWORD') == 'true':
         user = User.objects.filter(registration='DEMO', role='ADMINISTRADOR', active=True).first()
         if user is None:

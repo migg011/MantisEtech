@@ -1,15 +1,16 @@
 """Persistência PostgreSQL e restrições de integridade; tabelas e colunas físicas em português, com compatibilidade da API e ORM."""
 
-from django.contrib.auth.base_user import AbstractBaseUser, BaseUserManager
 from uuid import uuid4
+
+from django.contrib.auth.base_user import AbstractBaseUser, BaseUserManager
 from django.db import models
 from django.db.models import Q
 from django.db.models.functions import Lower
 from django.utils import timezone
-from .portuguese_names import COLUMN_NAMES
+from .portuguese_schema import COLUNAS
 
 # Para aprendizagem: o atributo à esquerda continua sendo usado pelo ORM/API.
-# db_column maps the real column: registration -> usuarios.matricula.
+# db_column traduz a coluna real: registration -> usuarios.matricula.
 # Meta.db_table traduz a tabela. A migração 0012 renomeia sem apagar registros.
 # Essa ponte permite traduzir os módulos gradualmente e manter os contratos HTTP.
 
@@ -21,6 +22,7 @@ class Sector(models.Model):
     """Agrupa linhas e equipamentos, preservando o cadastro por desativação lógica."""
     code = models.CharField(max_length=40, unique=True, db_column='codigo')
     name = models.CharField('Nome', max_length=120, db_column='nome')
+    cost_center = models.CharField(max_length=80, blank=True, default='', db_column='centro_custo')
     description = models.TextField('Descrição', blank=True, null=True, db_column='descricao')
     active = models.BooleanField(default=True, db_column='ativo')
     created_at = models.DateTimeField(default=timezone.now, db_column='criado_em')
@@ -58,12 +60,12 @@ class UserManager(BaseUserManager):
         user.save(using=self._db)
         return user
     def create_superuser(self, registration, password=None, **extra):
-        """Cria um administrador com acesso ao sistema e ao Django Admin."""
+        """Define o perfil administrador deste sistema e delega à criação de usuário; não instala o painel admin do Django."""
         extra['role'] = 'ADMINISTRADOR'
         return self.create_user(registration, password, **extra)
 
 class User(AbstractBaseUser):
-    """Conta por matrícula, com perfil e linha do operador; usa a tabela usuarios e sua coluna senha_hash."""
+    """Conta por matrícula e perfil. A linha de trabalho pertence à sessão do operador."""
     # last_login é o nome esperado pelo Django; db_column traduz somente a coluna.
     last_login = models.DateTimeField('Último acesso', blank=True, null=True, db_column='ultimo_acesso')
     name = models.CharField('Nome', max_length=160, db_column='nome')
@@ -71,39 +73,25 @@ class User(AbstractBaseUser):
     password = models.TextField(db_column='senha_hash')
     role = models.CharField('Perfil', max_length=20, choices=ROLES, db_column='perfil')
     line = models.ForeignKey(Line, on_delete=models.PROTECT, null=True, blank=True, verbose_name='Linha SMT', db_column='linha_id')
-    sector = models.ForeignKey(Sector, on_delete=models.PROTECT, null=True, blank=True, verbose_name='Setor', db_column='setor_id')
     active = models.BooleanField(default=True, db_column='ativo')
     created_at = models.DateTimeField(default=timezone.now, db_column='criado_em')
     objects = UserManager()
     USERNAME_FIELD = 'registration'
     REQUIRED_FIELDS = ['name']
+    sector = models.ForeignKey(Sector, on_delete=models.PROTECT, null=True, blank=True, verbose_name='Setor', db_column='setor_id')
+    operator_line_id = None
     class Meta:
         """Mapeia User para a tabela usuarios; as configurações abaixo definem ordenação e/ou integridade quando declaradas."""
         db_table = 'usuarios'
         ordering = ['name']
-        constraints = [models.CheckConstraint(condition=~Q(role='OPERADOR') | Q(line__isnull=False), name='operator_requires_line')]
     @property
     def is_active(self):
         """Expõe o campo active no formato esperado pela autenticação Django."""
         return self.active
     @property
     def is_admin(self):
-        """Indicate whether the account has the administrator profile for internal rules."""
+        """Indica se a conta tem perfil administrador para as regras internas do sistema."""
         return self.role == 'ADMINISTRADOR'
-    @property
-    def is_staff(self):
-        return self.active and self.is_admin
-
-    @property
-    def is_superuser(self):
-        return self.active and self.is_admin
-
-    def has_perm(self, perm, obj=None):
-        return self.is_superuser
-
-    def has_module_perms(self, app_label):
-        return self.is_superuser
-
     @property
     def is_staff_member(self):
         """Identifica os perfis administrador e técnico usados nas operações de manutenção."""
@@ -112,33 +100,17 @@ class User(AbstractBaseUser):
         """Representação legível de User para mensagens e diagnósticos; não grava dados."""
         return f'{self.name} ({self.registration})'
 
-
-class ActivityLog(models.Model):
-    """Registro de atividades (POST/PATCH/DELETE) para auditoria administrativa."""
-    actor_id = models.PositiveBigIntegerField(db_column='autor_id')
-    actor_name = models.CharField('Autor', max_length=200, db_column='autor_nome')
-    actor_registration = models.CharField('Matrícula', max_length=80, db_column='autor_matricula')
-    method = models.CharField('Método HTTP', max_length=8, db_column='metodo')
-    route = models.CharField('Rota', max_length=180, db_column='rota')
-    target = models.JSONField('Alvo', default=dict, db_column='alvo')
-    created_at = models.DateTimeField(default=timezone.now, db_index=True, db_column='criado_em')
-    class Meta:
-        """Mapeia ActivityLog para a tabela registro_atividades."""
-        db_table = 'registro_atividades'
-        ordering = ['-created_at', '-pk']
-
-
 class OperatorSession(models.Model):
-    """Sessão aberta por um operador em um totem; carrega a linha ativa e expira automaticamente."""
     id = models.UUIDField(primary_key=True, default=uuid4, editable=False)
-    user = models.ForeignKey(User, on_delete=models.CASCADE, verbose_name='Operador', db_column='usuario_id')
-    line = models.ForeignKey(Line, on_delete=models.SET_NULL, null=True, blank=True, verbose_name='Linha ativa', db_column='linha_id')
+    user = models.ForeignKey(User, on_delete=models.CASCADE, db_column='usuario_id')
+    line = models.ForeignKey(Line, on_delete=models.SET_NULL, null=True, db_column='linha_id')
+    # Preserva o horário de abertura das sessões já registradas.
     opened_at = models.DateTimeField(default=timezone.now, db_column='aberta_em')
     expires_at = models.DateTimeField(db_index=True, db_column='expira_em')
+
     class Meta:
-        """Mapeia OperatorSession para a tabela sessoes_operadores."""
         db_table = 'sessoes_operadores'
-        ordering = ['-opened_at']
+
 
 class EquipmentType(models.Model):
     """Catálogo de tipos de equipamento utilizado pelo cadastro Angular."""
@@ -218,25 +190,24 @@ class FeederTape(models.TextChoices):
 
 
 class Feeder(models.Model):
-    """Cadastro do feeder associado a um setor e, opcionalmente, a uma linha."""
-    sector = models.ForeignKey(Sector, on_delete=models.PROTECT, related_name='feeders', verbose_name='Setor', db_column='setor_id')
-    line = models.ForeignKey(Line, on_delete=models.PROTECT, related_name='feeders', null=True, blank=True, verbose_name='Linha SMT', db_column='linha_id')
-    platform = models.CharField('Plataforma', max_length=3, choices=FeederPlatform.choices, db_column='plataforma')
-    part_number = models.CharField('Part number', max_length=100, db_column='part_number')
-    width = models.CharField('Largura', max_length=40, db_column='largura')
-    model_number = models.CharField('Modelo', max_length=100, blank=True, default='', db_column='modelo')
-    serial_number = models.CharField('Número de série', max_length=100, blank=True, default='', db_column='numero_serie')
-    tape_type = models.CharField('Tipo de fita', max_length=6, choices=FeederTape.choices, blank=True, default='', db_column='tipo_fita')
-    manufacturing_code = models.CharField('Código do fabricante', max_length=40, blank=True, default='', db_column='codigo_fabricante')
+    """Identifica cada feeder do setor e sua linha, quando houver."""
+
+    sector = models.ForeignKey(Sector, on_delete=models.PROTECT, related_name='feeders')
+    line = models.ForeignKey(Line, on_delete=models.PROTECT, related_name='feeders', null=True, blank=True)
+    platform = models.CharField(max_length=3, choices=FeederPlatform.choices)
+    part_number = models.CharField(max_length=100)
+    width = models.CharField(max_length=40)
+    model_number = models.CharField(max_length=100, blank=True, default='')
+    serial_number = models.CharField(max_length=100, blank=True, default='')
+    tape_type = models.CharField(max_length=6, choices=FeederTape.choices, blank=True, default='')
+    manufacturing_code = models.CharField(max_length=40, blank=True, default='')
+
     class Meta:
-        """Mapeia Feeder para a tabela feeders."""
         db_table = 'feeders'
         ordering = ['part_number', 'id']
         constraints = [
             models.CheckConstraint(condition=Q(platform__in=FeederPlatform.values), name='feeder_valid_platform'),
         ]
-    def __str__(self):
-        return f'{self.platform} {self.part_number}'
 
 
 class FeederMaintenanceType(models.TextChoices):
@@ -245,13 +216,14 @@ class FeederMaintenanceType(models.TextChoices):
 
 
 class FeederMaintenance(models.Model):
-    """Registro do que foi feito em uma preventiva ou conserto do feeder."""
-    feeder = models.ForeignKey(Feeder, on_delete=models.PROTECT, related_name='maintenance_records', verbose_name='Feeder', db_column='feeder_id')
-    kind = models.CharField('Tipo', max_length=10, choices=FeederMaintenanceType.choices, default=FeederMaintenanceType.PREVENTIVE, db_column='tipo')
-    date = models.DateField('Data', db_column='data')
-    description = models.TextField('Descrição', max_length=4000, db_column='descricao')
+    """Guarda o que foi feito em uma preventiva ou conserto do feeder."""
+
+    feeder = models.ForeignKey(Feeder, on_delete=models.PROTECT, related_name='maintenance_records')
+    kind = models.CharField(max_length=10, choices=FeederMaintenanceType.choices, default=FeederMaintenanceType.PREVENTIVE)
+    date = models.DateField()
+    description = models.TextField(max_length=4000)
+
     class Meta:
-        """Mapeia FeederMaintenance para a tabela feeder_preventives."""
         db_table = 'feeder_preventives'
         ordering = ['-date', '-id']
         constraints = [
@@ -264,7 +236,7 @@ class EquipmentPreventive(models.Model):
     equipment = models.ForeignKey(Equipment, on_delete=models.PROTECT, related_name='preventive_schedules', db_column='equipamento_id')
     frequency = models.CharField(max_length=20, choices=PREVENTIVE_FREQUENCIES, db_column='periodicidade')
     next_due = models.DateField(db_index=True, db_column='proximo_vencimento')
-    planned_time = models.TimeField('Horário planejado', null=True, blank=True, db_column='hora_programada')
+    planned_time = models.TimeField(null=True, blank=True, db_column='hora_programada')
     last_performed = models.DateField(null=True, blank=True, db_column='ultima_execucao')
     active = models.BooleanField(default=True, db_column='ativo')
     checklist_items = models.JSONField(null=True, blank=True, db_column='itens_roteiro')
@@ -435,23 +407,23 @@ class EquipmentMovement(models.Model):
         db_table = 'movimentacoes_equipamento'
         ordering = ['-created_at']
 
-class MaterialCategory(models.Model):
-    """Single catalog: normalize names to avoid duplicate categories."""
+class CategoriaMaterial(models.Model):
+    """Cadastro único: normaliza nomes para evitar categorias repetidas."""
     name = models.CharField('Nome', max_length=100, db_column='nome')
     name_key = models.CharField(max_length=64, unique=True, editable=False, db_column='chave_nome')
     description = models.CharField('Descrição', max_length=250, blank=True, default='', db_column='descricao')
     active = models.BooleanField(default=True, db_column='ativo')
 
     @staticmethod
-    def make_key(name):
+    def key_value(name_value):
         import hashlib, unicodedata
-        text = unicodedata.normalize('NFKD', ' '.join(name.split()).casefold())
-        text = ''.join(character for character in text if not unicodedata.combining(character))
-        return hashlib.sha256(text.encode()).hexdigest()
+        texto = unicodedata.normalize('NFKD', ' '.join(name_value.split()).casefold())
+        texto = ''.join(c for c in texto if not unicodedata.combining(c))
+        return hashlib.sha256(texto.encode()).hexdigest()
 
     def save(self, *args, **kwargs):
         self.name = ' '.join(self.name.split())
-        self.name_key = self.make_key(self.name)
+        self.name_key = self.key_value(self.name)
         super().save(*args, **kwargs)
 
     class Meta:
@@ -464,7 +436,7 @@ class SparePart(models.Model):
     description = models.CharField('Descrição', max_length=250, db_column='descricao')
     part_number = models.CharField('Part number', max_length=120, blank=True, null=True, db_column='numero_peca')
     manufacturer = models.CharField('Fabricante', max_length=160, blank=True, null=True, db_column='fabricante')
-    categories = models.ManyToManyField(MaterialCategory, blank=True, related_name='parts', through='SparePartCategory')
+    categorias = models.ManyToManyField(CategoriaMaterial, blank=True, related_name='pecas', db_table='categorias_pecas')
     category = models.CharField('Categoria', max_length=100, blank=True, null=True, db_column='categoria')
     unit = models.CharField('Unidade', max_length=20, default='UN', db_column='unidade')
     # Nulo significa que a contagem inicial ainda não foi informada.
@@ -476,7 +448,7 @@ class SparePart(models.Model):
     preferred_supplier = models.CharField('Fornecedor preferencial', max_length=160, blank=True, null=True, db_column='fornecedor_preferencial')
     average_cost = models.DecimalField('Custo médio', max_digits=14, decimal_places=2, blank=True, null=True, db_column='custo_medio')
     last_cost = models.DecimalField('Último custo', max_digits=14, decimal_places=2, blank=True, null=True, db_column='ultimo_custo')
-    # Empty preserves the unknown currency of values registered before this feature.
+    # Vazio preserva a moeda desconhecida dos valores cadastrados antes deste recurso.
     average_cost_currency = models.CharField('Moeda do custo médio', max_length=3, choices=[('BRL', 'R$'), ('USD', 'US$'), ('EUR', '€')], blank=True, default='', db_column='moeda_custo_medio')
     last_cost_currency = models.CharField('Moeda do último custo', max_length=3, choices=[('BRL', 'R$'), ('USD', 'US$'), ('EUR', '€')], blank=True, default='', db_column='moeda_ultimo_custo')
     photo_filename = models.CharField(max_length=255, null=True, db_column='nome_arquivo_foto')
@@ -496,9 +468,24 @@ class SparePart(models.Model):
         """Representação legível de SparePart para mensagens e diagnósticos; não grava dados."""
         return f'{self.part_number or self.code} — {self.description}'
 
-class StockMovement(models.Model):
-    """Movement history. The balance changes only together with this record in the same transaction."""
+class SectorStock(models.Model):
+    spare_part = models.ForeignKey(SparePart, on_delete=models.PROTECT, related_name='sector_stocks')
+    sector = models.ForeignKey(Sector, on_delete=models.PROTECT)
+    quantity = models.DecimalField(max_digits=14, decimal_places=3)
+    location = models.CharField(max_length=160, blank=True, default='')
+
+    class Meta:
+        db_table = 'estoque_peca_setor'
+        constraints = [
+            models.UniqueConstraint(fields=['spare_part', 'sector'], name='estoque_peca_setor_unico'),
+            models.CheckConstraint(condition=Q(quantity__gte=0), name='estoque_setor_nao_negativo'),
+        ]
+
+
+class MovimentacaoEstoque(models.Model):
+    """Histórico de lançamentos. O saldo só muda junto deste registro na mesma transação."""
     spare_part = models.ForeignKey(SparePart, on_delete=models.PROTECT, related_name='stock_movements', db_column='peca_id')
+    sector = models.ForeignKey(Sector, null=True, on_delete=models.PROTECT, db_column='setor_id')
     kind = models.CharField(max_length=12, choices=[('INICIAL','Saldo inicial'),('ENTRADA','Entrada'),('SAIDA','Saída'),('AJUSTE','Contagem de ajuste')], db_column='tipo')
     quantity = models.DecimalField(max_digits=14, decimal_places=3, db_column='quantidade_informada')
     previous_quantity = models.DecimalField(max_digits=14, decimal_places=3, null=True, db_column='saldo_anterior')
@@ -552,7 +539,7 @@ class SparePartTechnical(models.Model):
 
 # Gera os campos repetidos da ficha a partir de um único catálogo de nomes e rótulos.
 for _name, _label in TECHNICAL_FIELDS.items():
-    SparePartTechnical.add_to_class(_name, models.CharField(_label, max_length=10, blank=True, null=True, db_column=COLUMN_NAMES[_name]) if _name == 'ncm' else models.TextField(_label, blank=True, null=True, db_column=COLUMN_NAMES[_name]))
+    SparePartTechnical.add_to_class(_name, models.CharField(_label, max_length=10, blank=True, null=True, db_column=COLUNAS[_name]) if _name == 'ncm' else models.TextField(_label, blank=True, null=True, db_column=COLUNAS[_name]))
 
 class PartRequisition(models.Model):
     """Solicitação direta de peça para manutenção, independente do processo de compra."""
@@ -580,6 +567,7 @@ class PurchaseRequest(models.Model):
     work_order = models.ForeignKey(WorkOrder, on_delete=models.PROTECT, blank=True, null=True, verbose_name='Ordem de serviço', db_column='ordem_servico_id')
     equipment = models.ForeignKey(Equipment, on_delete=models.PROTECT, blank=True, null=True, verbose_name='Equipamento', db_column='equipamento_id')
     equipment_serial = models.CharField('Serial da máquina na solicitação', max_length=160, blank=True, null=True, db_column='serie_equipamento')
+    sector = models.ForeignKey(Sector, null=True, on_delete=models.PROTECT, db_column='setor_id')
     justification = models.TextField('Justificativa', db_column='justificativa')
     priority = models.CharField('Prioridade', max_length=12, choices=PRIORITIES, db_column='prioridade')
     manager_comment = models.TextField(null=True, db_column='parecer_gestor')
@@ -609,21 +597,57 @@ class PurchaseEvent(models.Model):
     actor = models.ForeignKey(User, on_delete=models.PROTECT, db_column='autor_id')
     action = models.CharField(max_length=32, db_column='acao')
     details = models.TextField(null=True, db_column='detalhes')
+    receipt = models.JSONField(null=True, blank=True, db_column='dados_recebimento')
     created_at = models.DateTimeField(default=timezone.now, db_column='criado_em')
     class Meta:
         """Mapeia PurchaseEvent para a tabela eventos_solicitacao_compra; as configurações abaixo definem ordenação e/ou integridade quando declaradas."""
         db_table = 'eventos_solicitacao_compra'
         ordering = ['created_at']
 
-# Domain catalog names are already exported directly by the class definitions above.
-
-
-class SparePartCategory(models.Model):
-    """Vínculo explícito para preservar as colunas da tabela de categorias existente."""
-
-    spare_part = models.ForeignKey(SparePart, on_delete=models.CASCADE, db_column='sparepart_id')
-    category = models.ForeignKey(MaterialCategory, on_delete=models.CASCADE, db_column='categoriamaterial_id')
+class ActivityLog(models.Model):
+    actor_id = models.PositiveBigIntegerField()
+    actor_name = models.CharField(max_length=200)
+    actor_registration = models.CharField(max_length=80)
+    method = models.CharField(max_length=8)
+    route = models.CharField(max_length=180)
+    target = models.JSONField(default=dict)
+    created_at = models.DateTimeField(default=timezone.now, db_index=True)
 
     class Meta:
-        db_table = 'categorias_pecas'
-        unique_together = [('spare_part', 'category')]
+        db_table = 'registro_atividades'
+        ordering = ['-created_at', '-pk']
+
+
+# Vocabulário de domínio: aliases não criam novas tabelas nem novos modelos.
+UserCode = User
+SectorCode = Sector
+LineCode = Line
+EquipmentTypeCode = EquipmentType
+EquipmentCode = Equipment
+EquipmentAttachmentCode = EquipmentAttachment
+EquipmentMovementCode = EquipmentMovement
+PreventiveChecklistCode = PreventiveChecklist
+EquipmentPreventiveCode = EquipmentPreventive
+PreventiveOrderCode = PreventiveOrder
+PreventiveExecutionCode = PreventiveExecution
+ProblemTypeCode = ProblemType
+WorkOrderCode = WorkOrder
+LinePendencyCode = LinePendency
+SparePartCode = SparePart
+SparePartCompatibilityCode = SparePartCompatibility
+SparePartTechnicalCode = SparePartTechnical
+PartRequisitionCode = PartRequisition
+PurchaseRequestCode = PurchaseRequest
+PurchaseItemCode = PurchaseItem
+PurchaseEventCode = PurchaseEvent
+
+# Catálogos de domínio para as regras escritas em português.
+PERFIS = ROLES
+PRIORIDADES = PRIORITIES
+SITUACOES_ORDEM = ORDER_STATUSES
+PERIODICIDADES_PREVENTIVA = PREVENTIVE_FREQUENCIES
+CAMPOS_FICHA_TECNICA = TECHNICAL_FIELDS
+
+# Estes nomes apontam para os modelos já registrados pelo Django.
+MaterialCategory = CategoriaMaterial
+StockMovement = MovimentacaoEstoque

@@ -1,0 +1,65 @@
+<!-- Menu compartilhado: routerLink troca a rota, routerLinkActive destaca o item e router-outlet recebe o componente escolhido. -->
+<div class="shell">
+            <aside *ngIf="authValue.userValue()?.role!=='OPERADOR'">
+                <div class="sidebrand">
+                    <img src="/assets/M.png" alt="Símbolo MANTIS" class="mantis-sidebar-symbol">
+                        <span class="mantis-sidebar-text">
+                            <strong>MANTIS</strong>
+                                <small>MAINTENANCE MANAGEMENT</small>
+                        </span>
+                </div>
+                <div class="sidelabel">MENU PRINCIPAL</div>
+                <a routerLinkActive="active" ariaCurrentWhenActive="page" routerLink="/dashboard">
+                    <mat-icon>dashboard</mat-icon> <span class="sidebar-link-label">Dashboard</span></a><a routerLinkActive="active" ariaCurrentWhenActive="page" routerLink="/ordens">
+                <mat-icon>assignment</mat-icon> <span class="sidebar-link-label">Ordens de serviço</span></a><a routerLinkActive="active" ariaCurrentWhenActive="page" routerLink="/totem">
+                <mat-icon>precision_manufacturing</mat-icon> <span class="sidebar-link-label">Totem / Linha SMT</span></a>
+                <a routerLinkActive="active" ariaCurrentWhenActive="page" routerLink="/status-linhas">
+                    <mat-icon>tv</mat-icon> <span class="sidebar-link-label">Modo de exposição</span>
+                </a>
+                <ng-container *ngIf="authValue.userValue()?.role==='ADMINISTRADOR'||authValue.userValue()?.role==='TECNICO'">
+                    <div class="sidelabel">CADASTROS</div>
+                    <a routerLinkActive="active" ariaCurrentWhenActive="page" routerLink="/cadastro">
+                        <mat-icon>apps</mat-icon> <span class="sidebar-link-label">Central de Cadastros</span>
+                    </a>
+                    <a routerLinkActive="active" ariaCurrentWhenActive="page" routerLink="/setores">
+                        <mat-icon>domain</mat-icon> <span class="sidebar-link-label">Setores</span></a>
+                    <!-- Atalho para Spare Parts; a tela continua também dentro da Central de Cadastros. -->
+                    <a routerLinkActive="active" ariaCurrentWhenActive="page" routerLink="/cadastro/spare-parts">
+                        <mat-icon>inventory_2</mat-icon> <span class="sidebar-link-label">Spare Parts</span></a><a routerLinkActive="active" ariaCurrentWhenActive="page" *ngIf="authValue.userValue()?.role==='ADMINISTRADOR'" routerLink="/usuarios">
+                    <mat-icon>people</mat-icon> <span class="sidebar-link-label">Usuários</span></a></ng-container>
+            </aside>
+            <main>
+                <header><span class="eyebrow">MANTIS REPORTING SYSTEM</span>
+                    <div class="actions"><span>{{ authValue.userValue()?.name }} · {{ authValue.userValue()?.role }}</span>
+                        <button *ngIf="authValue.userValue()?.role === 'ADMINISTRADOR'" mat-icon-button
+                                type="button" aria-label="Configurações do sistema" title="Configurações do sistema"
+                                (click)="openSettings(settingsDialog)">
+                            <mat-icon>settings</mat-icon>
+                        </button>
+                        <button type="button" mat-button (click)="authValue.signOut()">
+                            <mat-icon>logout</mat-icon>
+                            Sair
+                        </button>
+                    </div>
+                </header>
+                <router-outlet/>
+            </main>
+        </div>
+
+<ng-template #settingsDialog let-dialogRef>
+    <h2 mat-dialog-title>Configurações do sistema</h2>
+    <form (ngSubmit)="saveSettings(dialogRef)" novalidate>
+        <mat-dialog-content>
+            <mat-form-field appearance="outline">
+                <mat-label>Encerrar sessão após (minutos)</mat-label>
+                <input matInput type="number" name="idleMinutes" [(ngModel)]="idleMinutes" min="0" max="480" step="1">
+            </mat-form-field>
+            <p>Use 0 para desativar. Esta configuração vale neste navegador. O Totem / Linha SMT fica isento.</p>
+            <p *ngIf="settingsError" role="alert">{{ settingsError }}</p>
+        </mat-dialog-content>
+        <mat-dialog-actions align="end">
+            <button type="button" mat-button mat-dialog-close>Cancelar</button>
+            <button type="submit" mat-flat-button class="button-confirm">Salvar</button>
+        </mat-dialog-actions>
+    </form>
+</ng-template>

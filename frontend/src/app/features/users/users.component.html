@@ -1,133 +1,129 @@
-<!-- Cadastro de contas: ngModel liga os campos ao objeto form. O Django valida perfil, linha e senha em cada operação. -->
+<!-- Cadastro de contas: o Django valida perfil e senha em cada operação. -->
 <div class="page usuarios-page">
+
     <!-- CABEÇALHO -->
     <div class="page-header">
         <div>
             <div class="eyebrow">CONTROLE DE ACESSO</div>
-            <h1>Gerenciamento de Usuários</h1>
+            <h1>{{ sectorId ? 'Usuários de ' + sectorName(sectorId) : 'Gerenciamento de Usuários' }}</h1>
             <p class="muted">
                 Cadastre, edite e gerencie os acessos ao MANTIS 2.0.
             </p>
         </div>
 
         <button
-            mat-flat-button
-            class="primary"
-            *ngIf="!formOpen"
-            (click)="newUser()"
-        >
+                mat-flat-button
+                class="primary"
+                *ngIf="!showForm"
+                (click)="newUser()">
             <mat-icon>person_add</mat-icon>
             Novo usuário
         </button>
     </div>
 
     <!-- MENSAGENS -->
-    <div class="alert success" *ngIf="successMessage">
+    <div class="alert success" *ngIf="success">
         <mat-icon>check_circle</mat-icon>
-        <span>{{ successMessage }}</span>
+        <span>{{ success }}</span>
     </div>
 
-    <div class="alert error" *ngIf="error && !formOpen">
+    <div class="alert error" *ngIf="errorValue && !showForm">
         <mat-icon>error_outline</mat-icon>
-        <span>{{ error }}</span>
+        <span>{{ errorValue }}</span>
     </div>
 
     <!-- CADASTRO / EDIÇÃO -->
-    <app-form-modal
-        *ngIf="formOpen"
-        [title]="editingId !== null ? 'Editar usuário' : 'Novo usuário'"
-        subtitle="Preencha os dados e selecione o perfil de acesso."
-        icon="person_add"
-        [busy]="loading"
-        (closed)="cancel()"
-    >
-        <p *ngIf="error" class="error" role="alert">{{ error }}</p>
+<app-modal-formulario *ngIf="showForm" [titleValue]="currentEditId !== null ? 'Editar usuário' : 'Novo usuário'" subtitulo="Preencha os dados e selecione o perfil de acesso." icone="person_add" [busy]="loading" (closedValue)="cancel()">
+<p *ngIf="errorValue" class="error" role="alert">{{errorValue}}</p>
         <div class="fields">
+
             <label class="modal-field">
                 <span>Nome completo</span>
-                <input name="name" [(ngModel)]="form.name" maxlength="150" />
+                <input
+                       name="name"
+                       [(ngModel)]="form.name"
+                       maxlength="150">
             </label>
 
             <label class="modal-field">
                 <span>Matrícula</span>
-                <input name="registration" [(ngModel)]="form.registration" />
+                <input
+                       name="registration"
+                       [(ngModel)]="form.registration">
             </label>
 
             <label class="modal-field">
                 <span>Perfil</span>
-                <select name="role" [(ngModel)]="form.role">
-                    <option value="ADMINISTRADOR">Administrador</option>
+                <select
+                        name="role"
+                        [(ngModel)]="form.role">
+                    <option *ngIf="!sectorId" value="ADMINISTRADOR">Administrador</option>
                     <option value="TECNICO">Técnico</option>
                     <option value="OPERADOR">Operador</option>
                 </select>
             </label>
 
-            <label class="modal-field" *ngIf="form.role === 'OPERADOR'">
-                <span>Linha SMT</span>
-
-                <select name="lineId" [(ngModel)]="form.lineId">
-                    <option *ngFor="let line of lines" [ngValue]="line.id">
-                        {{ line.name }}
-                    </option>
+            <label class="modal-field" *ngIf="form.role && form.role !== 'ADMINISTRADOR'">
+                <span>Setor *</span>
+                <select name="sector" [(ngModel)]="form.sectorId" [disabled]="!!sectorId" required>
+                    <option [ngValue]="null" disabled>Selecione o setor</option>
+                    <option *ngFor="let sector of sectors" [ngValue]="sector.id">{{ sector.name }}</option>
                 </select>
             </label>
+            <p *ngIf="form.role === 'OPERADOR'">O operador escolhe uma linha do seu setor ao entrar no sistema.</p>
 
-            <label class="modal-field" *ngIf="editingId === null">
+            <label class="modal-field"
+                    *ngIf="currentEditId === null">
+
                 <span>Senha inicial (12+ caracteres)</span>
                 <input
-                    type="password"
-                    name="password"
-                    autocomplete="new-password"
-                    [(ngModel)]="form.password"
-                />
+                       type="password"
+                       name="password"
+                       autocomplete="new-password"
+                       [(ngModel)]="form.password">
             </label>
+
         </div>
 
         <div modalActions class="modal-actions">
-            <button
-                mat-flat-button
-                class="primary"
-                [disabled]="
-                    loading ||
-                    !form.name.trim() ||
-                    !form.registration.trim() ||
-                    !form.role ||
-                    (form.role === 'OPERADOR' && !form.lineId) ||
-                    (editingId === null && form.password.length < 12)
-                "
-                (click)="register()"
-            >
+            <button mat-flat-button
+                    class="button-confirm primary"
+                    [disabled]="loading ||
+                !form.name.trim() ||
+                !form.registration.trim() ||
+                !form.role ||
+                (form.role !== 'ADMINISTRADOR' && !form.sectorId) ||
+                (currentEditId === null && form.password.length < 12)"
+                    (click)="cadastrar()">
                 <mat-icon>save</mat-icon>
                 {{
-                    loading
-                        ? 'Salvando...'
-                        : editingId !== null
-                          ? 'Salvar alterações'
-                          : 'Cadastrar usuário'
+                    loading ? 'Salvando...' :
+                        currentEditId !== null ? 'Salvar alterações' : 'Cadastrar usuário'
                 }}
             </button>
 
-            <button
-                mat-stroked-button
-                type="button"
-                [disabled]="loading"
-                (click)="cancel()"
-            >
+            <button mat-stroked-button
+                    type="button"
+                    [disabled]="loading"
+                    (click)="cancel()">
                 Cancelar
             </button>
         </div>
-    </app-form-modal>
+
+</app-modal-formulario>
 
     <!-- LISTA DE USUÁRIOS -->
     <div class="card users-list-card">
+
         <div class="section-header">
             <div>
                 <h2>Usuários cadastrados</h2>
                 <p class="muted">
-                    {{ usersFiltered.length }} usuário(s) encontrado(s)
+                    {{ filteredUsers.length }} usuário(s) encontrado(s)
                 </p>
             </div>
         </div>
+
 
         <!-- PESQUISA DE USUÁRIOS -->
         <div class="list-toolbar">
@@ -136,13 +132,13 @@
                 <mat-icon matPrefix>search</mat-icon>
 
                 <input
-                    matInput
-                    name="search"
-                    [(ngModel)]="search"
-                    placeholder="Nome, matrícula ou perfil"
-                />
+                        matInput
+                        name="search"
+                        [(ngModel)]="search"
+                        placeholder="Nome, matrícula ou perfil">
             </mat-form-field>
         </div>
+
 
         <!-- INDICADOR DE CARREGAMENTO -->
         <div class="loading-users" *ngIf="loadingUsers">
@@ -153,114 +149,92 @@
         <div class="table-wrap">
             <table class="users-table">
                 <thead>
-                    <tr>
-                        <th>Nome</th>
-                        <th>Matrícula</th>
-                        <th>Perfil</th>
-                        <th>Linha SMT</th>
-                        <th>Situação</th>
-                        <th class="actions-column">Ações</th>
-                    </tr>
+                <tr>
+                    <th>Nome</th>
+                    <th>Matrícula</th>
+                    <th>Perfil</th>
+                    <th>Setor</th>
+                    <th>Situação</th>
+                    <th class="actions-column">Ações</th>
+                </tr>
                 </thead>
 
                 <tbody>
-                    <tr *ngFor="let user of usersFiltered">
-                        <td>
-                            <div class="user-identity">
-                                <span class="user-avatar">
-                                    <mat-icon>person</mat-icon>
-                                </span>
-                                <strong>{{ user.name }}</strong>
-                            </div>
-                        </td>
+                <tr *ngFor="let user of filteredUsers">
 
-                        <td>{{ user.registration }}</td>
+                    <td>
+                        <div class="user-identity">
+                <span class="user-avatar">
+                  <mat-icon>person</mat-icon>
+                </span>
+                            <strong>{{ user.name }}</strong>
+                        </div>
+                    </td>
 
-                        <td>
-                            <span
-                                class="role-badge"
-                                [class.admin]="user.role === 'ADMINISTRADOR'"
-                                [class.technician]="user.role === 'TECNICO'"
-                                [class.operator]="user.role === 'OPERADOR'"
-                            >
-                                {{ user.role }}
-                            </span>
-                        </td>
+                    <td>{{ user.registration }}</td>
 
-                        <td>{{ getLine(user.line_id) }}</td>
+                    <td>
+              <span class="role-badge"
+                    [class.admin]="user.role === 'ADMINISTRADOR'"
+                    [class.technician]="user.role === 'TECNICO'"
+                    [class.operator]="user.role === 'OPERADOR'">
+                {{ user.role }}
+              </span>
+                    </td>
 
-                        <td>
-                            <span
-                                class="status-badge"
-                                [class.inactive]="!user.active"
-                            >
-                                <span class="status-dot"></span>
-                                {{ user.active ? 'Ativo' : 'Inativo' }}
-                            </span>
-                        </td>
+                    <td>{{ user.role === 'ADMINISTRADOR' ? 'Todos os setores' : sectorName(user.sector_id) }}</td>
+                    <td>
+              <span class="status-badge"
+                    [class.inactive]="!user.active">
+                <span class="status-dot"></span>
+                  {{ user.active ? 'Ativo' : 'Inativo' }}
+              </span>
+                    </td>
 
-                        <td>
-                            <div class="row-actions">
-                                <button
-                                    mat-icon-button
+                    <td>
+                        <div class="row-actions">
+
+                            <button mat-icon-button
                                     title="Editar"
                                     aria-label="Editar usuário"
-                                    (click)="editUser(user)"
-                                >
-                                    <mat-icon>edit</mat-icon>
-                                </button>
+                                    (click)="editUser(user)">
+                                <mat-icon>edit</mat-icon>
+                            </button>
 
-                                <button
-                                    mat-icon-button
+                            <button mat-icon-button
                                     title="Redefinir senha"
                                     aria-label="Redefinir senha"
-                                    (click)="resetPassword(user)"
-                                >
-                                    <mat-icon>lock_reset</mat-icon>
-                                </button>
+                                    (click)="resetPassword(user)">
+                                <mat-icon>lock_reset</mat-icon>
+                            </button>
 
-                                <button
-                                    mat-icon-button
-                                    [disabled]="
-                                        user.active &&
-                                        user.id === authentication.user()?.id
-                                    "
-                                    [title]="
-                                        user.active ? 'Desativar' : 'Reativar'
-                                    "
-                                    [attr.aria-label]="
-                                        user.active
-                                            ? 'Desativar usuário'
-                                            : 'Reativar usuário'
-                                    "
-                                    (click)="toggleActive(user)"
-                                >
-                                    <mat-icon>
-                                        {{
-                                            user.active
-                                                ? 'person_off'
-                                                : 'person_add'
-                                        }}
-                                    </mat-icon>
-                                </button>
-                            </div>
-                        </td>
-                    </tr>
+                            <button mat-icon-button
+                                    [disabled]="user.active && user.id === authValue.userValue()?.id"
+                                    [title]="user.active ? 'Desativar' : 'Reativar'"
+                                    [attr.aria-label]="user.active ? 'Desativar usuário' : 'Reativar usuário'"
+                                    (click)="toggleActive(user)">
+                                <mat-icon>
+                                    {{ user.active ? 'person_off' : 'person_add' }}
+                                </mat-icon>
+                            </button>
 
-                    <tr
-                        *ngIf="
-                            !loadingUsers &&
-                            usersFiltered.length === 0 &&
-                            !error
-                        "
-                    >
-                        <td colspan="6" class="empty-state">
-                            <mat-icon>group_off</mat-icon>
-                            <p>Nenhum usuário encontrado.</p>
-                        </td>
-                    </tr>
+                        </div>
+                    </td>
+
+                </tr>
+
+
+                <tr *ngIf="!loadingUsers && filteredUsers.length === 0 && !errorValue">
+
+                    <td colspan="6" class="empty-state">
+                        <mat-icon>group_off</mat-icon>
+                        <p>Nenhum usuário encontrado.</p>
+                    </td>
+                </tr>
                 </tbody>
             </table>
         </div>
+
     </div>
+
 </div>

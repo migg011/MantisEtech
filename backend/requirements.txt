@@ -1,12 +1,6 @@
 # Dependências diretas da API; requirements.lock.txt fixa as versões usadas na instalação reproduzível.
 # Framework HTTP, ORM, migrações e validação.
 Django>=5.2.8,<5.3
-# Django REST Framework para serializers, viewsets, routers.
-djangorestframework>=3.15,<4
-# Filtros para DRF.
-django-filter>=24,<27
-# CORS headers para frontend.
-django-cors-headers>=4.5,<5
 # Driver que conecta o ORM ao PostgreSQL.
 psycopg[binary]>=3.2,<4
 # Leitura do arquivo local de configuração .env.
@@ -15,4 +9,8 @@ python-dotenv>=1.1,<2
 bcrypt>=4.3,<6
 # Servidor WSGI usado no contêiner da API.
 waitress>=3,<4
-whitenoise>=6.8,<7
+pillow>=12,<14
+zxing-cpp>=3,<4
+# Busca de peças por foto com IA (modelo DINOv2 em ONNX).
+numpy>=2,<3
+onnxruntime>=1.20,<2

@@ -1,0 +1,18 @@
+/* Estilo local de ambiente-setor: aparência, estados visuais e adaptação da tela; não acessa a API nem o banco. */
+/* Estilos específicos do componente. Estilos compartilhados em src/styles.scss. */
+
+.sector-cards {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    gap: 16px;
+}
+
+.sector-cards > .card {
+    display: flex;
+    flex-direction: column;
+}
+
+.sector-cards > .card > a {
+    align-self: flex-start;
+    margin-top: auto;
+}

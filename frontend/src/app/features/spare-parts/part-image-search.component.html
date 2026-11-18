@@ -1,0 +1,40 @@
+<button type="button" mat-stroked-button (click)="open = true"><mat-icon>image_search</mat-icon>Buscar por imagem</button>
+<app-modal-formulario *ngIf="open" titleValue="Buscar peça por imagem" iconValue="image_search"
+                      [wide]="true" [busy]="busy()" (closedValue)="close()">
+    <form class="search-fields" (ngSubmit)="search()">
+        <div class="photo-panel">
+            <div class="photo-actions">
+                <input #camera type="file" accept="image/*" capture="environment" hidden (change)="capture($event)">
+                <input #gallery type="file" accept="image/jpeg,image/png,image/webp" hidden (change)="choose($event); gallery.value = ''">
+                <button type="button" mat-stroked-button (click)="camera.click()" [disabled]="busy()"><mat-icon>photo_camera</mat-icon>Tirar foto</button>
+                <button type="button" mat-stroked-button (click)="gallery.click()" [disabled]="busy()"><mat-icon>upload</mat-icon>Escolher imagem</button>
+            </div>
+            <small class="detected" aria-live="polite">{{ file ? file.name : 'JPG, PNG ou WebP, até 6 MB' }}</small>
+        </div>
+        <div class="reference-row">
+            <label>Código ou Part Number <small>(opcional)</small>
+                <input name="reference" [(ngModel)]="reference" maxlength="200" [disabled]="busy()">
+            </label>
+            <button mat-flat-button class="primary" type="submit" [disabled]="!file || busy()">{{ busy() ? 'Analisando…' : 'Analisar imagem' }}</button>
+        </div>
+    </form>
+    <p *ngIf="busy()" role="status">Analisando imagem e consultando o catálogo…</p>
+    <p *ngIf="error()" class="error" role="alert">{{ error() }}</p>
+    <ng-container *ngIf="response() as result">
+        <h3 class="results-title" aria-live="polite">Resultados ({{ result.results.length }})</h3>
+        <p *ngIf="!result.results.length" role="status">Nenhuma peça correspondente encontrada. Tente uma foto mais nítida ou informe o Part Number.</p>
+        <p *ngIf="result.results.length" role="status">Confira o Part Number e as especificações na ficha antes de identificar a peça.</p>
+        <article *ngFor="let part of result.results" class="result">
+            <app-consulta-peca [partId]="part.id" [labelText]="part.part_number || part.code" />
+            <p>{{ part.description }} <span *ngIf="part.manufacturer">· {{ part.manufacturer }}</span></p>
+            <p>Código interno {{ part.code }} · Estoque {{ part.stock_quantity === null ? 'sem contagem' : (part.stock_quantity | number:'1.0-3') + ' ' + part.unit }}<span *ngIf="part.storage_location"> · {{ part.storage_location }}</span></p>
+            <p>{{ evidence[part.evidence] }}<span *ngIf="part.visual_similarity !== null"> · Semelhança visual {{ part.visual_similarity }}%</span></p>
+        </article>
+        <details class="reading-details" *ngIf="result.codes.length || result.label || !result.ocr_available">
+            <summary>Detalhes da leitura</summary>
+            <p class="detected" *ngIf="result.codes.length"><strong>Códigos lidos</strong> {{ result.codes.join(', ') }}</p>
+            <p class="detected" *ngIf="result.label"><strong>Texto lido</strong> {{ result.label }}</p>
+            <p *ngIf="!result.ocr_available">A leitura de texto está indisponível neste servidor. Você pode informar o código acima.</p>
+        </details>
+    </ng-container>
+</app-modal-formulario>

@@ -1,14 +1,10 @@
-"""Configuração de URLs; o router e as rotas pertencem ao app maintenance."""
+"""Roteador raiz: inclui os contratos /api e aponta os erros globais para respostas JSON."""
+
 from django.urls import include, path
-from django.contrib import admin
 
-urlpatterns = [
-    path('admin/', admin.site.urls),
-    path('api/', include('maintenance.urls')),
-    path('api/v1/', include('maintenance.urls_v1')),
-]
+urlpatterns = [path('', include('maintenance.urls'))]
 
-handler400 = 'maintenance.api.bad_request'
-handler403 = 'maintenance.api.forbidden'
-handler404 = 'maintenance.api.not_found'
-handler500 = 'maintenance.api.server_error'
+handler400 = 'maintenance.api.bad_request_value'
+handler403 = 'maintenance.api.forbidden_value'
+handler404 = 'maintenance.api.not_found_value'
+handler500 = 'maintenance.api.server_error_value'

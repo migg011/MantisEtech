@@ -1,0 +1,7 @@
+.venv
+.env
+.validation-*
+__pycache__
+*.sqlite3
+artifacts
+staticfiles

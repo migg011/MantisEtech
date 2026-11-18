@@ -19,7 +19,7 @@ with psycopg.connect(url) as db:
     with db.cursor() as cursor:
         cursor.execute("SELECT count(*) FROM information_schema.tables WHERE table_schema='public'")
         if cursor.fetchone()[0]:
-            raise RuntimeError('Use only an empty database dedicated to this validation.')
+            raise RuntimeError('Use somente um banco vazio, exclusivo para esta validação.')
         for path in sorted((root / 'maintenance' / 'legacy_sql').glob('*.sql')):
             cursor.execute(path.read_text(encoding='utf-8'))
         cursor.execute("INSERT INTO sectors(code,name) VALUES('LEGACY','Setor preservado') RETURNING id")
@@ -41,10 +41,10 @@ sys.path.insert(0, str(root))
 import django
 django.setup()
 from django.contrib.auth import authenticate
-from maintenance.models import Equipment, EquipmentAttachment, WorkOrder, User
-assert Equipment.objects.get(pk=equipment).serial == 'SERIE-ORIGINAL'
-assert bytes(EquipmentAttachment.objects.get(equipment_id=equipment).content) == b'%PDF-test'
-assert WorkOrder.objects.get().problem == 'Falha preservada'
+from maintenance.models import EquipmentCode, EquipmentAttachmentCode, WorkOrderCode, UserCode
+assert EquipmentCode.objects.get(pk=equipment).serial == 'SERIE-ORIGINAL'
+assert bytes(EquipmentAttachmentCode.objects.get(equipment_id=equipment).content) == b'%PDF-test'
+assert WorkOrderCode.objects.get().problem == 'Falha preservada'
 assert authenticate(username='LEGACY', password=password) is not None
-assert not User.objects.get(pk=user).password.startswith('$2')
-print('Legacy adoption validated: registrations, orders, binary attachment, and bcrypt login preserved; command is idempotent.')
+assert not UserCode.objects.get(pk=user).password.startswith('$2')
+print('Adoção legada validada: cadastros, OS, anexo binário e login bcrypt preservados; comando idempotente.')

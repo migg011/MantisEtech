@@ -1,0 +1,17 @@
+.receipt { max-width: 1100px; }
+fieldset { border: 0; margin: 0; padding: 0; min-inline-size: 0; }
+.card { padding: 1rem; margin-bottom: 1rem; }
+.fields { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 190px), 1fr)); gap: .75rem; align-items: end; }
+label { display: grid; gap: .35rem; margin: .5rem 0; }
+input, select, button { min-height: 42px; padding: .5rem .75rem; border: 1px solid #c9d3e2; border-radius: .5rem; font: inherit; }
+input, select { width: 100%; box-sizing: border-box; }
+button { min-height: 44px; cursor: pointer; background: white; }
+button:disabled { cursor: default; opacity: .65; }
+.primary:not(:disabled) { background: #c8102e; border-color: #c8102e; color: white; }
+.item-header, .actions { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: .75rem; }
+.fields > button { margin-bottom: .5rem; }
+.error { color: #a1132a; }
+
+button:not(:disabled):hover { background-color: #eef2f7; }
+.remove-item { color: #a1132a; }
+.actions { justify-content: flex-end; }

@@ -1,0 +1,43 @@
+<!-- Abertura da OS: o operador seleciona um problema do catálogo; save envia IDs e a prioridade ao servidor. -->
+<div class="mantis-modal">
+    <header class="mantis-modal-header">
+        <div class="mantis-modal-icon"><mat-icon>build</mat-icon></div>
+        <div><h2 mat-dialog-title>Abrir ordem de serviço</h2><p>Identifique o problema e registre o que aconteceu.</p></div>
+        <button class="mantis-modal-close" aria-label="Fechar modal" [disabled]="working" (click)="dialogRefValue.close()"><mat-icon>close</mat-icon></button>
+    </header>
+    <mat-dialog-content class="mantis-modal-body">
+        <fieldset [disabled]="working || success">
+            <p><b>{{ machineValue.name || machineValue.model || machineValue.type_name }}</b> — {{ machineValue.model || machineValue.type_name }}</p>
+            <section class="opening-context" aria-label="Dados automáticos da ocorrência">
+                <div><span>Operador / responsável pela abertura</span><strong>{{createdRecord?.opened_by_name || operatorName}}</strong></div>
+                <div><span>Início da parada de linha</span><strong>{{(createdRecord?.created_at || currentTime) | date:'dd/MM/yyyy HH:mm:ss'}}</strong><small>{{createdRecord ? 'Horário registrado pelo servidor' : 'Horário definitivo registrado ao confirmar a ocorrência'}}</small></div>
+            </section>
+            <p *ngIf="loadingProblems" class="muted" role="status">Carregando problemas cadastrados...</p>
+            <div *ngIf="loadError" class="error" role="alert">{{ loadError }} <button mat-button (click)="loadProblems()">Tentar novamente</button></div>
+            <label class="modal-field">
+                <span>Problema identificado *</span>
+                <input type="text" [ngModel]="problemQuery" (ngModelChange)="searchProblems($event)"
+                       [matAutocomplete]="problemOptions" [disabled]="loadingProblems || !!loadError || !problemsValue.length"
+                       placeholder="Digite para buscar um problema" required>
+                <mat-autocomplete #problemOptions="matAutocomplete" [displayWith]="displayProblem"
+                                  (optionSelected)="selectProblem($event.option.value)">
+                    <mat-option *ngFor="let problem of filteredProblems" [value]="problem">{{ problem.name }}</mat-option>
+                    <mat-option *ngIf="!filteredProblems.length" disabled>Nenhum problema encontrado</mat-option>
+                </mat-autocomplete>
+            </label>
+            <p class="muted" *ngIf="!loadingProblems && !loadError && !problemsValue.length">Nenhum problema cadastrado para este tipo de equipamento. Solicite o cadastro à equipe de manutenção.</p>
+            <p class="priority-summary" *ngIf="isOperator && problemTypeIdValue">Prioridade definida pelo cadastro: <strong>{{ priorities[priorityValue] }}</strong></p>
+            <label class="modal-field" *ngIf="!isOperator">
+                <span>Prioridade</span>
+                <select [(ngModel)]="priorityValue"><option value="BAIXA">Baixa</option><option value="MEDIA">Média</option><option value="ALTA">Alta</option><option value="CRITICA">Crítica</option></select>
+            </label>
+            <label class="modal-field occurrence-description"><span>Descrição do ocorrido (opcional)</span><textarea rows="4" maxlength="3000" [(ngModel)]="occurrenceDescription" placeholder="Descreva o que aconteceu, os sintomas e as condições observadas. Ex.: a máquina parou durante a alimentação da placa e apresentou um alarme no painel."></textarea><small>{{occurrenceDescription.length}} / 3000 caracteres</small></label>
+            <p class="error" *ngIf="errorValue" role="alert">{{ errorValue }}</p>
+            <p class="success" *ngIf="success" role="status">OS #{{createdRecord?.id}} aberta com sucesso. Operador, horário e relato registrados.</p>
+        </fieldset>
+    </mat-dialog-content>
+    <mat-dialog-actions align="end" class="mantis-modal-footer">
+        <button mat-button [disabled]="working" (click)="dialogRefValue.close()">Fechar</button>
+        <button mat-flat-button class="button-confirm primary" (click)="save()" *ngIf="!success" [disabled]="working || loadingProblems || !problemTypeIdValue">{{ working ? 'Registrando...' : 'Registrar ocorrência' }}</button>
+    </mat-dialog-actions>
+</div>

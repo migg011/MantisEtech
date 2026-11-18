@@ -1,9 +1,9 @@
 """Persistência, autorização e isolamento dos checklists e arquivos imprimíveis."""
 from django.test import TestCase
-from maintenance.authentication import issue_token
-from maintenance.models import Equipment, EquipmentType, Line, Sector, User
-from maintenance.models import EquipmentPreventive, PreventiveExecution, PreventiveChecklist
-from maintenance.services.preventive_schedule import calculate_next_due
+from maintenance.api import issue_token_value
+from maintenance.models import EquipmentCode, EquipmentTypeCode, LineCode, SectorCode, UserCode
+from maintenance.models import EquipmentPreventiveCode, PreventiveExecutionCode, PreventiveChecklistCode
+from maintenance.schedule_rules import next_due_value
 from datetime import date
 from unittest.mock import patch
 
@@ -12,12 +12,13 @@ class PreventiveTests(TestCase):
     """Verifica as rotas de roteiro, prévia imprimível e permissões, usando dados fictícios no banco de testes."""
     def setUp(self):
         """Cria tipos, máquina, agenda e técnico fictícios; configura o token do cliente e um roteiro de exemplo para cada teste."""
-        self.kind = EquipmentType.objects.create(id=90, name='Tipo teste')
-        self.other = EquipmentType.objects.create(id=91, name='Outro tipo')
-        self.machine = Equipment.objects.create(equipment_type=self.kind, model='<script>alert(1)</script>', serial='SER-123')
-        EquipmentPreventive.objects.create(equipment=self.machine, frequency='MENSAL', next_due=date(2026, 10, 26))
-        self.tech = User.objects.create_user('TECH', 'test', name='Técnico', role='TECNICO')
-        self.client.defaults['HTTP_AUTHORIZATION'] = 'Bearer ' + issue_token(self.tech)
+        self.kind = EquipmentTypeCode.objects.create(id=90, name='Tipo teste')
+        self.other = EquipmentTypeCode.objects.create(id=91, name='Outro tipo')
+        self.sector = SectorCode.objects.create(code='DOC', name='Setor do documento')
+        self.machine = EquipmentCode.objects.create(equipment_type=self.kind, sector=self.sector, model='<script>alert(1)</script>', serial='SER-123')
+        EquipmentPreventiveCode.objects.create(equipment=self.machine, frequency='MENSAL', next_due=date(2026, 10, 26))
+        self.tech = UserCode.objects.create_user('TECH', 'test', name='Técnico', role='TECNICO', sector=self.sector)
+        self.client.defaults['HTTP_AUTHORIZATION'] = 'Bearer ' + issue_token_value(self.tech)
         self.data = {'equipmentTypeId': self.kind.pk, 'frequency': 'MENSAL', 'items': ['Verificar sensor', '<script>alert(2)</script>']}
 
     def save(self, data=None):
@@ -44,16 +45,16 @@ class PreventiveTests(TestCase):
         self.assertEqual(self.save().status_code, 200)
         response = self.client.get('/api/preventive-checklists', {'equipmentTypeId': self.kind.pk, 'frequency': 'ANUAL'})
         self.assertEqual(response.json()['items'], [])
-        foreign = Equipment.objects.create(equipment_type=self.other)
+        foreign = EquipmentCode.objects.create(equipment_type=self.other)
         response = self.client.get('/api/preventive-checklists/document', self.data | {'equipmentId': foreign.pk})
         self.assertEqual(response.status_code, 404)
 
     def test_operator_and_anonymous_cannot_access(self):
         """Confirma HTTP 403 para operador e HTTP 401 sem autenticação nas operações de preventiva."""
-        sector = Sector.objects.create(code='S', name='Setor')
-        line = Line.objects.create(code='L', name='Linha', sector=sector)
-        operator = User.objects.create_user('OP', 'test', name='Operador', role='OPERADOR', line=line)
-        self.client.defaults['HTTP_AUTHORIZATION'] = 'Bearer ' + issue_token(operator)
+        sector = SectorCode.objects.create(code='S', name='Setor')
+        line = LineCode.objects.create(code='L', name='Linha', sector=sector)
+        operator = UserCode.objects.create_user('OP', 'test', name='Operador', role='OPERADOR', line=line)
+        self.client.defaults['HTTP_AUTHORIZATION'] = 'Bearer ' + issue_token_value(operator)
         self.assertEqual(self.save().status_code, 403)
         self.assertEqual(self.client.get('/api/preventive-checklists/document', self.data).status_code, 403)
         self.client.defaults.clear()
@@ -67,12 +68,12 @@ class PreventiveAgendaTests(TestCase):
         frozen = patch('django.utils.timezone.localdate', return_value=date(2026, 10, 27))
         frozen.start()
         self.addCleanup(frozen.stop)
-        self.sector = Sector.objects.create(code='PREV', name='Setor preventiva')
-        self.kind = EquipmentType.objects.create(id=90, name='Impressora')
-        self.admin = User.objects.create_user('ADM', 'test', name='Admin', role='ADMINISTRADOR')
-        self.tech = User.objects.create_user('TEC', 'test', name='Técnico', role='TECNICO')
-        self.machine = Equipment.objects.create(equipment_type=self.kind, sector=self.sector, name='Impressora 01')
-        self.client.defaults['HTTP_AUTHORIZATION'] = 'Bearer ' + issue_token(self.admin)
+        self.sector = SectorCode.objects.create(code='PREV', name='Setor preventiva')
+        self.kind = EquipmentTypeCode.objects.create(id=90, name='Impressora')
+        self.admin = UserCode.objects.create_user('ADM', 'test', name='Admin', role='ADMINISTRADOR')
+        self.tech = UserCode.objects.create_user('TEC', 'test', name='Técnico', role='TECNICO', sector=self.sector)
+        self.machine = EquipmentCode.objects.create(equipment_type=self.kind, sector=self.sector, name='Impressora 01')
+        self.client.defaults['HTTP_AUTHORIZATION'] = 'Bearer ' + issue_token_value(self.admin)
 
     def configure(self, rows, **extra):
         """Envia PATCH com as periodicidades da máquina e eventuais campos adicionais. Retorna a resposta para testar validação e persistência."""
@@ -91,7 +92,7 @@ class PreventiveAgendaTests(TestCase):
         self.assertEqual(data['name'], 'Nova máquina')
         schedules = {row['frequency']: row['next_due'] for row in data['preventive_schedules']}
         self.assertEqual(schedules, {'QUINZENAL': '2026-11-11', 'MENSAL': '2026-11-27',
-            'TRIMESTRAL': '2027-01-27', 'SEMESTRAL': '2027-04-27', 'ANUAL': '2027-10-27'})
+            'TRIMESTRAL': '2027-01-27', 'SEMESTRAL': '2027-04-27', 'ANUAL': '2026-12-20'})
         self.assertEqual(self.configure([{'frequency': 'MENSAL', 'nextDue': '2026-10-20'}], name='Nome editado').status_code, 200)
         # Uma edição de outro campo não apaga a agenda omitida do JSON.
         response = self.client.patch(f'/api/equipment/{self.machine.pk}', {'model': 'Modelo novo'}, content_type='application/json')
@@ -100,6 +101,47 @@ class PreventiveAgendaTests(TestCase):
         self.assertEqual(response.json()['preventive_schedules'][0]['next_due'], '2026-10-20')
         listing = self.client.get('/api/equipment').json()
         self.assertEqual(next(row for row in listing if row['id'] == self.machine.pk)['name'], 'Nome editado')
+
+    def test_registration_inherits_first_equipment_by_name(self):
+        first = self.configure([
+            {'frequency': 'MENSAL', 'nextDue': '2026-10-20'},
+            {'frequency': 'TRIMESTRAL', 'nextDue': '2026-12-20'},
+        ], model='Modelo original', manufacturer='Fabricante original', lengthMm='125.50',
+            description='Descrição original', processDescription='Processo original',
+            serial='SERIE-1', assetNumber='ATIVO-1', manufacturingDateText='2020')
+        self.assertEqual(first.status_code, 200, first.content)
+        later = EquipmentCode.objects.create(equipment_type=self.kind, sector=self.sector,
+                                             name=self.machine.name, model='Outro modelo')
+        later.preventive_schedules.create(frequency='BIMESTRAL', next_due=date(2027, 2, 1))
+        destination = SectorCode.objects.create(code='OUTRO', name='Outro setor')
+        other_kind = EquipmentTypeCode.objects.create(id=91, name='Outra classificação')
+        name = '  iMPRESSORA 01  '
+
+        response = self.client.get('/api/equipment-reference', {'name': name, 'equipmentTypeId': other_kind.pk})
+        self.assertEqual(response.status_code, 200, response.content)
+        pattern = response.json()
+        self.assertEqual(pattern['fields']['model'], 'Modelo original')
+        self.assertNotIn('serial', pattern['fields'])
+        self.assertCountEqual(pattern['frequencies'], ['MENSAL', 'TRIMESTRAL'])
+        self.assertIsNone(self.client.get('/api/equipment-reference', {'name': 'Outro nome'}).json()['fields'])
+
+        response = self.client.post('/api/equipment', {
+            'equipmentTypeId': other_kind.pk, 'sectorId': destination.pk, 'name': name,
+            'model': 'Modelo enviado', 'description': 'Descrição enviada',
+            'serial': 'SERIE-2', 'assetNumber': 'ATIVO-2', 'manufacturingDateText': '2026',
+            'preventiveSchedules': [{'frequency': 'MENSAL', 'nextDue': '2026-12-05'}, {'frequency': 'BIMESTRAL'}],
+        }, content_type='application/json')
+        self.assertEqual(response.status_code, 201, response.content)
+        data = response.json()
+        for field in ('model', 'manufacturer', 'length_mm', 'description', 'process_description'):
+            self.assertEqual(data[field], first.json()[field])
+        self.assertEqual(data['serial'], 'SERIE-2')
+        self.assertEqual(data['asset_number'], 'ATIVO-2')
+        self.assertEqual(data['manufacturing_date_text'], '2026')
+        self.assertEqual(data['sector_id'], destination.pk)
+        self.assertEqual(data['equipment_type_id'], other_kind.pk)
+        schedules = {row['frequency']: row['next_due'] for row in data['preventive_schedules']}
+        self.assertEqual(schedules, {'MENSAL': '2026-12-05', 'TRIMESTRAL': '2027-01-27'})
 
     def test_invalid_configuration_does_not_partially_save_machine(self):
         """Envia configurações inválidas e confirma que o nome da máquina e a agenda não são parcialmente gravados."""
@@ -110,16 +152,16 @@ class PreventiveAgendaTests(TestCase):
             self.assertEqual(response.status_code, 400, response.content)
         self.machine.refresh_from_db()
         self.assertEqual(self.machine.name, 'Impressora 01')
-        self.assertEqual(EquipmentPreventive.objects.count(), 0)
+        self.assertEqual(EquipmentPreventiveCode.objects.count(), 0)
 
     def test_status_boundaries_inactive_equipment_and_unconfigured(self):
         """Confere ontem, hoje e amanhã como vencida, vence hoje e em dia; exclui inativos e conta máquinas sem agenda separadamente."""
         self.configure([{'frequency': 'QUINZENAL', 'nextDue': '2026-10-26'},
                         {'frequency': 'MENSAL', 'nextDue': '2026-10-27'},
                         {'frequency': 'SEMESTRAL', 'nextDue': '2026-10-28'}])
-        unused = Equipment.objects.create(equipment_type=self.kind, sector=self.sector)
-        inactive = Equipment.objects.create(equipment_type=self.kind, sector=self.sector, active=False)
-        EquipmentPreventive.objects.create(equipment=inactive, frequency='ANUAL', next_due=date(2020, 1, 1))
+        unused = EquipmentCode.objects.create(equipment_type=self.kind, sector=self.sector)
+        inactive = EquipmentCode.objects.create(equipment_type=self.kind, sector=self.sector, active=False)
+        EquipmentPreventiveCode.objects.create(equipment=inactive, frequency='ANUAL', next_due=date(2020, 1, 1))
         data = self.client.get('/api/preventive-schedules').json()
         self.assertEqual(data['unconfigured_count'], 1)
         self.assertEqual(data['today'], '2026-10-27')
@@ -130,8 +172,8 @@ class PreventiveAgendaTests(TestCase):
         """Emite e conclui uma OS mensal; confirma que a anual não muda, o histórico não duplica e desativar/reativar preserva os dados anteriores."""
         self.configure([{'frequency': 'MENSAL', 'nextDue': '2026-10-20'}, {'frequency': 'ANUAL', 'nextDue': '2026-12-01'}])
         monthly = self.machine.preventive_schedules.get(frequency='MENSAL')
-        self.client.defaults['HTTP_AUTHORIZATION'] = 'Bearer ' + issue_token(self.tech)
-        PreventiveChecklist.objects.create(equipment_type=self.kind, frequency='MENSAL', items=['Verificar sensores'])
+        self.client.defaults['HTTP_AUTHORIZATION'] = 'Bearer ' + issue_token_value(self.tech)
+        PreventiveChecklistCode.objects.create(equipment_type=self.kind, frequency='MENSAL', items=['Verificar sensores'])
         order = self.client.post('/api/preventive-orders', {'scheduleId':monthly.pk, 'expectedDueDate':'2026-10-20', 'plannedDate':'2026-10-20', 'assignedToId':self.tech.pk, 'recurrenceBasis':'EXECUCAO'}, content_type='application/json').json()
         data = {'performedDate': '2026-10-27', 'revision':order['revision'], 'results':[{'status':'REALIZADO'}], 'notes': 'Sensores verificados'}
         response = self.client.post(f"/api/preventive-orders/{order['id']}/complete", data, content_type='application/json')
@@ -139,18 +181,18 @@ class PreventiveAgendaTests(TestCase):
         self.assertEqual(response.json()['next_due'], '2026-11-27')
         monthly.refresh_from_db()
         self.assertEqual(monthly.last_performed, date(2026, 10, 27))
-        self.assertEqual(self.machine.preventive_schedules.get(frequency='ANUAL').next_due, date(2026, 12, 1))
+        self.assertEqual(self.machine.preventive_schedules.get(frequency='ANUAL').next_due, date(2026, 12, 20))
         history = self.client.get('/api/preventive-executions').json()
         self.assertEqual(history[0]['technician_name'], 'Técnico')
         self.assertEqual(history[0]['previous_due'], '2026-10-20')
         self.assertEqual(history[0]['notes'], 'Sensores verificados')
         # Reenvio da mesma conclusão não duplica o histórico.
         self.assertEqual(self.client.post(f"/api/preventive-orders/{order['id']}/complete", data, content_type='application/json').status_code, 409)
-        self.assertEqual(PreventiveExecution.objects.count(), 1)
-        self.client.defaults['HTTP_AUTHORIZATION'] = 'Bearer ' + issue_token(self.admin)
+        self.assertEqual(PreventiveExecutionCode.objects.count(), 1)
+        self.client.defaults['HTTP_AUTHORIZATION'] = 'Bearer ' + issue_token_value(self.admin)
         self.assertEqual(self.configure([]).status_code, 200)
         self.assertEqual(self.client.get('/api/preventive-schedules').json()['schedules'], [])
-        self.assertEqual(PreventiveExecution.objects.count(), 1)
+        self.assertEqual(PreventiveExecutionCode.objects.count(), 1)
         self.configure([{'frequency': 'MENSAL'}])
         monthly.refresh_from_db()
         self.assertTrue(monthly.active)
@@ -159,35 +201,35 @@ class PreventiveAgendaTests(TestCase):
 
     def test_execution_validation_and_calendar_months(self):
         """Confere datas no fim do mês e ano bissexto e rejeita data futura, data inexistente ou observação inválida na conclusão da OS."""
-        self.assertEqual(calculate_next_due(date(2026, 1, 31), 'MENSAL'), date(2026, 2, 28))
-        self.assertEqual(calculate_next_due(date(2024, 2, 29), 'ANUAL'), date(2025, 2, 28))
-        self.assertEqual(calculate_next_due(date(2026, 8, 31), 'SEMESTRAL'), date(2027, 2, 28))
+        self.assertEqual(next_due_value(date(2026, 1, 31), 'MENSAL'), date(2026, 2, 28))
+        self.assertEqual(next_due_value(date(2024, 2, 29), 'ANUAL'), date(2025, 2, 28))
+        self.assertEqual(next_due_value(date(2026, 8, 31), 'SEMESTRAL'), date(2027, 2, 28))
         self.configure([{'frequency': 'MENSAL', 'nextDue': '2026-10-20'}])
         schedule = self.machine.preventive_schedules.get()
-        PreventiveChecklist.objects.create(equipment_type=self.kind, frequency='MENSAL', items=['Verificar sensores'])
+        PreventiveChecklistCode.objects.create(equipment_type=self.kind, frequency='MENSAL', items=['Verificar sensores'])
         order = self.client.post('/api/preventive-orders', {'scheduleId':schedule.pk, 'expectedDueDate':'2026-10-20', 'plannedDate':'2026-10-20', 'assignedToId':self.tech.pk}, content_type='application/json').json()
         for changes in ({'performedDate': '2026-10-28'}, {'performedDate': '2026-02-30'}, {'notes': []}):
             data = {'performedDate': '2026-10-27', 'revision':order['revision'], 'results':[{'status':'REALIZADO'}], **changes}
             self.assertEqual(self.client.post(f"/api/preventive-orders/{order['id']}/complete", data, content_type='application/json').status_code, 400)
-        self.assertFalse(PreventiveExecution.objects.exists())
+        self.assertFalse(PreventiveExecutionCode.objects.exists())
 
     def test_operator_permissions_and_disabled_frequency_document(self):
         """Bloqueia operador e impressão de frequência não habilitada; confirma a impressão semestral com identificação e prazo, sem criar execução."""
-        line = Line.objects.create(code='OP', name='Linha', sector=self.sector)
-        operator = User.objects.create_user('OP', 'test', name='Operador', role='OPERADOR', line=line)
-        self.client.defaults['HTTP_AUTHORIZATION'] = 'Bearer ' + issue_token(operator)
+        line = LineCode.objects.create(code='OP', name='Linha', sector=self.sector)
+        operator = UserCode.objects.create_user('OP', 'test', name='Operador', role='OPERADOR', line=line)
+        self.client.defaults['HTTP_AUTHORIZATION'] = 'Bearer ' + issue_token_value(operator)
         for url in ('/api/preventive-schedules', '/api/preventive-executions'):
             self.assertEqual(self.client.get(url).status_code, 403)
         self.assertEqual(self.client.post('/api/preventive-schedules/1/complete', {}, content_type='application/json').status_code, 403)
         self.assertEqual(self.configure([]).status_code, 403)
-        self.client.defaults['HTTP_AUTHORIZATION'] = 'Bearer ' + issue_token(self.tech)
+        self.client.defaults['HTTP_AUTHORIZATION'] = 'Bearer ' + issue_token_value(self.tech)
         data = {'equipmentTypeId': self.kind.pk, 'frequency': 'SEMESTRAL', 'items': ['Verificar sensores']}
         self.assertEqual(self.client.put('/api/preventive-checklists', data, content_type='application/json').status_code, 200)
         params = {**data, 'equipmentId': self.machine.pk}
         self.assertEqual(self.client.get('/api/preventive-checklists/document', params).status_code, 404)
-        EquipmentPreventive.objects.create(equipment=self.machine, frequency='SEMESTRAL', next_due=date(2027, 4, 27))
+        EquipmentPreventiveCode.objects.create(equipment=self.machine, frequency='SEMESTRAL', next_due=date(2027, 4, 27))
         response = self.client.get('/api/preventive-checklists/document', params)
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, 'Impressora 01')
         self.assertContains(response, '27/04/2027')
-        self.assertFalse(PreventiveExecution.objects.exists())
+        self.assertFalse(PreventiveExecutionCode.objects.exists())

@@ -1,0 +1,1 @@
+{"extends":"../tsconfig.app.json","files":["stock-receipt.visual.ts"],"include":["../src/**/*.d.ts"],"compilerOptions":{"rootDir":"..","outDir":"../.tmp-test-entrada-pecas"}}

@@ -8,8 +8,5 @@ export interface ProblemType {
     active: boolean;
 }
 export const PRIORITY_LABELS: Record<string, string> = {
-    BAIXA: 'Baixa',
-    MEDIA: 'Média',
-    ALTA: 'Alta',
-    CRITICA: 'Crítica',
+    BAIXA: 'Baixa', MEDIA: 'Média', ALTA: 'Alta', CRITICA: 'Crítica'
 };

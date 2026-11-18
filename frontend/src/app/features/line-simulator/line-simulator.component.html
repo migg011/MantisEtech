@@ -1,0 +1,161 @@
+<div class="page simulator" (pointermove)="moveDrag($event, floor)"
+     (document:pointerup)="finishDrag($event, floor)" (document:pointercancel)="finishDrag($event, floor)"
+     (lostpointercapture)="onLostCapture($event)">
+    <a routerLink="/cadastro">← Central de Cadastros</a>
+    <h1>Simulador de linha</h1>
+    <form class="area-controls" (ngSubmit)="applyArea()">
+        <label>Comprimento (m)
+            <input type="number" name="length" [(ngModel)]="areaLength" min="2" max="100" step="0.001" required>
+        </label>
+        <label>Largura (m)
+            <input type="number" name="width" [(ngModel)]="areaWidth" min="2" max="100" step="0.001" required>
+        </label>
+        <label>Setor de destino
+            <select name="destination" [ngModel]="destination()" (ngModelChange)="destination.set($event)">
+                <option [ngValue]="null">Selecione o setor</option>
+                @for (sector of sectors(); track sector.id) {
+                    <option [ngValue]="sector.id">{{ sector.name }}</option>
+                }
+            </select>
+        </label>
+        <button class="apply" type="submit">Aplicar medidas</button>
+    </form>
+
+    <div class="work-area">
+        <aside class="panel">
+            <h2>Equipamentos dos setores</h2>
+            @if (loading()) {
+                <p class="muted">Carregando equipamentos...</p>
+            } @else if (loadError()) {
+                <p role="alert">Não foi possível carregar os equipamentos.</p>
+                <button type="button" (click)="loadEquipment()">Tentar novamente</button>
+            } @else {
+                <p class="muted">Arraste para a planta ou selecione o equipamento para adicionar. Na planta, use as setas para mover o equipamento em foco.</p>
+                <div class="catalog-filters">
+                    <label>Buscar equipamento
+                        <input type="search" [ngModel]="search()" (ngModelChange)="search.set($event)" placeholder="Nome, patrimônio ou linha">
+                    </label>
+                    <label>Setor de origem
+                        <select [ngModel]="sectorFilter()" (ngModelChange)="sectorFilter.set($event)">
+                            <option [ngValue]="null">Todos os setores disponíveis</option>
+                            @for (sector of sectors(); track sector.id) {
+                                <option [ngValue]="sector.id">{{ sector.name }}</option>
+                            }
+                        </select>
+                    </label>
+                </div>
+                <div class="catalog">
+                    @for (machine of available(); track machine.id) {
+                        <button type="button" (pointerdown)="startDrag($event, machine)" (click)="add(machine)">
+                            @if (imageFor(machine); as photo) {
+                                <img [src]="photo" alt="" draggable="false" loading="lazy">
+                            }
+                            <span>
+                                <strong>{{ machine.name }}</strong>
+                                <small>{{ sizeLabel(machine) }} · {{ machine.context }}</small>
+                            </span>
+                        </button>
+                    } @empty {
+                        <p class="muted">Nenhum equipamento com dimensões disponível para adicionar.</p>
+                    }
+                </div>
+                @if (incomplete().length) {
+                    <details>
+                        <summary>{{ incomplete().length }} sem comprimento ou largura</summary>
+                        <p class="muted">Preencha as dimensões na ficha técnica para posicionar estas máquinas.</p>
+                        <ul>
+                            @for (name of incomplete(); track $index) { <li>{{ name }}</li> }
+                        </ul>
+                    </details>
+                }
+            }
+        </aside>
+
+        <section class="panel" aria-label="Planta da linha">
+            <div class="plan-header">
+                <h2>Planta em escala</h2>
+                <output>{{ areaLabel() }}</output>
+            </div>
+            <div class="plan-stage">
+                <div class="floor" #floor role="group" aria-label="Área de posicionamento"
+                     [style.aspect-ratio]="area().length + ' / ' + area().width"
+                     [style.--plan-max]="(410 * area().length / area().width) + 'px'"
+                     [style.--step-x]="percent(1000, 'length') + '%'"
+                     [style.--step-y]="percent(1000, 'width') + '%'">
+                    @for (item of placements(); track item.machine.id; let i = $index) {
+                        <button class="piece" type="button"
+                                [attr.aria-label]="'Mover ' + item.machine.name + ' ' + item.machine.context"
+                                [attr.aria-pressed]="selectedId() === item.machine.id"
+                                [style.left.%]="percent(item.x, 'length')" [style.top.%]="percent(item.y, 'width')"
+                                [style.width.%]="percent(dimensions(item).length, 'length')"
+                                [style.height.%]="percent(dimensions(item).width, 'width')"
+                                (pointerdown)="startDrag($event, item.machine, item)"
+                                (click)="select(item.machine.id)" (keydown)="nudge($event, item)">
+                            @if (imageFor(item.machine); as photo) {
+                                <img [src]="photo" alt="" draggable="false" [class.rotated]="item.rotated">
+                                <span class="piece-number">{{ i + 1 }}</span>
+                            } @else {
+                                <span>{{ i + 1 }} · {{ item.machine.name }}</span>
+                            }
+                        </button>
+                    }
+                    @if (preview(); as item) {
+                        <div class="ghost" aria-hidden="true" [class.invalid]="previewError()"
+                             [style.left.%]="percent(item.x, 'length')" [style.top.%]="percent(item.y, 'width')"
+                             [style.width.%]="percent(dimensions(item).length, 'length')"
+                             [style.height.%]="percent(dimensions(item).width, 'width')">
+                            @if (imageFor(item.machine); as photo) {
+                                <img [src]="photo" alt="" draggable="false" [class.rotated]="item.rotated">
+                            }
+                        </div>
+                    }
+                </div>
+            </div>
+            <div class="plan-footer">
+                <small>Grade de 1 m</small>
+                <small>{{ placements().length }} na planta</small>
+            </div>
+            <dl class="measurements">
+                <div><dt>Dimensões do layout</dt><dd>{{ placements().length ? sizeLabel(occupied()) : '—' }}</dd></div>
+                <div><dt>Área ocupada</dt><dd>{{ areaInSquareMeters(occupied().area) }}</dd></div>
+                <div><dt>Área livre total</dt><dd>{{ freeArea() }}</dd></div>
+            </dl>
+            <p class="muted">O encaixe considera as medidas cadastradas, os limites da planta e a posição das outras máquinas. Reserve espaço para circulação e manutenção ao montar a planta.</p>
+            <div class="placed">
+                @for (item of placements(); track item.machine.id; let i = $index) {
+                    <button type="button" [attr.aria-pressed]="selectedId() === item.machine.id"
+                            (click)="select(item.machine.id)" (keydown)="nudge($event, item)">
+                        {{ i + 1 }} · {{ item.machine.name }}
+                    </button>
+                }
+            </div>
+            @if (selected(); as item) {
+                <div class="selection">
+                    <strong>{{ item.machine.name }} · {{ sizeLabel(dimensions(item)) }}</strong>
+                    <div>
+                        <button type="button" (click)="rotate(item)">Girar 90°</button>
+                        <button type="button" (click)="remove(item)">Remover</button>
+                    </div>
+                </div>
+            }
+            @if (destination() !== null && placements().length) {
+                <div class="transfer-summary">
+                    <h2>Transferências a avaliar</h2>
+                    @if (transfers().length) {
+                        <ul>
+                            @for (item of transfers(); track item.machine.id) {
+                                <li><strong>{{ item.machine.name }}</strong> · {{ item.machine.context }}
+                                    @if (item.machine.lineName) { <span> · retirar da linha de origem antes da transferência</span> }
+                                </li>
+                            }
+                        </ul>
+                        <p class="muted">A simulação apenas indica os equipamentos de outros setores.</p>
+                    } @else {
+                        <p class="muted">Nenhum equipamento de outro setor identificado neste layout.</p>
+                    }
+                </div>
+            }
+            <p class="message" [class.error]="isError()" role="status">{{ message() }}</p>
+        </section>
+    </div>
+</div>

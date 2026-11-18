@@ -1,6 +1,1 @@
-{
-    "extends": "../tsconfig.app.json",
-    "files": ["work-order-types.visual.ts"],
-    "include": ["../src/**/*.d.ts"],
-    "compilerOptions": { "outDir": "../.tmp-test-tipos-os" }
-}
+{"extends":"../tsconfig.app.json","files":["work-order-types.visual.ts"],"include":["../src/**/*.d.ts"],"compilerOptions":{"rootDir":"..","outDir":"../.tmp-test-tipos-os"}}
